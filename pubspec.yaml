@@ -1,0 +1,23 @@
+name: dnd_kit_workspace
+publish_to: none
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+workspace:
+  - packages/dnd_kit_core
+  - packages/dnd_kit_flutter
+  - packages/dnd_kit_sortable
+  - packages/dnd_kit
+
+dev_dependencies:
+  lints: ^5.0.0
+  melos: ^7.8.1
+
+melos:
+  sdkPath: .fvm/flutter_sdk
+  scripts:
+    analyze:
+      run: dart run melos exec --concurrency 1 -- "dart analyze"
+    test:
+      run: dart run melos exec --dir-exists test -- "dart test"

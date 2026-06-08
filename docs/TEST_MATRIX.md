@@ -19,6 +19,7 @@ Do not mark a row implemented until tests or validation evidence exist.
 | Story | Contract | Unit | Integration | E2E | Platform | Status | Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | US-001 | Repository foundation and package boundaries | yes | no | no | no | implemented | `story verify US-001`; `fvm dart analyze`; `melos run analyze` |
+| US-002 | Melos workspace tooling upgraded to `^7.8.1` | yes | yes | no | no | implemented | `story verify US-002`; `melos bootstrap`; `melos run analyze` |
 
 ## Evidence Rules
 
