@@ -16,7 +16,8 @@ Build the pure Dart foundation:
 - drag state machine;
 - event models;
 - collision detectors;
-- modifier contracts.
+- modifier contracts;
+- registry contracts.
 
 ## Phase 2 - Basic Flutter Adapter
 
@@ -26,7 +27,7 @@ Create the first Flutter adapter surface:
 - `DndController`;
 - `DndDraggable`;
 - `DndDroppable`;
-- registry;
+- Flutter registry integration;
 - basic measuring;
 - drag event lifecycle.
 
