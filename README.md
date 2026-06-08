@@ -50,10 +50,11 @@ docs/
 
 ## Current Status
 
-The repository is in Phase 0 foundation work. Public APIs are not implemented
-yet. The source of truth is being split from [SPEC.md](SPEC.md) into product
-docs, story packets, validation expectations, and decision records under
-`docs/`.
+The repository has completed Phase 0 foundation work and is now building the
+Phase 1 pure Dart core engine. `dnd_kit_core` exposes the first stable value
+primitives and drag lifecycle/session models. The living source of truth is
+split from historical [SPEC.md](SPEC.md) input material into product docs, story
+packets, validation expectations, and decision records under `docs/`.
 
 ## Harness
 

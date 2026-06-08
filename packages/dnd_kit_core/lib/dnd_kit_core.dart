@@ -4,3 +4,4 @@ library;
 
 export 'src/geometry.dart';
 export 'src/id.dart';
+export 'src/state.dart';
