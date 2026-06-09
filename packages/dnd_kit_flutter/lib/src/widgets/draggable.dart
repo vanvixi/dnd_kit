@@ -144,12 +144,14 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
       controller.registry.registerDraggable(next);
       _registeredController = controller;
       _registration = next;
+      _markMeasurementDirty();
       return;
     }
 
     if (_registration != next) {
       controller.registry.updateDraggable(next);
       _registration = next;
+      _markMeasurementDirty();
     }
   }
 
@@ -163,6 +165,48 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
 
     _registeredController = null;
     _registration = null;
+  }
+
+  DndRect? _measureCurrentRect() {
+    final measureContext = _measureKey.currentContext;
+    return measureContext == null ? null : measureDndRect(measureContext);
+  }
+
+  void _markMeasurementDirty() {
+    final controller = _registeredController;
+    final registration = _registration;
+    if (controller == null || registration == null) {
+      return;
+    }
+
+    controller.measuring.markDraggableDirty(
+      registration.id,
+      measure: _measureCurrentRect,
+    );
+  }
+
+  DndRect? _refreshDraggableMeasurement() {
+    final controller = _controller;
+    if (controller == null) {
+      return null;
+    }
+
+    controller.measuring.markDraggableDirty(
+      widget.id,
+      measure: _measureCurrentRect,
+    );
+    controller.measuring.refreshDirty();
+
+    final cachedRect = controller.measuring.draggableRect(widget.id);
+    if (cachedRect != null) {
+      return cachedRect;
+    }
+
+    final rect = _measureCurrentRect();
+    if (rect != null) {
+      controller.measuring.updateDraggableRect(widget.id, rect);
+    }
+    return rect;
   }
 
   @internal
@@ -264,11 +308,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
       return;
     }
 
-    final activeRect =
-        _measureKey.currentContext == null ? null : measureDndRect(_measureKey.currentContext!);
-    if (activeRect != null) {
-      controller.measuring.updateDraggableRect(widget.id, activeRect);
-    }
+    final activeRect = _refreshDraggableMeasurement();
 
     final sensor = DndPointerSensor(
       controller: controller,
@@ -423,11 +463,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
       return false;
     }
 
-    final activeRect =
-        _measureKey.currentContext == null ? null : measureDndRect(_measureKey.currentContext!);
-    if (activeRect != null) {
-      controller.measuring.updateDraggableRect(widget.id, activeRect);
-    }
+    final activeRect = _refreshDraggableMeasurement();
 
     final initialPointer = activeRect?.center ?? DndPoint.zero;
     controller.beginDrag(
@@ -495,18 +531,21 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
             onPointerMove: widget.disabled ? null : _handlePointerMove,
             onPointerUp: widget.disabled ? null : _handlePointerUp,
             onPointerCancel: widget.disabled ? null : _handlePointerCancel,
-            child: GestureDetector(
+            child: DndMeasuredBox(
               key: _measureKey,
-              behavior: widget.hitTestBehavior ?? HitTestBehavior.opaque,
-              onPanStart: widget.disabled || _usesLongPressActivation
-                  ? null
-                  : (details) {
-                      _handlePanStart(details, fromHandle: false);
-                    },
-              onPanUpdate: widget.disabled || _usesLongPressActivation ? null : _handlePanUpdate,
-              onPanEnd: widget.disabled || _usesLongPressActivation ? null : _handlePanEnd,
-              onPanCancel: widget.disabled || _usesLongPressActivation ? null : _handlePanCancel,
-              child: widget.child,
+              onLayout: _markMeasurementDirty,
+              child: GestureDetector(
+                behavior: widget.hitTestBehavior ?? HitTestBehavior.opaque,
+                onPanStart: widget.disabled || _usesLongPressActivation
+                    ? null
+                    : (details) {
+                        _handlePanStart(details, fromHandle: false);
+                      },
+                onPanUpdate: widget.disabled || _usesLongPressActivation ? null : _handlePanUpdate,
+                onPanEnd: widget.disabled || _usesLongPressActivation ? null : _handlePanEnd,
+                onPanCancel: widget.disabled || _usesLongPressActivation ? null : _handlePanCancel,
+                child: widget.child,
+              ),
             ),
           ),
         ),

@@ -2,7 +2,7 @@
 ///
 library;
 
-export 'src/measuring/measuring.dart';
+export 'src/measuring/measuring.dart' hide DndMeasuredBox;
 export 'src/scope/controller.dart';
 export 'src/scope/scope.dart';
 export 'src/sensors/long_press_activation.dart';

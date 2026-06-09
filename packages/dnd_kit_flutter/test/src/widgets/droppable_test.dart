@@ -165,5 +165,141 @@ void main() {
 
       expect(controller.measuring.droppableRect(const DndId('column-1')), isNull);
     });
+
+    testWidgets('removes old measurements and measures the new id after id changes',
+        (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: const Stack(
+            textDirection: TextDirection.ltr,
+            children: <Widget>[
+              Positioned(
+                left: 0,
+                top: 0,
+                child: DndDroppable(
+                  id: DndId('column-1'),
+                  child: SizedBox(width: 80, height: 60),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(controller.measuring.droppableStatus(const DndId('column-1')),
+          DndMeasurementStatus.clean);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: const Stack(
+            textDirection: TextDirection.ltr,
+            children: <Widget>[
+              Positioned(
+                left: 0,
+                top: 0,
+                child: DndDroppable(
+                  id: DndId('column-2'),
+                  child: SizedBox(width: 100, height: 70),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(controller.measuring.droppableStatus(const DndId('column-1')),
+          DndMeasurementStatus.removed);
+      expect(controller.measuring.droppableStatus(const DndId('column-2')),
+          DndMeasurementStatus.clean);
+      expect(
+        controller.measuring.droppableRect(const DndId('column-2')),
+        const DndRect(left: 0, top: 0, width: 100, height: 70),
+      );
+    });
+
+    testWidgets('marks disabled changes dirty while keeping stale rects out of collision',
+        (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      DndDragEndEvent? endEvent;
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: Stack(
+            textDirection: TextDirection.ltr,
+            children: <Widget>[
+              const Positioned(
+                left: 100,
+                top: 0,
+                child: DndDroppable(
+                  id: DndId('column-1'),
+                  child: SizedBox(width: 80, height: 80),
+                ),
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                child: DndDraggable(
+                  id: const DndId('task-1'),
+                  onDragEnd: (event) {
+                    endEvent = event;
+                  },
+                  child: const SizedBox(width: 40, height: 40),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: Stack(
+            textDirection: TextDirection.ltr,
+            children: <Widget>[
+              const Positioned(
+                left: 100,
+                top: 0,
+                child: DndDroppable(
+                  id: DndId('column-1'),
+                  disabled: true,
+                  child: SizedBox(width: 80, height: 80),
+                ),
+              ),
+              Positioned(
+                left: 0,
+                top: 0,
+                child: DndDraggable(
+                  id: const DndId('task-1'),
+                  onDragEnd: (event) {
+                    endEvent = event;
+                  },
+                  child: const SizedBox(width: 40, height: 40),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(controller.registry.droppable(const DndId('column-1'))?.disabled, isTrue);
+      expect(controller.measuring.droppableRect(const DndId('column-1')), isNotNull);
+
+      await tester.dragFrom(const Offset(20, 20), const Offset(100, 0));
+      await tester.pump();
+
+      expect(endEvent?.overId, isNull);
+    });
   });
 }

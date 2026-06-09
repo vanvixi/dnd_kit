@@ -1,5 +1,4 @@
 import 'package:dnd_kit_core/dnd_kit_core.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 import '../measuring/measuring.dart';
@@ -79,12 +78,14 @@ class _DndDroppableState extends State<DndDroppable> {
       controller.registry.registerDroppable(next);
       _registeredController = controller;
       _registration = next;
+      _markMeasurementDirty();
       return;
     }
 
     if (_registration != next) {
       controller.registry.updateDroppable(next);
       _registration = next;
+      _markMeasurementDirty();
     }
   }
 
@@ -100,7 +101,25 @@ class _DndDroppableState extends State<DndDroppable> {
     _registration = null;
   }
 
-  void _scheduleMeasure(BuildContext measureContext) {
+  DndRect? _measureCurrentRect() {
+    final measureContext = _measureKey.currentContext;
+    return measureContext == null ? null : measureDndRect(measureContext);
+  }
+
+  void _markMeasurementDirty() {
+    final controller = _registeredController;
+    final registration = _registration;
+    if (controller == null || registration == null) {
+      return;
+    }
+
+    controller.measuring.markDroppableDirty(
+      registration.id,
+      measure: _measureCurrentRect,
+    );
+  }
+
+  void _scheduleMeasure() {
     if (_measureScheduled) {
       return;
     }
@@ -114,48 +133,25 @@ class _DndDroppableState extends State<DndDroppable> {
 
       final controller = _registeredController;
       final registration = _registration;
-      final currentMeasureContext = _measureKey.currentContext ?? measureContext;
-      final rect = measureDndRect(currentMeasureContext);
-      if (controller == null || registration == null || rect == null) {
+      if (controller == null || registration == null) {
         return;
       }
 
-      controller.measuring.updateDroppableRect(registration.id, rect);
+      controller.measuring.markDroppableDirty(
+        registration.id,
+        measure: _measureCurrentRect,
+      );
+      controller.measuring.refreshDirty();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    _scheduleMeasure(context);
-    return _DndMeasuredBox(
+    _scheduleMeasure();
+    return DndMeasuredBox(
       key: _measureKey,
+      onLayout: _markMeasurementDirty,
       child: widget.child,
     );
-  }
-}
-
-class _DndMeasuredBox extends SingleChildRenderObjectWidget {
-  const _DndMeasuredBox({
-    super.key,
-    required super.child,
-  });
-
-  @override
-  RenderObject createRenderObject(BuildContext context) {
-    return _RenderDndMeasuredBox();
-  }
-}
-
-class _RenderDndMeasuredBox extends RenderProxyBox {
-  @override
-  void performLayout() {
-    final child = this.child;
-    if (child == null) {
-      size = constraints.smallest;
-      return;
-    }
-
-    child.layout(constraints, parentUsesSize: true);
-    size = constraints.constrain(child.size);
   }
 }

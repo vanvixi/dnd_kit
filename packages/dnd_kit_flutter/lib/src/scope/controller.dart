@@ -100,6 +100,7 @@ class DndController extends ChangeNotifier {
       return null;
     }
 
+    _refreshMeasurements(current.session.activeId);
     final next = DndDragging(session: _modifiedSession(current.session, position));
     _replaceState(next);
     _updateCollision(next.session);
@@ -162,6 +163,7 @@ class DndController extends ChangeNotifier {
   }
 
   void _updateCollision(DndDragSession session) {
+    _refreshMeasurements(session.activeId);
     final activeRect = _activeRect;
     if (activeRect == null) {
       _setOverId(null);
@@ -191,6 +193,14 @@ class DndController extends ChangeNotifier {
       ),
     );
     _setOverId(result.firstOrNull?.id);
+  }
+
+  void _refreshMeasurements(DndId activeId) {
+    measuring.refreshDirty();
+    final activeRect = measuring.draggableRect(activeId);
+    if (activeRect != null) {
+      _activeRect = activeRect;
+    }
   }
 
   DndDragSession _modifiedSession(DndDragSession session, DndPoint rawPosition) {

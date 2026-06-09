@@ -86,6 +86,60 @@ void main() {
       );
     });
 
+    testWidgets('tracks dirty and removed draggable measurements through lifecycle',
+        (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: const DndDraggable(
+            id: DndId('task-1'),
+            child: SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      expect(
+          controller.measuring.draggableStatus(const DndId('task-1')), DndMeasurementStatus.dirty);
+
+      await tester.dragFrom(const Offset(20, 20), const Offset(1, 0));
+      await tester.pump();
+
+      expect(
+          controller.measuring.draggableStatus(const DndId('task-1')), DndMeasurementStatus.clean);
+      expect(
+        controller.measuring.draggableRect(const DndId('task-1')),
+        const DndRect(left: 0, top: 0, width: 800, height: 600),
+      );
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: const DndDraggable(
+            id: DndId('task-2'),
+            child: SizedBox(width: 50, height: 50),
+          ),
+        ),
+      );
+
+      expect(controller.measuring.draggableStatus(const DndId('task-1')),
+          DndMeasurementStatus.removed);
+      expect(
+          controller.measuring.draggableStatus(const DndId('task-2')), DndMeasurementStatus.dirty);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: const SizedBox(),
+        ),
+      );
+
+      expect(controller.measuring.draggableStatus(const DndId('task-2')),
+          DndMeasurementStatus.removed);
+    });
+
     testWidgets('moves registration when the nearest controller changes', (tester) async {
       final firstController = DndController();
       final secondController = DndController();

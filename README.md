@@ -50,11 +50,16 @@ docs/
 
 ## Current Status
 
-The repository has completed Phase 0 foundation work and is now building the
-Phase 1 pure Dart core engine. `dnd_kit_core` exposes the first stable value
-primitives and drag lifecycle/session models. The living source of truth is
-split from historical [SPEC.md](SPEC.md) input material into product docs, story
-packets, validation expectations, and decision records under `docs/`.
+The repository has completed Phase 0 foundation work, the Phase 1 pure Dart
+core engine, the Phase 2 basic Flutter adapter, and the Phase 3 sensor and
+activation work. Phase 4 measuring, collision runtime, modifiers, and cached
+measuring invalidation work is validated through `US-021`. The next roadmap
+area is Phase 5 overlay, visual state, and auto-scroll work.
+
+The living source of truth is split from historical [SPEC.md](SPEC.md) input
+material into product docs, story packets, validation expectations, and decision
+records under `docs/`. Use `scripts/bin/harness-cli query matrix` for durable
+story proof status.
 
 ## Harness
 
