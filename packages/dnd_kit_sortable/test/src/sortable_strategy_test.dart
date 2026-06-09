@@ -126,6 +126,130 @@ void main() {
       );
     });
   });
+
+  group('SortableStrategies.horizontalList', () {
+    test('computes new index from the active translated center', () {
+      final details = SortableStrategies.horizontalList(
+        _input(
+          activeId: const DndId('item-1'),
+          overId: const DndId('item-3'),
+          oldIndex: 0,
+          activeTranslatedRect: _rect(left: 126),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(left: 0),
+            const DndId('item-2'): _rect(left: 60),
+            const DndId('item-3'): _rect(left: 120),
+          },
+        ),
+      );
+
+      expect(details?.activeId, const DndId('item-1'));
+      expect(details?.overId, const DndId('item-3'));
+      expect(details?.oldIndex, 0);
+      expect(details?.newIndex, 2);
+    });
+
+    test('supports moving left before earlier measured items', () {
+      final details = SortableStrategies.horizontalList(
+        _input(
+          activeId: const DndId('item-3'),
+          overId: const DndId('item-1'),
+          oldIndex: 2,
+          activeTranslatedRect: _rect(left: -20),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(left: 0),
+            const DndId('item-2'): _rect(left: 60),
+            const DndId('item-3'): _rect(left: 120),
+          },
+        ),
+      );
+
+      expect(details?.oldIndex, 2);
+      expect(details?.newIndex, 0);
+    });
+
+    test('uses measured centers for a two item horizontal list', () {
+      final details = SortableStrategies.horizontalList(
+        _input(
+          activeId: const DndId('item-1'),
+          overId: const DndId('item-2'),
+          oldIndex: 0,
+          itemIds: const <DndId>[DndId('item-1'), DndId('item-2')],
+          activeTranslatedRect: _rect(left: 80),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(left: 0),
+            const DndId('item-2'): _rect(left: 60),
+          },
+        ),
+      );
+
+      expect(details?.newIndex, 1);
+    });
+
+    test('falls back to drop-over index when measurements are incomplete', () {
+      final details = SortableStrategies.horizontalList(
+        _input(
+          activeId: const DndId('item-1'),
+          overId: const DndId('item-3'),
+          oldIndex: 0,
+          activeTranslatedRect: _rect(left: 126),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(left: 0),
+            const DndId('item-2'): _rect(left: 60),
+          },
+        ),
+      );
+
+      expect(details?.newIndex, 2);
+    });
+
+    test('falls back to drop-over index for non-horizontal layouts', () {
+      final details = SortableStrategies.horizontalList(
+        _input(
+          activeId: const DndId('item-1'),
+          overId: const DndId('item-2'),
+          oldIndex: 0,
+          activeTranslatedRect: _rect(top: 100),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(top: 0),
+            const DndId('item-2'): _rect(top: 100),
+            const DndId('item-3'): _rect(top: 200),
+          },
+        ),
+      );
+
+      expect(details?.newIndex, 1);
+    });
+
+    test('does not report same-item moves or mutate item order', () {
+      final itemIds = <DndId>[
+        const DndId('item-1'),
+        const DndId('item-2'),
+        const DndId('item-3'),
+      ];
+
+      final details = SortableStrategies.horizontalList(
+        _input(
+          activeId: const DndId('item-1'),
+          overId: const DndId('item-1'),
+          oldIndex: 0,
+          itemIds: itemIds,
+          activeTranslatedRect: _rect(left: 60),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(left: 0),
+            const DndId('item-2'): _rect(left: 60),
+            const DndId('item-3'): _rect(left: 120),
+          },
+        ),
+      );
+
+      expect(details, isNull);
+      expect(
+        itemIds,
+        const <DndId>[DndId('item-1'), DndId('item-2'), DndId('item-3')],
+      );
+    });
+  });
 }
 
 SortableStrategyInput _input({
@@ -160,7 +284,7 @@ SortableStrategyInput _input({
 }
 
 DndRect _rect({
-  required double top,
+  double top = 0,
   double left = 0,
 }) {
   return DndRect(left: left, top: top, width: 50, height: 50);

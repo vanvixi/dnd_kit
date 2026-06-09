@@ -120,6 +120,52 @@ abstract final class SortableStrategies {
 
     return input.fallbackMoveDetails(newIndex: newIndex);
   }
+
+  /// Computes same-container horizontal list movement from measured item centers.
+  static SortableMoveDetails? horizontalList(SortableStrategyInput input) {
+    final fallback = input.fallbackMoveDetails();
+    if (fallback == null) {
+      return null;
+    }
+
+    final activeTranslatedRect = input.activeTranslatedRect;
+    if (activeTranslatedRect == null) {
+      return fallback;
+    }
+
+    final measuredItems = <_MeasuredSortableItem>[];
+    for (final id in input.itemIds) {
+      if (id == input.activeId) {
+        continue;
+      }
+
+      final rect = input.itemRects[id];
+      if (rect == null) {
+        return fallback;
+      }
+
+      measuredItems.add(_MeasuredSortableItem(id: id, rect: rect));
+    }
+
+    if (!_hasHorizontalSeparation(
+      measuredItems,
+      activeCenterX: activeTranslatedRect.center.x,
+    )) {
+      return fallback;
+    }
+
+    measuredItems.sort(_compareHorizontalItems);
+    final newIndex = _horizontalInsertionIndex(
+      activeCenterX: activeTranslatedRect.center.x,
+      measuredItems: measuredItems,
+    );
+
+    if (newIndex == input.oldIndex) {
+      return null;
+    }
+
+    return input.fallbackMoveDetails(newIndex: newIndex);
+  }
 }
 
 final class _MeasuredSortableItem {
@@ -139,6 +185,13 @@ bool _hasVerticalSeparation(
   return measuredItems.any((item) => item.rect.center.y != activeCenterY);
 }
 
+bool _hasHorizontalSeparation(
+  List<_MeasuredSortableItem> measuredItems, {
+  required double activeCenterX,
+}) {
+  return measuredItems.any((item) => item.rect.center.x != activeCenterX);
+}
+
 int _verticalInsertionIndex({
   required double activeCenterY,
   required List<_MeasuredSortableItem> measuredItems,
@@ -146,6 +199,23 @@ int _verticalInsertionIndex({
   var index = 0;
   for (final item in measuredItems) {
     if (activeCenterY > item.rect.center.y) {
+      index += 1;
+      continue;
+    }
+
+    break;
+  }
+
+  return index;
+}
+
+int _horizontalInsertionIndex({
+  required double activeCenterX,
+  required List<_MeasuredSortableItem> measuredItems,
+}) {
+  var index = 0;
+  for (final item in measuredItems) {
+    if (activeCenterX > item.rect.center.x) {
       index += 1;
       continue;
     }
@@ -165,6 +235,20 @@ int _compareVerticalItems(_MeasuredSortableItem a, _MeasuredSortableItem b) {
   final topComparison = a.rect.top.compareTo(b.rect.top);
   if (topComparison != 0) {
     return topComparison;
+  }
+
+  return a.id.value.compareTo(b.id.value);
+}
+
+int _compareHorizontalItems(_MeasuredSortableItem a, _MeasuredSortableItem b) {
+  final centerComparison = a.rect.center.x.compareTo(b.rect.center.x);
+  if (centerComparison != 0) {
+    return centerComparison;
+  }
+
+  final leftComparison = a.rect.left.compareTo(b.rect.left);
+  if (leftComparison != 0) {
+    return leftComparison;
   }
 
   return a.id.value.compareTo(b.id.value);
