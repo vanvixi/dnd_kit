@@ -22,15 +22,17 @@ class DndDraggable extends StatefulWidget {
     this.data,
     this.activationConstraint = DndSensorActivationConstraint.none,
     this.longPressActivation,
+    this.keyboardDragStep = 25,
     this.hitTestBehavior,
     this.onDragStart,
     this.onDragMove,
     this.onDragEnd,
     this.onDragCancel,
-  }) : assert(
+  })  : assert(
           longPressActivation == null || activationConstraint == DndSensorActivationConstraint.none,
           'Use either activationConstraint or longPressActivation, not both.',
-        );
+        ),
+        assert(keyboardDragStep > 0, 'Keyboard drag step must be positive.');
 
   /// The stable draggable id.
   final DndId id;
@@ -49,6 +51,9 @@ class DndDraggable extends StatefulWidget {
 
   /// Optional long-press activation behavior for pointer drags.
   final DndLongPressActivation? longPressActivation;
+
+  /// Logical pixels moved for each keyboard arrow key press.
+  final double keyboardDragStep;
 
   /// How this draggable participates in hit testing.
   final HitTestBehavior? hitTestBehavior;
@@ -71,6 +76,7 @@ class DndDraggable extends StatefulWidget {
 
 class _DndDraggableState extends State<DndDraggable> implements DndDraggableHandleController {
   final GlobalKey _measureKey = GlobalKey();
+  final FocusNode _focusNode = FocusNode(debugLabel: 'DndDraggable');
   DndController? _controller;
   DndController? _registeredController;
   DndDraggableRegistration? _registration;
@@ -91,7 +97,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     super.didUpdateWidget(oldWidget);
     _syncRegistration();
 
-    if (!oldWidget.disabled && widget.disabled && _isWidgetGestureDrag) {
+    if (!oldWidget.disabled && widget.disabled && (_isWidgetGestureDrag || _isKeyboardDrag)) {
       _scheduleDisabledCancel();
     }
   }
@@ -100,11 +106,19 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
   void dispose() {
     _pointerSensor?.dispose();
     _unregister();
+    _focusNode.dispose();
     super.dispose();
   }
 
   bool get _isWidgetGestureDrag {
     return _pointerSensor?.isActive == true && _controller?.activeId == widget.id;
+  }
+
+  bool get _isKeyboardDrag {
+    final state = _controller?.state;
+    return state is DndDragging &&
+        state.session.activeId == widget.id &&
+        state.session.inputKind == DndInputKind.keyboard;
   }
 
   bool get _usesLongPressActivation => widget.longPressActivation != null;
@@ -306,6 +320,14 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     _pointerSensor?.cancel(reason: reason);
     _pointerSensor = null;
     _handlePointerActive = false;
+
+    if (_isKeyboardDrag) {
+      final event = _controller?.cancelDrag(reason: reason);
+      if (event != null) {
+        widget.onDragCancel?.call(event);
+        _controller?.reset();
+      }
+    }
   }
 
   void _scheduleDisabledCancel() {
@@ -316,7 +338,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     _disabledCancelScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _disabledCancelScheduled = false;
-      if (!mounted || !widget.disabled || !_isWidgetGestureDrag) {
+      if (!mounted || !widget.disabled || (!_isWidgetGestureDrag && !_isKeyboardDrag)) {
         return;
       }
 
@@ -324,28 +346,148 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     });
   }
 
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+
+    if (widget.disabled) {
+      return KeyEventResult.ignored;
+    }
+
+    final key = event.logicalKey;
+    if (key == LogicalKeyboardKey.space || key == LogicalKeyboardKey.enter) {
+      return _toggleKeyboardDrag();
+    }
+
+    if (key == LogicalKeyboardKey.escape) {
+      return _cancelKeyboardDrag();
+    }
+
+    final delta = switch (key) {
+      LogicalKeyboardKey.arrowLeft => DndPoint(-widget.keyboardDragStep, 0),
+      LogicalKeyboardKey.arrowRight => DndPoint(widget.keyboardDragStep, 0),
+      LogicalKeyboardKey.arrowUp => DndPoint(0, -widget.keyboardDragStep),
+      LogicalKeyboardKey.arrowDown => DndPoint(0, widget.keyboardDragStep),
+      _ => null,
+    };
+
+    if (delta == null) {
+      return KeyEventResult.ignored;
+    }
+
+    return _moveKeyboardDrag(delta);
+  }
+
+  KeyEventResult _toggleKeyboardDrag() {
+    if (_isKeyboardDrag) {
+      final event = _controller?.endDrag();
+      if (event != null) {
+        widget.onDragEnd?.call(event);
+        _controller?.reset();
+      }
+      return KeyEventResult.handled;
+    }
+
+    if (_startKeyboardDrag()) {
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
+  }
+
+  bool _startKeyboardDrag() {
+    final controller = _controller;
+    if (controller == null || !controller.isIdle) {
+      return false;
+    }
+
+    final activeRect =
+        _measureKey.currentContext == null ? null : measureDndRect(_measureKey.currentContext!);
+    if (activeRect != null) {
+      controller.measuring.updateDraggableRect(widget.id, activeRect);
+    }
+
+    final initialPointer = activeRect?.center ?? DndPoint.zero;
+    controller.beginDrag(
+      DndSensorActivationEvent(
+        activeId: widget.id,
+        position: initialPointer,
+        inputKind: DndInputKind.keyboard,
+      ),
+      activeRect: activeRect,
+    );
+
+    final event = controller.startDrag();
+    if (event == null) {
+      return false;
+    }
+
+    widget.onDragStart?.call(event);
+    return true;
+  }
+
+  KeyEventResult _moveKeyboardDrag(DndPoint delta) {
+    final session = _controller?.activeSession;
+    if (!_isKeyboardDrag || session == null) {
+      return KeyEventResult.ignored;
+    }
+
+    final event = _controller?.moveDrag(session.currentPointer.translate(delta));
+    if (event != null) {
+      widget.onDragMove?.call(event);
+    }
+
+    return KeyEventResult.handled;
+  }
+
+  KeyEventResult _cancelKeyboardDrag() {
+    if (!_isKeyboardDrag) {
+      return KeyEventResult.ignored;
+    }
+
+    final event = _controller?.cancelDrag(reason: DndCancelReason.user);
+    if (event != null) {
+      widget.onDragCancel?.call(event);
+      _controller?.reset();
+    }
+
+    return KeyEventResult.handled;
+  }
+
   @override
   Widget build(BuildContext context) {
     return DndDraggableHandleScope(
       draggable: this,
-      child: Listener(
-        behavior: widget.hitTestBehavior ?? HitTestBehavior.opaque,
-        onPointerDown: widget.disabled ? null : _handlePointerDown,
-        onPointerMove: widget.disabled ? null : _handlePointerMove,
-        onPointerUp: widget.disabled ? null : _handlePointerUp,
-        onPointerCancel: widget.disabled ? null : _handlePointerCancel,
-        child: GestureDetector(
-          key: _measureKey,
-          behavior: widget.hitTestBehavior ?? HitTestBehavior.opaque,
-          onPanStart: widget.disabled || _usesLongPressActivation
-              ? null
-              : (details) {
-                  _handlePanStart(details, fromHandle: false);
-                },
-          onPanUpdate: widget.disabled || _usesLongPressActivation ? null : _handlePanUpdate,
-          onPanEnd: widget.disabled || _usesLongPressActivation ? null : _handlePanEnd,
-          onPanCancel: widget.disabled || _usesLongPressActivation ? null : _handlePanCancel,
-          child: widget.child,
+      child: Semantics(
+        enabled: !widget.disabled,
+        focusable: !widget.disabled,
+        hint: 'Press Space or Enter to pick up, arrow keys to move, Escape to cancel.',
+        textDirection: Directionality.maybeOf(context) ?? TextDirection.ltr,
+        child: Focus(
+          focusNode: _focusNode,
+          canRequestFocus: !widget.disabled,
+          onKeyEvent: _handleKeyEvent,
+          child: Listener(
+            behavior: widget.hitTestBehavior ?? HitTestBehavior.opaque,
+            onPointerDown: widget.disabled ? null : _handlePointerDown,
+            onPointerMove: widget.disabled ? null : _handlePointerMove,
+            onPointerUp: widget.disabled ? null : _handlePointerUp,
+            onPointerCancel: widget.disabled ? null : _handlePointerCancel,
+            child: GestureDetector(
+              key: _measureKey,
+              behavior: widget.hitTestBehavior ?? HitTestBehavior.opaque,
+              onPanStart: widget.disabled || _usesLongPressActivation
+                  ? null
+                  : (details) {
+                      _handlePanStart(details, fromHandle: false);
+                    },
+              onPanUpdate: widget.disabled || _usesLongPressActivation ? null : _handlePanUpdate,
+              onPanEnd: widget.disabled || _usesLongPressActivation ? null : _handlePanEnd,
+              onPanCancel: widget.disabled || _usesLongPressActivation ? null : _handlePanCancel,
+              child: widget.child,
+            ),
+          ),
         ),
       ),
     );

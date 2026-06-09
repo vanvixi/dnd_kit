@@ -1,10 +1,19 @@
 import 'package:dnd_kit_core/dnd_kit_core.dart';
 import 'package:dnd_kit_flutter/dnd_kit_flutter.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DndDraggable', () {
+    Future<void> focusDraggable(WidgetTester tester) async {
+      final focus = tester.widget<Focus>(
+        find.descendant(of: find.byType(DndDraggable), matching: find.byType(Focus)).first,
+      );
+      focus.focusNode!.requestFocus();
+      await tester.pump();
+    }
+
     testWidgets('registers and unregisters draggable metadata', (tester) async {
       final controller = DndController();
       addTearDown(controller.dispose);
@@ -802,6 +811,171 @@ void main() {
       await tester.pump();
 
       expect(endEvent?.overId, isNull);
+    });
+
+    testWidgets('starts, moves, and drops a focused keyboard drag', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      DndDragStartEvent? startEvent;
+      final moveEvents = <DndDragMoveEvent>[];
+      DndDragEndEvent? endEvent;
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: DndDraggable(
+            id: const DndId('task-1'),
+            keyboardDragStep: 10,
+            onDragStart: (event) {
+              startEvent = event;
+            },
+            onDragMove: moveEvents.add,
+            onDragEnd: (event) {
+              endEvent = event;
+            },
+            child: const SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      await focusDraggable(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+
+      expect(startEvent?.activeId, const DndId('task-1'));
+      expect(startEvent?.inputKind, DndInputKind.keyboard);
+      expect(startEvent?.initialPointer, const DndPoint(400, 300));
+      expect(controller.state, isA<DndDragging>());
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await tester.pump();
+
+      expect(moveEvents.map((event) => event.currentPointer), <DndPoint>[
+        const DndPoint(410, 300),
+        const DndPoint(410, 310),
+      ]);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+
+      expect(endEvent?.activeId, const DndId('task-1'));
+      expect(endEvent?.currentPointer, const DndPoint(410, 310));
+      expect(controller.state, const DndIdle());
+    });
+
+    testWidgets('cancels an active keyboard drag with escape', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      DndDragCancelEvent? cancelEvent;
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: DndDraggable(
+            id: const DndId('task-1'),
+            onDragCancel: (event) {
+              cancelEvent = event;
+            },
+            child: const SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      await focusDraggable(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pump();
+
+      expect(cancelEvent?.activeId, const DndId('task-1'));
+      expect(cancelEvent?.reason, DndCancelReason.user);
+      expect(controller.state, const DndIdle());
+    });
+
+    testWidgets('does not start keyboard dragging when disabled', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      var startCount = 0;
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: DndDraggable(
+            id: const DndId('task-1'),
+            disabled: true,
+            onDragStart: (_) {
+              startCount += 1;
+            },
+            child: const SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      await focusDraggable(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+
+      expect(startCount, 0);
+      expect(controller.state, const DndIdle());
+    });
+
+    testWidgets('drops keyboard drag without a droppable', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      DndDragEndEvent? endEvent;
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: DndDraggable(
+            id: const DndId('task-1'),
+            onDragEnd: (event) {
+              endEvent = event;
+            },
+            child: const SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      await focusDraggable(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+
+      expect(endEvent?.activeId, const DndId('task-1'));
+      expect(endEvent?.overId, isNull);
+      expect(controller.state, const DndIdle());
+    });
+
+    testWidgets('exposes a keyboard drag semantics hint', (tester) async {
+      await tester.pumpWidget(
+        const DndScope(
+          child: DndDraggable(
+            id: DndId('task-1'),
+            child: SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      final semantics = tester.widget<Semantics>(
+        find
+            .byWidgetPredicate(
+              (widget) =>
+                  widget is Semantics &&
+                  widget.properties.hint ==
+                      'Press Space or Enter to pick up, arrow keys to move, Escape to cancel.',
+            )
+            .first,
+      );
+
+      expect(
+        semantics.properties.hint,
+        'Press Space or Enter to pick up, arrow keys to move, Escape to cancel.',
+      );
     });
   });
 }
