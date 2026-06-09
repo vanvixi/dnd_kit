@@ -53,8 +53,8 @@ docs/
 The repository has completed Phase 0 foundation work, the Phase 1 pure Dart
 core engine, the Phase 2 basic Flutter adapter, Phase 3 sensor and activation
 work, and Phase 4 measuring, collision runtime, modifier, and cached measuring
-work. Phase 5 overlay and visual state work is validated through `US-023`. The
-next roadmap area is Phase 5 auto-scroll work.
+work. Phase 5 overlay, visual state, and auto-scroll work is validated through
+`US-024`. The next roadmap area is Phase 6 stable sortable preset work.
 
 The living source of truth is split from historical [SPEC.md](SPEC.md) input
 material into product docs, story packets, validation expectations, and decision
