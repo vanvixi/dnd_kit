@@ -1,8 +1,8 @@
 name: dnd_kit
 description: Flutter drag-and-drop toolkit with core widgets, sensors, measuring, overlays, and sortable presets.
 version: 0.1.0-dev.0
-publish_to: none
-repository: https://github.com/vanvixi/dnd_kit.flutter
+homepage: https://github.com/vanvixi/dnd_kit.flutter
+repository: https://github.com/vanvixi/dnd_kit.flutter/tree/main/packages/dnd_kit
 issue_tracker: https://github.com/vanvixi/dnd_kit.flutter/issues
 topics:
   - drag-and-drop
