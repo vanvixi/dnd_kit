@@ -10,7 +10,9 @@ class DndController extends ChangeNotifier {
     DndState initialState = const DndIdle(),
     DndCollisionDetector? collisionDetector,
     Iterable<DndModifier> modifiers = const <DndModifier>[],
+    DndDiagnosticsConfig diagnosticsConfig = const DndDiagnosticsConfig(),
   })  : _state = initialState,
+        registry = DndRegistry(diagnosticsConfig: diagnosticsConfig),
         modifiers = List<DndModifier>.unmodifiable(modifiers),
         collisionDetector = collisionDetector ??
             DndCollisionDetectors.compose(
@@ -25,7 +27,7 @@ class DndController extends ChangeNotifier {
   DndId? _overId;
 
   /// Registered draggable and droppable metadata for this controller.
-  final DndRegistry registry = DndRegistry();
+  final DndRegistry registry;
 
   /// Measured Flutter adapter rectangles for registered drag-and-drop widgets.
   final DndMeasuringRegistry measuring = DndMeasuringRegistry();

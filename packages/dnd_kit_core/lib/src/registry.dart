@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'diagnostics.dart';
 import 'id.dart';
 
 /// Pure Dart metadata for a registered draggable.
@@ -114,6 +115,12 @@ final class DndRegistrySnapshot {
 
 /// Pure Dart registry for draggable and droppable entries.
 final class DndRegistry {
+  /// Creates a registry.
+  DndRegistry({
+    DndDiagnosticsConfig diagnosticsConfig = const DndDiagnosticsConfig(),
+  }) : _diagnosticsConfig = diagnosticsConfig;
+
+  final DndDiagnosticsConfig _diagnosticsConfig;
   final Map<DndId, DndDraggableRegistration> _draggables = <DndId, DndDraggableRegistration>{};
   final Map<DndId, DndDroppableRegistration> _droppables = <DndId, DndDroppableRegistration>{};
 
@@ -149,6 +156,13 @@ final class DndRegistry {
 
   /// Registers [registration] as a draggable entry.
   void registerDraggable(DndDraggableRegistration registration) {
+    if (_draggables.containsKey(registration.id)) {
+      _warnDuplicate(
+        code: 'duplicate-draggable-id',
+        id: registration.id,
+        label: 'draggable',
+      );
+    }
     assert(
       !_draggables.containsKey(registration.id),
       'Duplicate draggable id registered: ${registration.id}.',
@@ -158,6 +172,13 @@ final class DndRegistry {
 
   /// Registers [registration] as a droppable entry.
   void registerDroppable(DndDroppableRegistration registration) {
+    if (_droppables.containsKey(registration.id)) {
+      _warnDuplicate(
+        code: 'duplicate-droppable-id',
+        id: registration.id,
+        label: 'droppable',
+      );
+    }
     assert(
       !_droppables.containsKey(registration.id),
       'Duplicate droppable id registered: ${registration.id}.',
@@ -189,6 +210,21 @@ final class DndRegistry {
   void clear() {
     _draggables.clear();
     _droppables.clear();
+  }
+
+  void _warnDuplicate({
+    required String code,
+    required DndId id,
+    required String label,
+  }) {
+    _diagnosticsConfig.warn(
+      DndWarning(
+        code: code,
+        id: id,
+        message: 'Duplicate $label id registered: $id. '
+            'Each active $label in the same DndRegistry must use a unique DndId.',
+      ),
+    );
   }
 }
 

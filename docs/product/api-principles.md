@@ -87,6 +87,9 @@ by application code because they make diagnostics and duplicate detection hard
 to understand.
 
 Duplicate IDs inside a registry should be caught by debug diagnostics.
+Recoverable registry diagnostics should also be available through
+`DndDiagnosticsConfig.onWarning` so applications can surface actionable
+warnings without depending only on debug assertions.
 
 ## Performance Principles
 

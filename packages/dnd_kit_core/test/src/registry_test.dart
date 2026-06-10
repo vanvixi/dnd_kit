@@ -2,6 +2,25 @@ import 'package:dnd_kit_core/dnd_kit_core.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('DndWarning', () {
+    test('compares by value', () {
+      const first = DndWarning(
+        code: 'duplicate-draggable-id',
+        message: 'Duplicate draggable id registered: DndId(drag).',
+        id: DndId('drag'),
+      );
+      const second = DndWarning(
+        code: 'duplicate-draggable-id',
+        message: 'Duplicate draggable id registered: DndId(drag).',
+        id: DndId('drag'),
+      );
+
+      expect(first, equals(second));
+      expect(first.hashCode, equals(second.hashCode));
+      expect(first.toString(), contains('DndWarning'));
+    });
+  });
+
   group('DndDraggableRegistration', () {
     test('compares by value', () {
       const first = DndDraggableRegistration(
@@ -102,7 +121,10 @@ void main() {
     });
 
     test('rejects duplicate draggable and droppable ids in debug mode', () {
-      final registry = DndRegistry()
+      final warnings = <DndWarning>[];
+      final registry = DndRegistry(
+        diagnosticsConfig: DndDiagnosticsConfig(onWarning: warnings.add),
+      )
         ..registerDraggable(const DndDraggableRegistration(id: DndId('drag')))
         ..registerDroppable(const DndDroppableRegistration(id: DndId('drop')));
 
@@ -113,10 +135,37 @@ void main() {
         throwsA(isA<AssertionError>()),
       );
       expect(
+        warnings,
+        contains(
+          isA<DndWarning>()
+              .having((warning) => warning.code, 'code', 'duplicate-draggable-id')
+              .having((warning) => warning.id, 'id', const DndId('drag'))
+              .having(
+                (warning) => warning.message,
+                'message',
+                contains('Each active draggable in the same DndRegistry'),
+              ),
+        ),
+      );
+
+      expect(
         () => registry.registerDroppable(
           const DndDroppableRegistration(id: DndId('drop')),
         ),
         throwsA(isA<AssertionError>()),
+      );
+      expect(
+        warnings,
+        contains(
+          isA<DndWarning>()
+              .having((warning) => warning.code, 'code', 'duplicate-droppable-id')
+              .having((warning) => warning.id, 'id', const DndId('drop'))
+              .having(
+                (warning) => warning.message,
+                'message',
+                contains('Each active droppable in the same DndRegistry'),
+              ),
+        ),
       );
     });
 

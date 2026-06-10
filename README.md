@@ -53,10 +53,11 @@ docs/
 The repository has completed Phase 0 foundation work, the Phase 1 pure Dart
 core engine, the Phase 2 basic Flutter adapter, Phase 3 sensor and activation
 work, Phase 4 measuring, collision runtime, modifier, and cached measuring
-work, Phase 5 overlay, visual state, and auto-scroll work, and the Phase 6
-stable sortable preset foundation through `US-028`, and the Phase 7 Kanban
-showcase and experimental multi-container sortable exploration through
-`US-030`. The current roadmap area is Phase 8 production hardening.
+work, Phase 5 overlay, visual state, and auto-scroll work, the Phase 6 stable
+sortable preset foundation through `US-028`, the Phase 7 Kanban showcase and
+experimental multi-container sortable exploration through `US-030`, and Phase
+8 production hardening work through `US-033` diagnostics for duplicate IDs and
+registry warnings.
 
 The living source of truth is split from historical [SPEC.md](SPEC.md) input
 material into product docs, story packets, validation expectations, and decision

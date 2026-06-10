@@ -16,6 +16,50 @@ void main() {
       expect(controller.registry.snapshot, DndRegistrySnapshot.empty);
     });
 
+    test('passes diagnostics configuration to its registry', () {
+      final warnings = <DndWarning>[];
+      final controller = DndController(
+        diagnosticsConfig: DndDiagnosticsConfig(onWarning: warnings.add),
+      );
+      addTearDown(controller.dispose);
+
+      controller.registry.registerDraggable(
+        const DndDraggableRegistration(id: DndId('task-1')),
+      );
+      expect(
+        () => controller.registry.registerDraggable(
+          const DndDraggableRegistration(id: DndId('task-1')),
+        ),
+        throwsA(isA<AssertionError>()),
+      );
+      controller.registry.registerDroppable(
+        const DndDroppableRegistration(id: DndId('column-1')),
+      );
+      expect(
+        () => controller.registry.registerDroppable(
+          const DndDroppableRegistration(id: DndId('column-1')),
+        ),
+        throwsA(isA<AssertionError>()),
+      );
+
+      expect(
+        warnings,
+        contains(
+          isA<DndWarning>()
+              .having((warning) => warning.code, 'code', 'duplicate-draggable-id')
+              .having((warning) => warning.id, 'id', const DndId('task-1')),
+        ),
+      );
+      expect(
+        warnings,
+        contains(
+          isA<DndWarning>()
+              .having((warning) => warning.code, 'code', 'duplicate-droppable-id')
+              .having((warning) => warning.id, 'id', const DndId('column-1')),
+        ),
+      );
+    });
+
     test('notifies listeners through drag lifecycle transitions', () {
       final controller = DndController();
       addTearDown(controller.dispose);
