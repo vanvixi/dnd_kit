@@ -4,7 +4,7 @@ Date: 2026-06-08
 
 ## Status
 
-Accepted
+Superseded by `docs/decisions/0008-main-dnd-kit-package.md`
 
 ## Context
 

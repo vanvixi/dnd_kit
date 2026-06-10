@@ -5,8 +5,6 @@
 ```text
 packages/
   dnd_kit_core/
-  dnd_kit_flutter/
-  dnd_kit_sortable/
   dnd_kit/
 examples/
   basic_drag_drop/
@@ -39,9 +37,9 @@ Must not import:
 - `Offset`, `Rect`, or `Size` from Flutter
 - animation or overlay APIs
 
-### `dnd_kit_flutter`
+### `dnd_kit`
 
-Flutter adapter package depending on `dnd_kit_core` and Flutter.
+Primary Flutter package depending on `dnd_kit_core` and Flutter.
 
 Owns:
 
@@ -56,12 +54,9 @@ Owns:
 - overlay rendering
 - auto-scroll
 - semantics and accessibility hooks
+- stable sortable preset APIs
 
-### `dnd_kit_sortable`
-
-Sortable preset package depending on `dnd_kit_core` and `dnd_kit_flutter`.
-
-Owns:
+Also owns sortable preset source:
 
 - `SortableScope`
 - `SortableItem`
@@ -73,14 +68,6 @@ Owns:
 
 Stable V1 strategies are vertical list, horizontal list, and grid.
 Multi-container, nested sortable, and virtualized adapters remain experimental.
-
-### `dnd_kit`
-
-Umbrella package exporting public APIs from:
-
-- `dnd_kit_core`
-- `dnd_kit_flutter`
-- `dnd_kit_sortable`
 
 ## Dependency Policy
 

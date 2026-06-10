@@ -1,7 +1,7 @@
 # Architecture
 
 This repository now targets `dnd_kit`, a Flutter drag-and-drop toolkit with a
-pure Dart core, Flutter adapter, sortable presets, and an umbrella package.
+pure Dart core and a primary Flutter package that includes sortable presets.
 
 The detailed living product contract is split across:
 
@@ -25,13 +25,12 @@ The seed specification remains in `SPEC.md` as historical input material.
 
 ```text
 dnd_kit_core
-  <- dnd_kit_flutter
-      <- dnd_kit_sortable
-          <- dnd_kit umbrella exports
+  <- dnd_kit
 ```
 
-`dnd_kit_sortable` also depends directly on `dnd_kit_core` for sortable math
-and IDs.
+Sortable source lives inside `dnd_kit` as a preset layer so the canonical app
+import, `package:dnd_kit/dnd_kit.dart`, can expose both drag/drop widgets and
+stable sortable APIs without a package dependency cycle.
 
 ## Dependency Rule
 
@@ -40,9 +39,7 @@ Inner packages must not depend on outer packages.
 | Package | May depend on | Must not depend on |
 | --- | --- | --- |
 | `dnd_kit_core` | `collection`, `meta`, Dart SDK | Flutter, `dart:ui`, widget/render/gesture APIs, state management packages |
-| `dnd_kit_flutter` | Flutter SDK, `dnd_kit_core`, small annotations/utilities | sortable presets, umbrella package, external state management |
-| `dnd_kit_sortable` | `dnd_kit_core`, `dnd_kit_flutter`, Flutter SDK | umbrella package, app-specific state management |
-| `dnd_kit` | public sub-packages | implementation internals |
+| `dnd_kit` | Flutter SDK, `dnd_kit_core`, small annotations/utilities | external state management |
 
 ## Boundary Rules
 

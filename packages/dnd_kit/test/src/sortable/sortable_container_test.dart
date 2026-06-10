@@ -1,5 +1,4 @@
-import 'package:dnd_kit_core/dnd_kit_core.dart';
-import 'package:dnd_kit_sortable/dnd_kit_sortable.dart';
+import 'package:dnd_kit/dnd_kit.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,7 +1,11 @@
 import 'package:dnd_kit_core/dnd_kit_core.dart';
-import 'package:dnd_kit_flutter/dnd_kit_flutter.dart';
 import 'package:flutter/widgets.dart';
 
+import '../scope/controller.dart';
+import '../scope/scope.dart';
+import '../sensors/long_press_activation.dart';
+import '../widgets/draggable.dart';
+import '../widgets/droppable.dart';
 import 'sortable_scope.dart';
 
 /// Builds a sortable item visual from current drag state.

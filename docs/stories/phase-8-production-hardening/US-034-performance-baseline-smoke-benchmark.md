@@ -76,3 +76,7 @@ Harness capability rather than part of this story.
 - `fvm dart run melos run validate` passed, covering format, workspace analyze,
   core tests, Flutter adapter tests, sortable tests with the new smoke
   benchmark, and the Kanban example widget tests.
+- Superseded for post-US-035 validation by
+  `fvm flutter test packages/dnd_kit/test/src/sortable/performance_smoke_test.dart`
+  and `fvm flutter test packages/dnd_kit`, because sortable source now lives in
+  the main package.

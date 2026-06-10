@@ -1,5 +1,5 @@
 name: dnd_kit
-description: Umbrella package for the dnd_kit Flutter drag-and-drop toolkit.
+description: Flutter drag-and-drop toolkit with core widgets, sensors, measuring, overlays, and sortable presets.
 version: 0.1.0-dev.0
 publish_to: none
 
@@ -11,10 +11,9 @@ resolution: workspace
 
 dependencies:
   dnd_kit_core: ^0.1.0-dev.0
-  dnd_kit_flutter: ^0.1.0-dev.0
-  dnd_kit_sortable: ^0.1.0-dev.0
   flutter:
     sdk: flutter
+  meta: ^1.15.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0

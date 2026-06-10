@@ -76,3 +76,4 @@ None expected.
 - `fvm flutter test packages/dnd_kit_flutter` passed with 68 tests, including
   controller diagnostics configuration flowing to its registry.
 - `fvm dart analyze` passed with no issues.
+- Superseded for post-US-035 validation by `fvm flutter test packages/dnd_kit`.

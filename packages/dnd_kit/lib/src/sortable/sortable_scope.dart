@@ -1,8 +1,9 @@
 import 'package:dnd_kit_core/dnd_kit_core.dart';
-import 'package:dnd_kit_flutter/dnd_kit_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '../scope/controller.dart';
+import '../scope/scope.dart';
 import 'sortable_details.dart';
 import 'sortable_strategy.dart';
 

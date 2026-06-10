@@ -1,5 +1,4 @@
-import 'package:dnd_kit_core/dnd_kit_core.dart';
-import 'package:dnd_kit_flutter/dnd_kit_flutter.dart';
+import 'package:dnd_kit/dnd_kit.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

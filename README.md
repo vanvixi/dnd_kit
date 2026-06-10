@@ -20,20 +20,18 @@ The architecture is:
 
 ```text
 generic DnD engine first
-Flutter adapter second
-sortable as preset
+Flutter toolkit package second
+sortable as built-in preset
 Kanban as showcase
 multi-container as experimental
 native OS drag/drop as future package
 ```
 
-The initial package layout is:
+The release package layout is:
 
 ```text
 packages/
   dnd_kit_core/
-  dnd_kit_flutter/
-  dnd_kit_sortable/
   dnd_kit/
 examples/
 docs/
@@ -44,9 +42,7 @@ docs/
 | Package | Role |
 | --- | --- |
 | `dnd_kit_core` | Pure Dart geometry, state, collision, modifier, sensor, and sortable math contracts. |
-| `dnd_kit_flutter` | Flutter adapter with scope, controller, draggable, droppable, overlay, sensors, measuring, auto-scroll, and semantics. |
-| `dnd_kit_sortable` | Sortable preset package for vertical lists, horizontal lists, and grids. |
-| `dnd_kit` | Umbrella package exporting the stable public APIs from the sub-packages. |
+| `dnd_kit` | Main Flutter package with scope, controller, draggable, droppable, overlay, sensors, measuring, auto-scroll, semantics, and stable sortable presets. |
 
 ## Current Status
 
@@ -57,7 +53,8 @@ work, Phase 5 overlay, visual state, and auto-scroll work, the Phase 6 stable
 sortable preset foundation through `US-028`, the Phase 7 Kanban showcase and
 experimental multi-container sortable exploration through `US-030`, and Phase
 8 production hardening work through `US-034` performance baseline smoke
-benchmarks for drag and sortable flows.
+benchmarks for drag and sortable flows, and the package rename/collapse work
+through `US-035`.
 
 The living source of truth is split from historical [SPEC.md](SPEC.md) input
 material into product docs, story packets, validation expectations, and decision

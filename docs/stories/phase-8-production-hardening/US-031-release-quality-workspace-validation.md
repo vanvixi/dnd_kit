@@ -69,4 +69,6 @@ None expected.
   `flutter test packages/dnd_kit_flutter`,
   `flutter test packages/dnd_kit_sortable`, and
   `flutter test examples/kanban_board`.
+- Superseded for post-US-035 validation by `flutter test packages/dnd_kit`,
+  which now covers both Flutter adapter and sortable preset tests.
 - `scripts/bin/harness-cli story verify US-031` passed.

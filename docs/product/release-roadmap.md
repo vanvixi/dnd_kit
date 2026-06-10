@@ -60,3 +60,7 @@ Add diagnostics, performance baselines, cross-platform verification, docs, and
 release-quality checks.
 
 First story: `docs/stories/phase-8-production-hardening/US-031-release-quality-workspace-validation.md`.
+
+Package polish before release also collapses the old umbrella-only `dnd_kit`
+role into the primary Flutter package through
+`docs/stories/phase-8-production-hardening/US-035-main-package-rename-and-umbrella-collapse.md`.
