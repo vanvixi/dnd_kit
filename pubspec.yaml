@@ -9,6 +9,7 @@ workspace:
   - packages/dnd_kit_flutter
   - packages/dnd_kit_sortable
   - packages/dnd_kit
+  - examples/kanban_board
 
 dev_dependencies:
   lints: ^5.0.0

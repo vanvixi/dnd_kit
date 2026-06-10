@@ -1,6 +1,6 @@
 # Examples
 
-Example apps will be added story by story as behavior becomes real.
+Example apps are added story by story as behavior becomes real.
 
 Planned examples include:
 
@@ -8,7 +8,7 @@ Planned examples include:
 - drag overlay;
 - sortable list;
 - sortable grid;
-- Kanban board;
+- Kanban board (`examples/kanban_board`);
 - custom collision;
 - custom sensor;
 - auto-scroll;

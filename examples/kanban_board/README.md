@@ -1,16 +1,26 @@
-# kanban_board
+# Kanban Board Example
 
-A new Flutter project.
+Showcase app for building a Kanban board with the generic `dnd_kit` Flutter
+APIs.
 
-## Getting Started
+The example uses:
 
-This project is a starting point for a Flutter application.
+- `DndScope`;
+- `DndDraggable`;
+- `DndDroppable`;
+- `DndDragOverlay`;
+- drag source opacity and drop target highlights;
+- vertical column auto-scroll and horizontal board auto-scroll;
+- a custom Kanban-oriented collision detector.
 
-A few resources to get you started if this is your first Flutter project:
+Run it from the repository root with:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+fvm flutter run -d chrome examples/kanban_board
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Run its widget tests with:
+
+```bash
+fvm flutter test examples/kanban_board
+```
