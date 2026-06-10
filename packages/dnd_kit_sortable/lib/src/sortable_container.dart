@@ -87,8 +87,6 @@ abstract final class SortableMultiContainer {
     return SortableMoveDetails(
       activeId: event.activeId,
       overId: overId,
-      oldIndex: fromIndex,
-      newIndex: toIndex,
       fromContainerId: fromContainer.id,
       toContainerId: toContainer.id,
       fromIndex: fromIndex,

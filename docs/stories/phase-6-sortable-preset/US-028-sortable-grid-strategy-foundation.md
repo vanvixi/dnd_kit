@@ -24,7 +24,7 @@ application-owned collection model.
 ## Acceptance Criteria
 
 - `SortableStrategies.grid` is public from `dnd_kit_sortable`.
-- `SortableStrategies.grid` computes `SortableMoveDetails.newIndex` from
+- `SortableStrategies.grid` computes `SortableMoveDetails.toIndex` from
   measured item rectangles and the active translated rectangle center in
   row-major order.
 - Grid strategy calculation reports intent only and does not mutate

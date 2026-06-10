@@ -29,7 +29,7 @@ keeps application-owned collections outside the library.
 - `SortableItem` registers itself as both draggable and droppable using the
   nearest sortable scope.
 - Dropping one sortable item over another emits `SortableMoveDetails` with
-  `activeId`, `overId`, `oldIndex`, and `newIndex`.
+  `activeId`, `overId`, `fromIndex`, and `toIndex`.
 - The sortable preset reports intent only and does not mutate the application
   list.
 - Disabled sortable items stay registered as disabled drag/drop metadata.

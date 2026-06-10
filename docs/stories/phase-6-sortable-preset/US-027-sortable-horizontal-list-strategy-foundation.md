@@ -24,7 +24,7 @@ application-owned collection model.
 ## Acceptance Criteria
 
 - `SortableStrategies.horizontalList` is public from `dnd_kit_sortable`.
-- `SortableStrategies.horizontalList` computes `SortableMoveDetails.newIndex`
+- `SortableStrategies.horizontalList` computes `SortableMoveDetails.toIndex`
   from measured item rectangles and the active translated rectangle center.
 - Horizontal strategy calculation reports intent only and does not mutate
   application item order.

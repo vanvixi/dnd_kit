@@ -117,9 +117,9 @@ final class SortableScopeData {
       return null;
     }
 
-    final oldIndex = indexOf(event.activeId);
-    final newIndex = indexOf(overId);
-    if (oldIndex < 0 || newIndex < 0) {
+    final fromIndex = indexOf(event.activeId);
+    final toIndex = indexOf(overId);
+    if (fromIndex < 0 || toIndex < 0) {
       return null;
     }
 
@@ -129,8 +129,9 @@ final class SortableScopeData {
         overId: overId,
         itemIds: itemIds,
         itemRects: itemRects,
-        oldIndex: oldIndex,
-        containerId: containerId,
+        fromIndex: fromIndex,
+        fromContainerId: containerId,
+        toContainerId: containerId,
         event: event,
         activeRect: activeRect,
         activeTranslatedRect: activeRect?.translate(event.session.transform.offset),

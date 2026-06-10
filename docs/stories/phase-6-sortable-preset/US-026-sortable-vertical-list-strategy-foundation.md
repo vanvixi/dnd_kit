@@ -25,7 +25,7 @@ rectangles while keeping application-owned collections outside the library.
 
 - `SortableStrategy` and `SortableStrategyInput` are public from
   `dnd_kit_sortable`.
-- `SortableStrategies.verticalList` computes `SortableMoveDetails.newIndex`
+- `SortableStrategies.verticalList` computes `SortableMoveDetails.toIndex`
   from measured item rectangles and the active translated rectangle center.
 - `SortableScope` accepts a strategy and defaults to the vertical list strategy.
 - Strategy calculation reports intent only and does not mutate application

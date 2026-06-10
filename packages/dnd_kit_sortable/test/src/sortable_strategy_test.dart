@@ -9,7 +9,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-3'),
-          oldIndex: 0,
+          fromIndex: 0,
           activeTranslatedRect: _rect(top: 126),
           itemRects: <DndId, DndRect>{
             const DndId('item-1'): _rect(top: 0),
@@ -21,8 +21,8 @@ void main() {
 
       expect(details?.activeId, const DndId('item-1'));
       expect(details?.overId, const DndId('item-3'));
-      expect(details?.oldIndex, 0);
-      expect(details?.newIndex, 2);
+      expect(details?.fromIndex, 0);
+      expect(details?.toIndex, 2);
     });
 
     test('supports moving upward before earlier measured items', () {
@@ -30,7 +30,7 @@ void main() {
         _input(
           activeId: const DndId('item-3'),
           overId: const DndId('item-1'),
-          oldIndex: 2,
+          fromIndex: 2,
           activeTranslatedRect: _rect(top: -20),
           itemRects: <DndId, DndRect>{
             const DndId('item-1'): _rect(top: 0),
@@ -40,8 +40,8 @@ void main() {
         ),
       );
 
-      expect(details?.oldIndex, 2);
-      expect(details?.newIndex, 0);
+      expect(details?.fromIndex, 2);
+      expect(details?.toIndex, 0);
     });
 
     test('uses measured centers for a two item vertical list', () {
@@ -49,7 +49,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-2'),
-          oldIndex: 0,
+          fromIndex: 0,
           itemIds: const <DndId>[DndId('item-1'), DndId('item-2')],
           activeTranslatedRect: _rect(top: 80),
           itemRects: <DndId, DndRect>{
@@ -59,7 +59,7 @@ void main() {
         ),
       );
 
-      expect(details?.newIndex, 1);
+      expect(details?.toIndex, 1);
     });
 
     test('falls back to drop-over index when measurements are incomplete', () {
@@ -67,7 +67,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-3'),
-          oldIndex: 0,
+          fromIndex: 0,
           activeTranslatedRect: _rect(top: 126),
           itemRects: <DndId, DndRect>{
             const DndId('item-1'): _rect(top: 0),
@@ -76,7 +76,7 @@ void main() {
         ),
       );
 
-      expect(details?.newIndex, 2);
+      expect(details?.toIndex, 2);
     });
 
     test('falls back to drop-over index for non-vertical layouts', () {
@@ -84,7 +84,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-2'),
-          oldIndex: 0,
+          fromIndex: 0,
           activeTranslatedRect: _rect(top: 0, left: 100),
           itemRects: <DndId, DndRect>{
             const DndId('item-1'): _rect(top: 0, left: 0),
@@ -94,7 +94,7 @@ void main() {
         ),
       );
 
-      expect(details?.newIndex, 1);
+      expect(details?.toIndex, 1);
     });
 
     test('does not report same-item moves or mutate item order', () {
@@ -108,7 +108,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-1'),
-          oldIndex: 0,
+          fromIndex: 0,
           itemIds: itemIds,
           activeTranslatedRect: _rect(top: 60),
           itemRects: <DndId, DndRect>{
@@ -133,7 +133,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-3'),
-          oldIndex: 0,
+          fromIndex: 0,
           activeTranslatedRect: _rect(left: 126),
           itemRects: <DndId, DndRect>{
             const DndId('item-1'): _rect(left: 0),
@@ -145,8 +145,8 @@ void main() {
 
       expect(details?.activeId, const DndId('item-1'));
       expect(details?.overId, const DndId('item-3'));
-      expect(details?.oldIndex, 0);
-      expect(details?.newIndex, 2);
+      expect(details?.fromIndex, 0);
+      expect(details?.toIndex, 2);
     });
 
     test('supports moving left before earlier measured items', () {
@@ -154,7 +154,7 @@ void main() {
         _input(
           activeId: const DndId('item-3'),
           overId: const DndId('item-1'),
-          oldIndex: 2,
+          fromIndex: 2,
           activeTranslatedRect: _rect(left: -20),
           itemRects: <DndId, DndRect>{
             const DndId('item-1'): _rect(left: 0),
@@ -164,8 +164,8 @@ void main() {
         ),
       );
 
-      expect(details?.oldIndex, 2);
-      expect(details?.newIndex, 0);
+      expect(details?.fromIndex, 2);
+      expect(details?.toIndex, 0);
     });
 
     test('uses measured centers for a two item horizontal list', () {
@@ -173,7 +173,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-2'),
-          oldIndex: 0,
+          fromIndex: 0,
           itemIds: const <DndId>[DndId('item-1'), DndId('item-2')],
           activeTranslatedRect: _rect(left: 80),
           itemRects: <DndId, DndRect>{
@@ -183,7 +183,7 @@ void main() {
         ),
       );
 
-      expect(details?.newIndex, 1);
+      expect(details?.toIndex, 1);
     });
 
     test('falls back to drop-over index when measurements are incomplete', () {
@@ -191,7 +191,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-3'),
-          oldIndex: 0,
+          fromIndex: 0,
           activeTranslatedRect: _rect(left: 126),
           itemRects: <DndId, DndRect>{
             const DndId('item-1'): _rect(left: 0),
@@ -200,7 +200,7 @@ void main() {
         ),
       );
 
-      expect(details?.newIndex, 2);
+      expect(details?.toIndex, 2);
     });
 
     test('falls back to drop-over index for non-horizontal layouts', () {
@@ -208,7 +208,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-2'),
-          oldIndex: 0,
+          fromIndex: 0,
           activeTranslatedRect: _rect(top: 100),
           itemRects: <DndId, DndRect>{
             const DndId('item-1'): _rect(top: 0),
@@ -218,7 +218,7 @@ void main() {
         ),
       );
 
-      expect(details?.newIndex, 1);
+      expect(details?.toIndex, 1);
     });
 
     test('does not report same-item moves or mutate item order', () {
@@ -232,7 +232,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-1'),
-          oldIndex: 0,
+          fromIndex: 0,
           itemIds: itemIds,
           activeTranslatedRect: _rect(left: 60),
           itemRects: <DndId, DndRect>{
@@ -257,7 +257,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-4'),
-          oldIndex: 0,
+          fromIndex: 0,
           itemIds: const <DndId>[
             DndId('item-1'),
             DndId('item-2'),
@@ -276,8 +276,8 @@ void main() {
 
       expect(details?.activeId, const DndId('item-1'));
       expect(details?.overId, const DndId('item-4'));
-      expect(details?.oldIndex, 0);
-      expect(details?.newIndex, 3);
+      expect(details?.fromIndex, 0);
+      expect(details?.toIndex, 3);
     });
 
     test('supports moving upward before earlier measured rows', () {
@@ -285,7 +285,7 @@ void main() {
         _input(
           activeId: const DndId('item-4'),
           overId: const DndId('item-1'),
-          oldIndex: 3,
+          fromIndex: 3,
           itemIds: const <DndId>[
             DndId('item-1'),
             DndId('item-2'),
@@ -302,8 +302,8 @@ void main() {
         ),
       );
 
-      expect(details?.oldIndex, 3);
-      expect(details?.newIndex, 0);
+      expect(details?.fromIndex, 3);
+      expect(details?.toIndex, 0);
     });
 
     test('uses measured centers within the same row', () {
@@ -311,7 +311,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-2'),
-          oldIndex: 0,
+          fromIndex: 0,
           itemIds: const <DndId>[
             DndId('item-1'),
             DndId('item-2'),
@@ -328,7 +328,7 @@ void main() {
         ),
       );
 
-      expect(details?.newIndex, 1);
+      expect(details?.toIndex, 1);
     });
 
     test('falls back to drop-over index when measurements are incomplete', () {
@@ -336,7 +336,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-4'),
-          oldIndex: 0,
+          fromIndex: 0,
           itemIds: const <DndId>[
             DndId('item-1'),
             DndId('item-2'),
@@ -352,7 +352,7 @@ void main() {
         ),
       );
 
-      expect(details?.newIndex, 3);
+      expect(details?.toIndex, 3);
     });
 
     test('falls back to drop-over index for non-grid layouts', () {
@@ -360,7 +360,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-2'),
-          oldIndex: 0,
+          fromIndex: 0,
           activeTranslatedRect: _rect(top: 0, left: 80),
           itemRects: <DndId, DndRect>{
             const DndId('item-1'): _rect(top: 0, left: 0),
@@ -370,7 +370,7 @@ void main() {
         ),
       );
 
-      expect(details?.newIndex, 1);
+      expect(details?.toIndex, 1);
     });
 
     test('does not report same-item moves or mutate item order', () {
@@ -385,7 +385,7 @@ void main() {
         _input(
           activeId: const DndId('item-1'),
           overId: const DndId('item-1'),
-          oldIndex: 0,
+          fromIndex: 0,
           itemIds: itemIds,
           activeTranslatedRect: _rect(top: 80, left: 80),
           itemRects: <DndId, DndRect>{
@@ -414,7 +414,7 @@ void main() {
 SortableStrategyInput _input({
   required DndId activeId,
   required DndId? overId,
-  required int oldIndex,
+  required int fromIndex,
   required Map<DndId, DndRect> itemRects,
   required DndRect activeTranslatedRect,
   Iterable<DndId> itemIds = const <DndId>[
@@ -428,8 +428,9 @@ SortableStrategyInput _input({
     overId: overId,
     itemIds: itemIds,
     itemRects: itemRects,
-    oldIndex: oldIndex,
-    containerId: const DndId('list-1'),
+    fromIndex: fromIndex,
+    fromContainerId: const DndId('list-1'),
+    toContainerId: const DndId('list-1'),
     event: DndDragEndEvent(
       session: DndDragSession.start(
         activeId: activeId,

@@ -187,9 +187,10 @@ void main() {
         isA<SortableMoveDetails>()
             .having((details) => details.activeId, 'activeId', const DndId('item-1'))
             .having((details) => details.overId, 'overId', const DndId('item-2'))
-            .having((details) => details.oldIndex, 'oldIndex', 0)
-            .having((details) => details.newIndex, 'newIndex', 1)
-            .having((details) => details.containerId, 'containerId', const DndId('list-1')),
+            .having((details) => details.fromIndex, 'fromIndex', 0)
+            .having((details) => details.toIndex, 'toIndex', 1)
+            .having((details) => details.fromContainerId, 'fromContainerId', const DndId('list-1'))
+            .having((details) => details.toContainerId, 'toContainerId', const DndId('list-1')),
       );
       expect(
         itemIds,
@@ -209,7 +210,7 @@ void main() {
           itemIds: const <DndId>[DndId('item-1'), DndId('item-2')],
           strategy: (input) {
             latestInput = input;
-            return input.fallbackMoveDetails(newIndex: 0);
+            return input.fallbackMoveDetails(toIndex: 0);
           },
           onMove: moves.add,
           child: const Stack(
@@ -247,8 +248,8 @@ void main() {
       expect(
         moves.single,
         isA<SortableMoveDetails>()
-            .having((details) => details.oldIndex, 'oldIndex', 0)
-            .having((details) => details.newIndex, 'newIndex', 0),
+            .having((details) => details.fromIndex, 'fromIndex', 0)
+            .having((details) => details.toIndex, 'toIndex', 0),
       );
     });
 
@@ -302,8 +303,8 @@ void main() {
       expect(
         moves.single,
         isA<SortableMoveDetails>()
-            .having((details) => details.oldIndex, 'oldIndex', 0)
-            .having((details) => details.newIndex, 'newIndex', 2),
+            .having((details) => details.fromIndex, 'fromIndex', 0)
+            .having((details) => details.toIndex, 'toIndex', 2),
       );
     });
 
@@ -370,8 +371,8 @@ void main() {
       expect(
         moves.single,
         isA<SortableMoveDetails>()
-            .having((details) => details.oldIndex, 'oldIndex', 0)
-            .having((details) => details.newIndex, 'newIndex', 3),
+            .having((details) => details.fromIndex, 'fromIndex', 0)
+            .having((details) => details.toIndex, 'toIndex', 3),
       );
     });
 

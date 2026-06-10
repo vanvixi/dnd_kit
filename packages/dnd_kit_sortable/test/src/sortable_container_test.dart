@@ -46,7 +46,6 @@ void main() {
       expect(details?.toContainerId, const DndId('done'));
       expect(details?.fromIndex, 0);
       expect(details?.toIndex, 0);
-      expect(details?.containerId, isNull);
     });
 
     test('reports moves to the end when dropped over a container', () {
@@ -70,7 +69,7 @@ void main() {
       expect(details?.toIndex, 1);
     });
 
-    test('keeps stable same-container getters compatible', () {
+    test('reports same-container identifiers with from and to fields', () {
       final details = SortableMultiContainer.moveDetailsFor(
         _event(activeId: const DndId('task-1'), overId: const DndId('task-2')),
         containers: <SortableContainer>[
@@ -83,9 +82,8 @@ void main() {
 
       expect(details?.fromContainerId, const DndId('todo'));
       expect(details?.toContainerId, const DndId('todo'));
-      expect(details?.oldIndex, 0);
-      expect(details?.newIndex, 1);
-      expect(details?.containerId, const DndId('todo'));
+      expect(details?.fromIndex, 0);
+      expect(details?.toIndex, 1);
     });
 
     test('returns null when the active item or drop target is unknown', () {

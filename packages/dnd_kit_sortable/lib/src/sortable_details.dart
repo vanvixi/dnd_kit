@@ -9,18 +9,12 @@ final class SortableMoveDetails {
   const SortableMoveDetails({
     required this.activeId,
     required this.overId,
-    required int oldIndex,
-    required int newIndex,
-    DndId? containerId,
-    DndId? fromContainerId,
-    DndId? toContainerId,
-    int? fromIndex,
-    int? toIndex,
+    required this.fromContainerId,
+    required this.toContainerId,
+    required this.fromIndex,
+    required this.toIndex,
     this.event,
-  })  : fromContainerId = fromContainerId ?? containerId,
-        toContainerId = toContainerId ?? containerId,
-        fromIndex = fromIndex ?? oldIndex,
-        toIndex = toIndex ?? newIndex;
+  });
 
   /// The sortable item being moved.
   final DndId activeId;
@@ -39,19 +33,6 @@ final class SortableMoveDetails {
 
   /// The target index in the destination container.
   final int toIndex;
-
-  /// The active item's index in the scope's item order before the move.
-  int get oldIndex => fromIndex;
-
-  /// The target index in the scope's item order.
-  int get newIndex => toIndex;
-
-  /// The sortable container id for same-container moves.
-  ///
-  /// Cross-container moves expose [fromContainerId] and [toContainerId] instead.
-  DndId? get containerId {
-    return fromContainerId == toContainerId ? fromContainerId : null;
-  }
 
   /// The lower-level drag end event that produced this move intent.
   final DndDragEndEvent? event;

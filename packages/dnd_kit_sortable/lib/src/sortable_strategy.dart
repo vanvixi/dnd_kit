@@ -15,8 +15,9 @@ final class SortableStrategyInput {
     required this.overId,
     required Iterable<DndId> itemIds,
     required Map<DndId, DndRect> itemRects,
-    required this.oldIndex,
-    required this.containerId,
+    required this.fromIndex,
+    required this.fromContainerId,
+    required this.toContainerId,
     required this.event,
     this.activeRect,
     this.activeTranslatedRect,
@@ -36,10 +37,13 @@ final class SortableStrategyInput {
   final Map<DndId, DndRect> itemRects;
 
   /// The active item's index before the move.
-  final int oldIndex;
+  final int fromIndex;
 
-  /// Optional sortable container id for future multi-container APIs.
-  final DndId? containerId;
+  /// The source container id, when the move is associated with a container.
+  final DndId? fromContainerId;
+
+  /// The destination container id, when the move is associated with a container.
+  final DndId? toContainerId;
 
   /// The lower-level drag end event that produced this strategy input.
   final DndDragEndEvent event;
@@ -51,9 +55,9 @@ final class SortableStrategyInput {
   final DndRect? activeTranslatedRect;
 
   /// Builds the previous drop-over move intent for fallback strategies.
-  SortableMoveDetails? fallbackMoveDetails({int? newIndex}) {
+  SortableMoveDetails? fallbackMoveDetails({int? toIndex}) {
     final overId = this.overId;
-    if (overId == null || overId == activeId || oldIndex < 0) {
+    if (overId == null || overId == activeId || fromIndex < 0) {
       return null;
     }
 
@@ -65,9 +69,10 @@ final class SortableStrategyInput {
     return SortableMoveDetails(
       activeId: activeId,
       overId: overId,
-      oldIndex: oldIndex,
-      newIndex: newIndex ?? fallbackIndex,
-      containerId: containerId,
+      fromContainerId: fromContainerId,
+      toContainerId: toContainerId,
+      fromIndex: fromIndex,
+      toIndex: toIndex ?? fallbackIndex,
       event: event,
     );
   }
@@ -109,16 +114,16 @@ abstract final class SortableStrategies {
     }
 
     measuredItems.sort(_compareVerticalItems);
-    final newIndex = _verticalInsertionIndex(
+    final toIndex = _verticalInsertionIndex(
       activeCenterY: activeTranslatedRect.center.y,
       measuredItems: measuredItems,
     );
 
-    if (newIndex == input.oldIndex) {
+    if (toIndex == input.fromIndex) {
       return null;
     }
 
-    return input.fallbackMoveDetails(newIndex: newIndex);
+    return input.fallbackMoveDetails(toIndex: toIndex);
   }
 
   /// Computes same-container horizontal list movement from measured item centers.
@@ -155,16 +160,16 @@ abstract final class SortableStrategies {
     }
 
     measuredItems.sort(_compareHorizontalItems);
-    final newIndex = _horizontalInsertionIndex(
+    final toIndex = _horizontalInsertionIndex(
       activeCenterX: activeTranslatedRect.center.x,
       measuredItems: measuredItems,
     );
 
-    if (newIndex == input.oldIndex) {
+    if (toIndex == input.fromIndex) {
       return null;
     }
 
-    return input.fallbackMoveDetails(newIndex: newIndex);
+    return input.fallbackMoveDetails(toIndex: toIndex);
   }
 
   /// Computes same-container grid movement from measured item centers.
@@ -200,16 +205,16 @@ abstract final class SortableStrategies {
     }
 
     measuredItems.sort(_compareGridItems);
-    final newIndex = _gridInsertionIndex(
+    final toIndex = _gridInsertionIndex(
       activeCenter: activeCenter,
       measuredItems: measuredItems,
     );
 
-    if (newIndex == input.oldIndex) {
+    if (toIndex == input.fromIndex) {
       return null;
     }
 
-    return input.fallbackMoveDetails(newIndex: newIndex);
+    return input.fallbackMoveDetails(toIndex: toIndex);
   }
 }
 
