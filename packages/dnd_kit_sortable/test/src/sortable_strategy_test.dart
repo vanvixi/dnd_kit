@@ -250,6 +250,165 @@ void main() {
       );
     });
   });
+
+  group('SortableStrategies.grid', () {
+    test('computes new index from the active translated center in row-major order', () {
+      final details = SortableStrategies.grid(
+        _input(
+          activeId: const DndId('item-1'),
+          overId: const DndId('item-4'),
+          oldIndex: 0,
+          itemIds: const <DndId>[
+            DndId('item-1'),
+            DndId('item-2'),
+            DndId('item-3'),
+            DndId('item-4'),
+          ],
+          activeTranslatedRect: _rect(top: 81, left: 81),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(top: 0, left: 0),
+            const DndId('item-2'): _rect(top: 0, left: 80),
+            const DndId('item-3'): _rect(top: 80, left: 0),
+            const DndId('item-4'): _rect(top: 80, left: 80),
+          },
+        ),
+      );
+
+      expect(details?.activeId, const DndId('item-1'));
+      expect(details?.overId, const DndId('item-4'));
+      expect(details?.oldIndex, 0);
+      expect(details?.newIndex, 3);
+    });
+
+    test('supports moving upward before earlier measured rows', () {
+      final details = SortableStrategies.grid(
+        _input(
+          activeId: const DndId('item-4'),
+          overId: const DndId('item-1'),
+          oldIndex: 3,
+          itemIds: const <DndId>[
+            DndId('item-1'),
+            DndId('item-2'),
+            DndId('item-3'),
+            DndId('item-4'),
+          ],
+          activeTranslatedRect: _rect(top: -80, left: -80),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(top: 0, left: 0),
+            const DndId('item-2'): _rect(top: 0, left: 80),
+            const DndId('item-3'): _rect(top: 80, left: 0),
+            const DndId('item-4'): _rect(top: 80, left: 80),
+          },
+        ),
+      );
+
+      expect(details?.oldIndex, 3);
+      expect(details?.newIndex, 0);
+    });
+
+    test('uses measured centers within the same row', () {
+      final details = SortableStrategies.grid(
+        _input(
+          activeId: const DndId('item-1'),
+          overId: const DndId('item-2'),
+          oldIndex: 0,
+          itemIds: const <DndId>[
+            DndId('item-1'),
+            DndId('item-2'),
+            DndId('item-3'),
+            DndId('item-4'),
+          ],
+          activeTranslatedRect: _rect(left: 81),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(top: 0, left: 0),
+            const DndId('item-2'): _rect(top: 0, left: 80),
+            const DndId('item-3'): _rect(top: 80, left: 0),
+            const DndId('item-4'): _rect(top: 80, left: 80),
+          },
+        ),
+      );
+
+      expect(details?.newIndex, 1);
+    });
+
+    test('falls back to drop-over index when measurements are incomplete', () {
+      final details = SortableStrategies.grid(
+        _input(
+          activeId: const DndId('item-1'),
+          overId: const DndId('item-4'),
+          oldIndex: 0,
+          itemIds: const <DndId>[
+            DndId('item-1'),
+            DndId('item-2'),
+            DndId('item-3'),
+            DndId('item-4'),
+          ],
+          activeTranslatedRect: _rect(top: 80, left: 80),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(top: 0, left: 0),
+            const DndId('item-2'): _rect(top: 0, left: 80),
+            const DndId('item-3'): _rect(top: 80, left: 0),
+          },
+        ),
+      );
+
+      expect(details?.newIndex, 3);
+    });
+
+    test('falls back to drop-over index for non-grid layouts', () {
+      final details = SortableStrategies.grid(
+        _input(
+          activeId: const DndId('item-1'),
+          overId: const DndId('item-2'),
+          oldIndex: 0,
+          activeTranslatedRect: _rect(top: 0, left: 80),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(top: 0, left: 0),
+            const DndId('item-2'): _rect(top: 0, left: 80),
+            const DndId('item-3'): _rect(top: 0, left: 160),
+          },
+        ),
+      );
+
+      expect(details?.newIndex, 1);
+    });
+
+    test('does not report same-item moves or mutate item order', () {
+      final itemIds = <DndId>[
+        const DndId('item-1'),
+        const DndId('item-2'),
+        const DndId('item-3'),
+        const DndId('item-4'),
+      ];
+
+      final details = SortableStrategies.grid(
+        _input(
+          activeId: const DndId('item-1'),
+          overId: const DndId('item-1'),
+          oldIndex: 0,
+          itemIds: itemIds,
+          activeTranslatedRect: _rect(top: 80, left: 80),
+          itemRects: <DndId, DndRect>{
+            const DndId('item-1'): _rect(top: 0, left: 0),
+            const DndId('item-2'): _rect(top: 0, left: 80),
+            const DndId('item-3'): _rect(top: 80, left: 0),
+            const DndId('item-4'): _rect(top: 80, left: 80),
+          },
+        ),
+      );
+
+      expect(details, isNull);
+      expect(
+        itemIds,
+        const <DndId>[
+          DndId('item-1'),
+          DndId('item-2'),
+          DndId('item-3'),
+          DndId('item-4'),
+        ],
+      );
+    });
+  });
 }
 
 SortableStrategyInput _input({

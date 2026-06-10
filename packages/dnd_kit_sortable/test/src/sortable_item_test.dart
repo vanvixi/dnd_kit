@@ -307,6 +307,74 @@ void main() {
       );
     });
 
+    testWidgets('can use the grid strategy for move intent', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      final moves = <SortableMoveDetails>[];
+
+      await tester.pumpWidget(
+        SortableScope(
+          controller: controller,
+          itemIds: const <DndId>[
+            DndId('item-1'),
+            DndId('item-2'),
+            DndId('item-3'),
+            DndId('item-4'),
+          ],
+          strategy: SortableStrategies.grid,
+          onMove: moves.add,
+          child: const Stack(
+            textDirection: TextDirection.ltr,
+            children: <Widget>[
+              Positioned(
+                left: 0,
+                top: 0,
+                child: SortableItem(
+                  id: DndId('item-1'),
+                  child: SizedBox(width: 80, height: 80),
+                ),
+              ),
+              Positioned(
+                left: 100,
+                top: 0,
+                child: SortableItem(
+                  id: DndId('item-2'),
+                  child: SizedBox(width: 80, height: 80),
+                ),
+              ),
+              Positioned(
+                left: 0,
+                top: 100,
+                child: SortableItem(
+                  id: DndId('item-3'),
+                  child: SizedBox(width: 80, height: 80),
+                ),
+              ),
+              Positioned(
+                left: 100,
+                top: 100,
+                child: SortableItem(
+                  id: DndId('item-4'),
+                  child: SizedBox(width: 80, height: 80),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.dragFrom(const Offset(40, 40), const Offset(110, 110));
+      await tester.pump();
+
+      expect(
+        moves.single,
+        isA<SortableMoveDetails>()
+            .having((details) => details.oldIndex, 'oldIndex', 0)
+            .having((details) => details.newIndex, 'newIndex', 3),
+      );
+    });
+
     testWidgets('does not report a move when dropped over itself', (tester) async {
       final controller = DndController();
       addTearDown(controller.dispose);

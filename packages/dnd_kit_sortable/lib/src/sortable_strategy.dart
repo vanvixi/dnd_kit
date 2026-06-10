@@ -166,6 +166,51 @@ abstract final class SortableStrategies {
 
     return input.fallbackMoveDetails(newIndex: newIndex);
   }
+
+  /// Computes same-container grid movement from measured item centers.
+  static SortableMoveDetails? grid(SortableStrategyInput input) {
+    final fallback = input.fallbackMoveDetails();
+    if (fallback == null) {
+      return null;
+    }
+
+    final activeTranslatedRect = input.activeTranslatedRect;
+    if (activeTranslatedRect == null) {
+      return fallback;
+    }
+
+    final measuredItems = <_MeasuredSortableItem>[];
+    for (final id in input.itemIds) {
+      if (id == input.activeId) {
+        continue;
+      }
+
+      final rect = input.itemRects[id];
+      if (rect == null) {
+        return fallback;
+      }
+
+      measuredItems.add(_MeasuredSortableItem(id: id, rect: rect));
+    }
+
+    final activeCenter = activeTranslatedRect.center;
+    if (!_hasVerticalSeparation(measuredItems, activeCenterY: activeCenter.y) ||
+        !_hasHorizontalSeparation(measuredItems, activeCenterX: activeCenter.x)) {
+      return fallback;
+    }
+
+    measuredItems.sort(_compareGridItems);
+    final newIndex = _gridInsertionIndex(
+      activeCenter: activeCenter,
+      measuredItems: measuredItems,
+    );
+
+    if (newIndex == input.oldIndex) {
+      return null;
+    }
+
+    return input.fallbackMoveDetails(newIndex: newIndex);
+  }
 }
 
 final class _MeasuredSortableItem {
@@ -226,6 +271,25 @@ int _horizontalInsertionIndex({
   return index;
 }
 
+int _gridInsertionIndex({
+  required DndPoint activeCenter,
+  required List<_MeasuredSortableItem> measuredItems,
+}) {
+  var index = 0;
+  for (final item in measuredItems) {
+    final itemCenter = item.rect.center;
+    final rowComparison = activeCenter.y.compareTo(itemCenter.y);
+    if (rowComparison > 0 || rowComparison == 0 && activeCenter.x > itemCenter.x) {
+      index += 1;
+      continue;
+    }
+
+    break;
+  }
+
+  return index;
+}
+
 int _compareVerticalItems(_MeasuredSortableItem a, _MeasuredSortableItem b) {
   final centerComparison = a.rect.center.y.compareTo(b.rect.center.y);
   if (centerComparison != 0) {
@@ -244,6 +308,30 @@ int _compareHorizontalItems(_MeasuredSortableItem a, _MeasuredSortableItem b) {
   final centerComparison = a.rect.center.x.compareTo(b.rect.center.x);
   if (centerComparison != 0) {
     return centerComparison;
+  }
+
+  final leftComparison = a.rect.left.compareTo(b.rect.left);
+  if (leftComparison != 0) {
+    return leftComparison;
+  }
+
+  return a.id.value.compareTo(b.id.value);
+}
+
+int _compareGridItems(_MeasuredSortableItem a, _MeasuredSortableItem b) {
+  final rowComparison = a.rect.center.y.compareTo(b.rect.center.y);
+  if (rowComparison != 0) {
+    return rowComparison;
+  }
+
+  final columnComparison = a.rect.center.x.compareTo(b.rect.center.x);
+  if (columnComparison != 0) {
+    return columnComparison;
+  }
+
+  final topComparison = a.rect.top.compareTo(b.rect.top);
+  if (topComparison != 0) {
+    return topComparison;
   }
 
   final leftComparison = a.rect.left.compareTo(b.rect.left);
