@@ -14,7 +14,6 @@ dev_dependencies:
   melos: ^7.8.1
 
 melos:
-  sdkPath: .fvm/flutter_sdk
   scripts:
     analyze:
       run: dart run melos exec --concurrency 1 -- "dart analyze"
