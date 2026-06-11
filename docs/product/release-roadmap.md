@@ -75,3 +75,11 @@ Prepare the renamed package for external review and publication:
 - publish dry-run and release metadata checks.
 
 First story: `docs/stories/phase-9-release-readiness/US-036-docs-api-polish-before-release.md`.
+
+## Phase 10 - Post-Publish Adoption
+
+Improve the package after the first pub.dev publication by closing package
+score gaps, keeping release metadata verifiable, and making adoption paths
+clear for users.
+
+First story: `docs/stories/phase-10-post-publish-adoption/US-037-pubdev-quality-package-example-pass.md`.

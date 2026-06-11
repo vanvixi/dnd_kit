@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-dev.1
+
+- Added a package-local `example/example.md` so pub.dev can render a compact
+  illustrative example for the package.
+- Clarified package README links to the quick example and full runnable
+  repository examples.
+- Updated the `dnd_kit_core` dependency to `^0.1.0-dev.1`.
+
 ## 0.1.0-dev.0
 
 - Initial development release of the main `dnd_kit` Flutter package.

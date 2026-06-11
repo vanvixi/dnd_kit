@@ -28,22 +28,6 @@ import 'package:dnd_kit_core/dnd_kit_core.dart';
   `DndModifiers.restrictToBoundary`, and `DndModifiers.snapToGrid`.
 - `DndRegistry` and diagnostics hooks for draggable and droppable metadata.
 
-## Example
-
-```dart
-final activeRect = const DndRect(left: 0, top: 0, width: 80, height: 40);
-final targets = <DndId, DndRect>{
-  const DndId('todo'): const DndRect(left: 0, top: 80, width: 240, height: 200),
-  const DndId('done'): const DndRect(left: 280, top: 80, width: 240, height: 200),
-};
-
-final result = DndCollisionDetectors.closestCenter(
-  DndCollisionInput(activeRect: activeRect, droppableRects: targets),
-);
-
-final overId = result.firstOrNull?.id;
-```
-
 ## Package Boundary
 
 `dnd_kit_core` intentionally has no Flutter dependency. It does not import

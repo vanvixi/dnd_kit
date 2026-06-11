@@ -116,13 +116,3 @@ Core behavior is intentionally open:
   activation;
 - attach `DndDiagnosticsConfig.onWarning` to surface duplicate ID and registry
   warnings.
-
-## Examples
-
-- `examples/kanban_board` demonstrates a realistic board built with the
-  generic drag/drop APIs.
-- `examples/multi_container_sortable` documents the experimental
-  multi-container sortable shape.
-
-Multi-container sortable APIs are experimental. Use `SortableScope` and
-`SortableItem` for stable same-container sorting.
