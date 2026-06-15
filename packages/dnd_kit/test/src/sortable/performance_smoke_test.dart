@@ -1,4 +1,5 @@
 import 'package:dnd_kit/dnd_kit.dart';
+import 'package:flutter/gestures.dart' show PointerDeviceKind;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -105,6 +106,7 @@ void main() {
         await tester.dragFrom(
           Offset(36 + index * 54, 60),
           const Offset(108, 0),
+          kind: PointerDeviceKind.mouse,
         );
         await tester.pump();
       }

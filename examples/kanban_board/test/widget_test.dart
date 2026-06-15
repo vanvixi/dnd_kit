@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart' show kLongPressTimeout;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kanban_board/main.dart';
@@ -106,8 +107,10 @@ void main() {
     );
     final gapCenter = Offset(start.dx, (auditRect.bottom + mobileRect.top) / 2);
 
+    // Hold past the activation delay so the touch drag starts; a quick swipe
+    // would scroll the column instead.
     final gesture = await tester.startGesture(start);
-    await tester.pump();
+    await tester.pump(kLongPressTimeout + const Duration(milliseconds: 10));
     await gesture.moveBy(const Offset(40, 0));
     await tester.pump();
     await gesture.moveTo(Offset.lerp(start, gapCenter, 0.55)!);
@@ -152,8 +155,10 @@ void main() {
     );
     final end = Offset(start.dx, writeBriefCenter.dy - 20);
 
+    // Hold past the activation delay so the touch drag starts; a quick swipe
+    // would scroll the column instead.
     final gesture = await tester.startGesture(start);
-    await tester.pump();
+    await tester.pump(kLongPressTimeout + const Duration(milliseconds: 10));
     await gesture.moveBy(const Offset(40, 0));
     await tester.pump();
     await gesture.moveTo(Offset.lerp(start, end, 0.55)!);
@@ -181,8 +186,10 @@ Future<void> _drag(
   final start = tester.getCenter(from);
   final targetCenter = tester.getCenter(to);
   final end = belowTargetCenter ? targetCenter.translate(0, 24) : targetCenter;
+  // Hold past the activation delay so the touch drag starts; a quick swipe
+  // would scroll the column instead.
   final gesture = await tester.startGesture(start);
-  await tester.pump();
+  await tester.pump(kLongPressTimeout + const Duration(milliseconds: 10));
   await gesture.moveBy(const Offset(40, 0));
   await tester.pump();
   await gesture.moveTo(Offset.lerp(start, end, 0.55)!);

@@ -1,5 +1,5 @@
 import 'package:dnd_kit/dnd_kit.dart';
-import 'package:flutter/gestures.dart' show PointerDeviceKind;
+import 'package:flutter/gestures.dart' show PointerDeviceKind, kLongPressTimeout;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -103,7 +103,11 @@ void main() {
       expect(
           controller.measuring.draggableStatus(const DndId('task-1')), DndMeasurementStatus.dirty);
 
-      await tester.dragFrom(const Offset(20, 20), const Offset(1, 0));
+      await tester.dragFrom(
+        const Offset(20, 20),
+        const Offset(20, 0),
+        kind: PointerDeviceKind.mouse,
+      );
       await tester.pump();
 
       expect(
@@ -318,7 +322,7 @@ void main() {
       expect(controller.state, const DndIdle());
     });
 
-    testWidgets('reports touch input kind for touch pan gestures', (tester) async {
+    testWidgets('touch uses a delayed drag so it can coexist with scrolling', (tester) async {
       final controller = DndController();
       addTearDown(controller.dispose);
       DndDragStartEvent? startEvent;
@@ -340,12 +344,29 @@ void main() {
         const Offset(10, 10),
         kind: PointerDeviceKind.touch,
       );
+
+      // A quick touch drag does not start (it would scroll an ancestor list).
       await gesture.moveBy(const Offset(15, 20));
+      await tester.pump();
+      expect(startEvent, isNull);
+      expect(controller.state, const DndIdle());
+
       await gesture.up();
+
+      // Holding still past the activation delay starts a touch drag.
+      final hold = await tester.startGesture(
+        const Offset(10, 10),
+        kind: PointerDeviceKind.touch,
+      );
+      await tester.pump(kLongPressTimeout + const Duration(milliseconds: 10));
+      await hold.moveBy(const Offset(15, 20));
       await tester.pump();
 
       expect(startEvent?.activeId, const DndId('task-1'));
       expect(startEvent?.inputKind, DndInputKind.touch);
+
+      await hold.up();
+      await tester.pump();
       expect(controller.state, const DndIdle());
     });
 
@@ -870,7 +891,11 @@ void main() {
         ),
       );
 
-      final gesture = await tester.startGesture(const Offset(20, 20));
+      final gesture = await tester.startGesture(
+        const Offset(20, 20),
+        kind: PointerDeviceKind.mouse,
+      );
+      await gesture.moveBy(const Offset(20, 0));
       await tester.pump();
 
       await tester.pumpWidget(
@@ -932,7 +957,10 @@ void main() {
       );
       await tester.pump();
 
-      final gesture = await tester.startGesture(const Offset(20, 20));
+      final gesture = await tester.startGesture(
+        const Offset(20, 20),
+        kind: PointerDeviceKind.mouse,
+      );
       await tester.pump();
       await gesture.moveBy(const Offset(100, 0));
       await tester.pump();
@@ -989,13 +1017,15 @@ void main() {
       );
       await tester.pump();
 
-      final gesture = await tester.startGesture(const Offset(20, 20));
+      final gesture = await tester.startGesture(
+        const Offset(20, 20),
+        kind: PointerDeviceKind.mouse,
+      );
       await tester.pump();
       await gesture.moveBy(const Offset(100, 100));
       await tester.pump();
 
-      expect(moveEvents.single.currentPointer, const DndPoint(120, 20));
-      expect(moveEvents.single.delta, const DndPoint(100, 0));
+      expect(moveEvents.last.currentPointer, const DndPoint(120, 20));
       expect(controller.overId, const DndId('column-1'));
 
       await gesture.up();
@@ -1042,7 +1072,11 @@ void main() {
       );
       await tester.pump();
 
-      await tester.dragFrom(const Offset(20, 20), const Offset(100, 0));
+      await tester.dragFrom(
+        const Offset(20, 20),
+        const Offset(100, 0),
+        kind: PointerDeviceKind.mouse,
+      );
       await tester.pump();
 
       expect(endEvent?.overId, isNull);

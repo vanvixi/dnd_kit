@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.0-dev.2
+
+- `DndRegistry.registerDraggable`/`registerDroppable` and their unregister
+  counterparts accept an optional `owner`. Owner-aware registration is
+  last-wins and lets a new owner take over an id without tripping duplicate
+  detection — required so draggables in a lazy `ListView.builder` survive the
+  list rebuilding a keyed entry (new element mounts before the old is disposed).
+  A departing owner can no longer remove a registration that a newer owner
+  already took over. Calls without `owner` keep the strict duplicate-id debug
+  assertion.
+
 ## 0.1.0-dev.1
 
 - Added a package-local `example/example.md` so pub.dev can render a compact

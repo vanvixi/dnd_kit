@@ -83,3 +83,8 @@ score gaps, keeping release metadata verifiable, and making adoption paths
 clear for users.
 
 First story: `docs/stories/phase-10-post-publish-adoption/US-037-pubdev-quality-package-example-pass.md`.
+
+Adoption hardening also makes draggables and sortables work inside scrollables
+and lazy `ListView.builder` lists through
+`docs/stories/phase-10-post-publish-adoption/US-040-drag-inside-scrollable-and-lazy-lists/`
+(see `docs/decisions/0010-draggable-arena-gesture.md`).

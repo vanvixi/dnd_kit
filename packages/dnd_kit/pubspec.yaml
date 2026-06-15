@@ -17,7 +17,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  dnd_kit_core: ^0.1.0-dev.1
+  dnd_kit_core: ^0.1.0-dev.2
   flutter:
     sdk: flutter
   meta: ^1.15.0

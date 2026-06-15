@@ -113,7 +113,7 @@ class _DndDroppableState extends State<DndDroppable> {
     final next = _currentRegistration;
     if (_registeredController != controller || _registration?.id != next.id) {
       _unregister();
-      controller.registry.registerDroppable(next);
+      controller.registry.registerDroppable(next, owner: this);
       _registeredController = controller;
       _registration = next;
       _markMeasurementDirty();
@@ -131,8 +131,12 @@ class _DndDroppableState extends State<DndDroppable> {
     final controller = _registeredController;
     final registration = _registration;
     if (controller != null && registration != null) {
-      controller.registry.unregisterDroppable(registration.id);
-      controller.measuring.removeDroppableRect(registration.id);
+      // Only drop the measured rect if we still owned the registration; a newer
+      // owner (lazy list rebuild) may have already taken it over.
+      final removed = controller.registry.unregisterDroppable(registration.id, owner: this);
+      if (removed != null) {
+        controller.measuring.removeDroppableRect(registration.id);
+      }
     }
 
     _registeredController = null;

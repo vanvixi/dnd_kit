@@ -124,6 +124,13 @@ final class DndRegistry {
   final Map<DndId, DndDraggableRegistration> _draggables = <DndId, DndDraggableRegistration>{};
   final Map<DndId, DndDroppableRegistration> _droppables = <DndId, DndDroppableRegistration>{};
 
+  // Identity of the widget/state that currently owns each id. Owner-aware
+  // registration lets a lazy list rebuild a keyed entry (new owner mounts
+  // before the old owner is disposed) without tripping duplicate detection or
+  // letting the departing owner remove the live registration.
+  final Map<DndId, Object> _draggableOwners = <DndId, Object>{};
+  final Map<DndId, Object> _droppableOwners = <DndId, Object>{};
+
   /// Registered draggables keyed by stable id.
   Map<DndId, DndDraggableRegistration> get draggables {
     return UnmodifiableMapView(_draggables);
@@ -155,35 +162,55 @@ final class DndRegistry {
   DndDroppableRegistration? droppable(DndId id) => _droppables[id];
 
   /// Registers [registration] as a draggable entry.
-  void registerDraggable(DndDraggableRegistration registration) {
-    if (_draggables.containsKey(registration.id)) {
-      _warnDuplicate(
-        code: 'duplicate-draggable-id',
-        id: registration.id,
-        label: 'draggable',
+  ///
+  /// When [owner] is provided, registration is owner-aware and last-wins: a new
+  /// owner can take over an id (e.g. a lazy list rebuilding a keyed entry)
+  /// without tripping duplicate detection. When [owner] is omitted, duplicate
+  /// ids are rejected in debug mode, preserving strict diagnostics for direct
+  /// registry usage.
+  void registerDraggable(DndDraggableRegistration registration, {Object? owner}) {
+    if (owner == null) {
+      if (_draggables.containsKey(registration.id)) {
+        _warnDuplicate(
+          code: 'duplicate-draggable-id',
+          id: registration.id,
+          label: 'draggable',
+        );
+      }
+      assert(
+        !_draggables.containsKey(registration.id),
+        'Duplicate draggable id registered: ${registration.id}.',
       );
+      _draggables[registration.id] = registration;
+      return;
     }
-    assert(
-      !_draggables.containsKey(registration.id),
-      'Duplicate draggable id registered: ${registration.id}.',
-    );
+
     _draggables[registration.id] = registration;
+    _draggableOwners[registration.id] = owner;
   }
 
   /// Registers [registration] as a droppable entry.
-  void registerDroppable(DndDroppableRegistration registration) {
-    if (_droppables.containsKey(registration.id)) {
-      _warnDuplicate(
-        code: 'duplicate-droppable-id',
-        id: registration.id,
-        label: 'droppable',
+  ///
+  /// See [registerDraggable] for the [owner] semantics.
+  void registerDroppable(DndDroppableRegistration registration, {Object? owner}) {
+    if (owner == null) {
+      if (_droppables.containsKey(registration.id)) {
+        _warnDuplicate(
+          code: 'duplicate-droppable-id',
+          id: registration.id,
+          label: 'droppable',
+        );
+      }
+      assert(
+        !_droppables.containsKey(registration.id),
+        'Duplicate droppable id registered: ${registration.id}.',
       );
+      _droppables[registration.id] = registration;
+      return;
     }
-    assert(
-      !_droppables.containsKey(registration.id),
-      'Duplicate droppable id registered: ${registration.id}.',
-    );
+
     _droppables[registration.id] = registration;
+    _droppableOwners[registration.id] = owner;
   }
 
   /// Updates or inserts [registration] as a draggable entry.
@@ -197,12 +224,32 @@ final class DndRegistry {
   }
 
   /// Removes the draggable with [id].
-  DndDraggableRegistration? unregisterDraggable(DndId id) {
+  ///
+  /// When [owner] is provided and a different owner currently holds [id]
+  /// (a newer owner took over), the removal is skipped and `null` is returned so
+  /// a departing owner cannot drop the live registration.
+  DndDraggableRegistration? unregisterDraggable(DndId id, {Object? owner}) {
+    if (owner != null) {
+      final currentOwner = _draggableOwners[id];
+      if (currentOwner != null && !identical(currentOwner, owner)) {
+        return null;
+      }
+    }
+    _draggableOwners.remove(id);
     return _draggables.remove(id);
   }
 
   /// Removes the droppable with [id].
-  DndDroppableRegistration? unregisterDroppable(DndId id) {
+  ///
+  /// See [unregisterDraggable] for the [owner] semantics.
+  DndDroppableRegistration? unregisterDroppable(DndId id, {Object? owner}) {
+    if (owner != null) {
+      final currentOwner = _droppableOwners[id];
+      if (currentOwner != null && !identical(currentOwner, owner)) {
+        return null;
+      }
+    }
+    _droppableOwners.remove(id);
     return _droppables.remove(id);
   }
 
@@ -210,6 +257,8 @@ final class DndRegistry {
   void clear() {
     _draggables.clear();
     _droppables.clear();
+    _draggableOwners.clear();
+    _droppableOwners.clear();
   }
 
   void _warnDuplicate({

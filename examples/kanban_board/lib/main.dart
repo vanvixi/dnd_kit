@@ -338,32 +338,34 @@ class _KanbanBoardExampleState extends State<KanbanBoardExample> {
             HorizontalBoardAutoScroll(
               controller: _controller,
               scrollController: _boardScrollController,
-              child: SingleChildScrollView(
+              child: ListView.builder(
                 key: const ValueKey<String>('kanban-board-scroll'),
                 controller: _boardScrollController,
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.all(20),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    for (var index = 0;
-                        index < _columns.length;
-                        index += 1) ...<Widget>[
-                      KanbanColumnView(
-                        key: ValueKey<String>(
-                            'column-view:${_columns[index].id}'),
-                        column: _columns[index],
-                        onDragEnd: _handleDragEnd,
-                        dropIndicatorIndex:
-                            _indicatorColumnId == _columns[index].id
-                                ? _indicatorIndex
-                                : null,
-                      ),
-                      if (index != _columns.length - 1)
-                        const SizedBox(width: 16),
-                    ],
-                  ],
-                ),
+                itemCount: _columns.length,
+                findChildIndexCallback: (key) {
+                  final value = (key as ValueKey<String>).value;
+                  final id = value.replaceFirst('column-view:', '');
+                  final index = _columns.indexWhere((c) => c.id == id);
+                  return index < 0 ? null : index;
+                },
+                itemBuilder: (context, index) {
+                  final column = _columns[index];
+                  return Padding(
+                    key: ValueKey<String>('column-view:${column.id}'),
+                    padding: EdgeInsets.only(
+                      right: index == _columns.length - 1 ? 0 : 16,
+                    ),
+                    child: KanbanColumnView(
+                      column: column,
+                      onDragEnd: _handleDragEnd,
+                      dropIndicatorIndex: _indicatorColumnId == column.id
+                          ? _indicatorIndex
+                          : null,
+                    ),
+                  );
+                },
               ),
             ),
             DndDragOverlay(

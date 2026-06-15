@@ -4,6 +4,31 @@
 
 - Fixed active drag geometry so overlays and collision detection stay aligned
   with the pointer when a scrollable ancestor moves during the drag.
+- Draggables now work inside scrollables, including lazy `ListView.builder`.
+  `DndDraggable` activates through an arena-winning `MultiDragGestureRecognizer`
+  instead of a pan recognizer, so a drag can start without losing the gesture to
+  an enclosing `Scrollable`.
+- **Behavior change:** default activation is now platform-adaptive — precise
+  pointers (mouse) drag immediately, while touch uses a short hold (delayed) so a
+  quick touch can still scroll. Set
+  `activationConstraint: DndSensorActivationConstraint(distance: …)` for
+  immediate touch drag.
+- Sortable strategies (`verticalList`, `horizontalList`, `grid`) now compute
+  reorder intent from the measured (visible) item subset, so reordering stays
+  correct in lazy lists where off-screen items are not measured.
+- An active drag and its registration/measured rect now survive the source
+  element being recycled by a lazy list mid-drag.
+- Fixed a `Duplicate draggable/droppable id` crash that could occur while
+  auto-scrolling a lazy list during a drag, when the list re-mounts a keyed
+  item before disposing the old one. `findChildIndexCallback` is now a
+  performance recommendation rather than a requirement.
+- The Kanban and multi-container examples now use `ListView.builder` (with
+  `findChildIndexCallback`) to demonstrate lazy sortable columns. The Kanban
+  board is lazy in both axes — the horizontal column row and each column's
+  vertical task list. Their task cards use the default platform-adaptive
+  activation (immediate with a mouse, hold-to-drag on touch) so a quick swipe
+  scrolls the list instead of starting a drag.
+- Requires `dnd_kit_core` `^0.1.0-dev.2`.
 
 ## 0.1.0-dev.1
 

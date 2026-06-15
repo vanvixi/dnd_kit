@@ -87,48 +87,69 @@ class _KanbanColumnViewState extends State<KanbanColumnView> {
                   edgeThreshold: 72,
                   maxVelocity: 12,
                 ),
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    children: <Widget>[
-                      for (var index = 0;
-                          index <= widget.column.tasks.length;
-                          index += 1) ...<Widget>[
-                        if (widget.dropIndicatorIndex == index)
-                          _buildDropIndicator(),
-                        if (index < widget.column.tasks.length)
-                          Padding(
-                            key: ValueKey<String>(
-                              'task-padding:${widget.column.tasks[index].id}',
-                            ),
-                            padding: EdgeInsets.only(
-                              // Remove bottom gap when the indicator immediately
-                              // follows — the Divider's own height fills it.
-                              bottom: (index ==
-                                          widget.column.tasks.length - 1 ||
-                                      widget.dropIndicatorIndex == index + 1)
-                                  ? 0
-                                  : 12,
-                            ),
-                            child: KanbanTaskTile(
-                              key: ValueKey<String>(
-                                'task-tile:${widget.column.tasks[index].id}',
-                              ),
-                              columnId: widget.column.id,
-                              task: widget.column.tasks[index],
-                              onDragEnd: widget.onDragEnd,
-                            ),
-                          ),
-                      ],
-                    ],
-                  ),
-                ),
+                child: _buildTaskList(),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  // Lazily-built task list so large columns stay performant.
+  Widget _buildTaskList() {
+    final tasks = widget.column.tasks;
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.all(12),
+      // Extra trailing slot hosts the drop indicator after the last task.
+      itemCount: tasks.length + 1,
+      // Relocate keyed tiles on reorder instead of rebuilding them, so dnd_kit
+      // registrations stay stable across reorders in a lazy list.
+      findChildIndexCallback: (key) {
+        final value = (key as ValueKey<String>).value;
+        if (value == 'task-trailing:${widget.column.id}') {
+          return tasks.length;
+        }
+        final id = value.replaceFirst('task-padding:', '');
+        final index = tasks.indexWhere((task) => task.id == id);
+        return index < 0 ? null : index;
+      },
+      itemBuilder: (context, index) {
+        if (index == tasks.length) {
+          return SizedBox(
+            key: ValueKey<String>('task-trailing:${widget.column.id}'),
+            child: widget.dropIndicatorIndex == tasks.length
+                ? _buildDropIndicator()
+                : null,
+          );
+        }
+
+        final task = tasks[index];
+        return Column(
+          key: ValueKey<String>('task-padding:${task.id}'),
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            if (widget.dropIndicatorIndex == index) _buildDropIndicator(),
+            Padding(
+              padding: EdgeInsets.only(
+                // Remove bottom gap when the indicator immediately follows —
+                // the Divider's own height fills it.
+                bottom: (index == tasks.length - 1 ||
+                        widget.dropIndicatorIndex == index + 1)
+                    ? 0
+                    : 12,
+              ),
+              child: KanbanTaskTile(
+                key: ValueKey<String>('task-tile:${task.id}'),
+                columnId: widget.column.id,
+                task: task,
+                onDragEnd: widget.onDragEnd,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

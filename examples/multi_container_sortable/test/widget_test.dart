@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart' show kLongPressTimeout;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:multi_container_sortable/main.dart';
@@ -72,8 +73,10 @@ Future<void> _drag(
   final start = tester.getCenter(from);
   final targetCenter = tester.getCenter(to);
   final end = belowTargetCenter ? targetCenter.translate(0, 24) : targetCenter;
+  // Hold past the activation delay so the touch drag starts; a quick swipe
+  // would scroll instead.
   final gesture = await tester.startGesture(start);
-  await tester.pump();
+  await tester.pump(kLongPressTimeout + const Duration(milliseconds: 10));
   await gesture.moveBy(const Offset(40, 0));
   await tester.pump();
   await gesture.moveTo(Offset.lerp(start, end, 0.55)!);

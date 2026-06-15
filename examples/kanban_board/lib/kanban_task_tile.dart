@@ -33,7 +33,9 @@ class KanbanTaskTile extends StatelessWidget {
           columnId: columnId,
           taskId: task.id,
         ),
-        activationConstraint: const DndSensorActivationConstraint(distance: 4),
+        // Default platform-adaptive activation: drag immediately with a mouse,
+        // but require a short hold on touch so a quick swipe scrolls the column
+        // instead of starting a drag.
         onDragEnd: onDragEnd,
         builder: (context, details, child) {
           return AnimatedOpacity(

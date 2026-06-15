@@ -1,4 +1,5 @@
 import 'package:dnd_kit/dnd_kit.dart';
+import 'package:flutter/gestures.dart' show PointerDeviceKind;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -176,7 +177,8 @@ void main() {
       );
       await tester.pump();
 
-      await tester.dragFrom(const Offset(40, 40), const Offset(100, 0));
+      await tester.dragFrom(const Offset(40, 40), const Offset(100, 0),
+          kind: PointerDeviceKind.mouse);
       await tester.pump();
 
       expect(moves, hasLength(1));
@@ -236,7 +238,8 @@ void main() {
       );
       await tester.pump();
 
-      await tester.dragFrom(const Offset(40, 40), const Offset(100, 0));
+      await tester.dragFrom(const Offset(40, 40), const Offset(100, 0),
+          kind: PointerDeviceKind.mouse);
       await tester.pump();
 
       expect(latestInput?.activeId, const DndId('item-1'));
@@ -295,7 +298,8 @@ void main() {
       );
       await tester.pump();
 
-      await tester.dragFrom(const Offset(40, 40), const Offset(210, 0));
+      await tester.dragFrom(const Offset(40, 40), const Offset(210, 0),
+          kind: PointerDeviceKind.mouse);
       await tester.pump();
 
       expect(
@@ -363,7 +367,8 @@ void main() {
       );
       await tester.pump();
 
-      await tester.dragFrom(const Offset(40, 40), const Offset(110, 110));
+      await tester.dragFrom(const Offset(40, 40), const Offset(110, 110),
+          kind: PointerDeviceKind.mouse);
       await tester.pump();
 
       expect(
@@ -392,7 +397,8 @@ void main() {
       );
       await tester.pump();
 
-      await tester.dragFrom(const Offset(40, 40), const Offset(5, 0));
+      await tester.dragFrom(const Offset(40, 40), const Offset(5, 0),
+          kind: PointerDeviceKind.mouse);
       await tester.pump();
 
       expect(moves, isEmpty);

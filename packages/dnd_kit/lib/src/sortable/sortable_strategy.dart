@@ -81,6 +81,10 @@ final class SortableStrategyInput {
 /// Built-in sortable strategies.
 abstract final class SortableStrategies {
   /// Computes same-container vertical list movement from measured item centers.
+  ///
+  /// Works with a partially-measured set: in a lazy `ListView.builder` only the
+  /// visible items are measured, so off-screen items are skipped and the
+  /// insertion index is mapped back into full list space.
   static SortableMoveDetails? verticalList(SortableStrategyInput input) {
     final fallback = input.fallbackMoveDetails();
     if (fallback == null) {
@@ -92,18 +96,13 @@ abstract final class SortableStrategies {
       return fallback;
     }
 
-    final measuredItems = <_MeasuredSortableItem>[];
-    for (final id in input.itemIds) {
-      if (id == input.activeId) {
-        continue;
-      }
+    if (!_overMeasured(input)) {
+      return fallback;
+    }
 
-      final rect = input.itemRects[id];
-      if (rect == null) {
-        return fallback;
-      }
-
-      measuredItems.add(_MeasuredSortableItem(id: id, rect: rect));
+    final measuredItems = _measuredItems(input);
+    if (measuredItems.isEmpty) {
+      return fallback;
     }
 
     if (!_hasVerticalSeparation(
@@ -114,10 +113,11 @@ abstract final class SortableStrategies {
     }
 
     measuredItems.sort(_compareVerticalItems);
-    final toIndex = _verticalInsertionIndex(
+    final boundary = _verticalInsertionIndex(
       activeCenterY: activeTranslatedRect.center.y,
       measuredItems: measuredItems,
     );
+    final toIndex = _resolveToIndex(measuredItems, boundary, input.fromIndex);
 
     if (toIndex == input.fromIndex) {
       return null;
@@ -127,6 +127,9 @@ abstract final class SortableStrategies {
   }
 
   /// Computes same-container horizontal list movement from measured item centers.
+  ///
+  /// Supports a partially-measured (visible-only) set the same way as
+  /// [verticalList].
   static SortableMoveDetails? horizontalList(SortableStrategyInput input) {
     final fallback = input.fallbackMoveDetails();
     if (fallback == null) {
@@ -138,18 +141,13 @@ abstract final class SortableStrategies {
       return fallback;
     }
 
-    final measuredItems = <_MeasuredSortableItem>[];
-    for (final id in input.itemIds) {
-      if (id == input.activeId) {
-        continue;
-      }
+    if (!_overMeasured(input)) {
+      return fallback;
+    }
 
-      final rect = input.itemRects[id];
-      if (rect == null) {
-        return fallback;
-      }
-
-      measuredItems.add(_MeasuredSortableItem(id: id, rect: rect));
+    final measuredItems = _measuredItems(input);
+    if (measuredItems.isEmpty) {
+      return fallback;
     }
 
     if (!_hasHorizontalSeparation(
@@ -160,10 +158,11 @@ abstract final class SortableStrategies {
     }
 
     measuredItems.sort(_compareHorizontalItems);
-    final toIndex = _horizontalInsertionIndex(
+    final boundary = _horizontalInsertionIndex(
       activeCenterX: activeTranslatedRect.center.x,
       measuredItems: measuredItems,
     );
+    final toIndex = _resolveToIndex(measuredItems, boundary, input.fromIndex);
 
     if (toIndex == input.fromIndex) {
       return null;
@@ -173,6 +172,9 @@ abstract final class SortableStrategies {
   }
 
   /// Computes same-container grid movement from measured item centers.
+  ///
+  /// Supports a partially-measured (visible-only) set the same way as
+  /// [verticalList].
   static SortableMoveDetails? grid(SortableStrategyInput input) {
     final fallback = input.fallbackMoveDetails();
     if (fallback == null) {
@@ -184,18 +186,13 @@ abstract final class SortableStrategies {
       return fallback;
     }
 
-    final measuredItems = <_MeasuredSortableItem>[];
-    for (final id in input.itemIds) {
-      if (id == input.activeId) {
-        continue;
-      }
+    if (!_overMeasured(input)) {
+      return fallback;
+    }
 
-      final rect = input.itemRects[id];
-      if (rect == null) {
-        return fallback;
-      }
-
-      measuredItems.add(_MeasuredSortableItem(id: id, rect: rect));
+    final measuredItems = _measuredItems(input);
+    if (measuredItems.isEmpty) {
+      return fallback;
     }
 
     final activeCenter = activeTranslatedRect.center;
@@ -205,10 +202,11 @@ abstract final class SortableStrategies {
     }
 
     measuredItems.sort(_compareGridItems);
-    final toIndex = _gridInsertionIndex(
+    final boundary = _gridInsertionIndex(
       activeCenter: activeCenter,
       measuredItems: measuredItems,
     );
+    final toIndex = _resolveToIndex(measuredItems, boundary, input.fromIndex);
 
     if (toIndex == input.fromIndex) {
       return null;
@@ -216,15 +214,69 @@ abstract final class SortableStrategies {
 
     return input.fallbackMoveDetails(toIndex: toIndex);
   }
+
+  /// Whether the drop-over target itself has a measured rect.
+  ///
+  /// In a lazy list the over target is always a built (visible) item, so this
+  /// is normally true; when it is not, the geometry cannot anchor reliably and
+  /// strategies fall back to the drop-over index.
+  static bool _overMeasured(SortableStrategyInput input) {
+    final overId = input.overId;
+    return overId != null && input.itemRects[overId] != null;
+  }
+
+  /// Builds the measured, non-active items with their full list index.
+  ///
+  /// Unmeasured (off-screen) items are skipped instead of forcing a fallback.
+  static List<_MeasuredSortableItem> _measuredItems(SortableStrategyInput input) {
+    final measuredItems = <_MeasuredSortableItem>[];
+    for (var index = 0; index < input.itemIds.length; index += 1) {
+      final id = input.itemIds[index];
+      if (id == input.activeId) {
+        continue;
+      }
+
+      final rect = input.itemRects[id];
+      if (rect == null) {
+        continue;
+      }
+
+      measuredItems.add(_MeasuredSortableItem(id: id, index: index, rect: rect));
+    }
+
+    return measuredItems;
+  }
+
+  /// Maps an insertion [boundary] in measured-subset space to a full list index.
+  ///
+  /// [boundary] is the count of measured items ordered before the active center.
+  /// The active is inserted before the first measured item after it (or after
+  /// the last measured item), then the index is adjusted for the active item's
+  /// own removal from [fromIndex].
+  static int _resolveToIndex(
+    List<_MeasuredSortableItem> sortedMeasured,
+    int boundary,
+    int fromIndex,
+  ) {
+    final insertBeforeIndex = boundary < sortedMeasured.length
+        ? sortedMeasured[boundary].index
+        : sortedMeasured.last.index + 1;
+
+    return insertBeforeIndex - (fromIndex < insertBeforeIndex ? 1 : 0);
+  }
 }
 
 final class _MeasuredSortableItem {
   const _MeasuredSortableItem({
     required this.id,
+    required this.index,
     required this.rect,
   });
 
   final DndId id;
+
+  /// The item's index in the full, application-owned item order.
+  final int index;
   final DndRect rect;
 }
 

@@ -49,8 +49,8 @@ class _DraggableCardState extends State<DraggableCard> {
           key: ValueKey('drag:${widget.task.id}'),
           id: taskDndId,
           onDragEnd: widget.onDragEnd,
-          activationConstraint:
-              const DndSensorActivationConstraint(distance: 4),
+          // Default platform-adaptive activation: immediate with a mouse, but a
+          // short hold on touch so a quick swipe scrolls instead of dragging.
           builder: (context, details, child) {
             return AnimatedOpacity(
               duration: const Duration(milliseconds: 150),

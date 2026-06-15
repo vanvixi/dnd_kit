@@ -91,6 +91,39 @@ Recoverable registry diagnostics should also be available through
 `DndDiagnosticsConfig.onWarning` so applications can surface actionable
 warnings without depending only on debug assertions.
 
+## Activation Principles
+
+Drag activation must coexist with scrolling so draggables work inside lazy
+lists (`ListView.builder`).
+
+- `DndDraggable` activates through an arena-winning `MultiDragGestureRecognizer`,
+  not a plain pan recognizer, so a drag can start inside a `Scrollable`.
+- The default activation is platform-adaptive: precise pointers (mouse) drag
+  immediately; touch uses a short hold (delayed) so a quick touch still scrolls
+  an ancestor list. This matches `ReorderableListView` conventions.
+- `activationConstraint` and `longPressActivation` override the default:
+  `distance` drags immediately on all pointers after the threshold, `delay`
+  (and `longPressActivation`) drag after a hold.
+- For immediate touch drag (e.g. outside a scrollable), set an explicit
+  `activationConstraint: DndSensorActivationConstraint(distance: …)`.
+
+## Lazy List Principles
+
+- Sortable strategies operate on the measured (visible) item subset, so reorder
+  intent stays correct when off-screen items are not built.
+- An active drag and its registration survive the source element being recycled
+  by a lazy list mid-drag.
+- Registration is owner-aware: a lazy list may re-mount a keyed item (new owner)
+  before disposing the old element without tripping duplicate-id detection, and
+  a departing owner cannot remove a registration a newer owner took over. As a
+  result, registering an id through a widget is last-wins; the strict
+  duplicate-id debug assertion applies only to direct `DndRegistry` use without
+  an `owner`.
+- When using `ListView.builder` with reorderable content, providing
+  `findChildIndexCallback` is recommended so keyed items are relocated (not
+  rebuilt) on reorder. It is a performance optimization, not a correctness
+  requirement.
+
 ## Performance Principles
 
 - Do not rebuild the whole app on every pointer move.

@@ -130,26 +130,40 @@ class BoardColumnWidget extends StatelessWidget {
                 const SizedBox(height: 16),
                 Divider(color: Colors.white.withValues(alpha: 0.06), height: 1),
                 const SizedBox(height: 16),
-
-                // Cards List
                 Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        for (final itemId in container.itemIds) ...[
-                          if (tasks[itemId.value] != null)
-                            Padding(
-                              key: ValueKey('task-padding:${itemId.value}'),
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: DraggableCard(
-                                key: ValueKey('task-card:${itemId.value}'),
-                                task: tasks[itemId.value]!,
-                                onDragEnd: onDragEnd,
-                              ),
+                  child: Builder(
+                    builder: (context) {
+                      final visibleIds = <DndId>[
+                        for (final itemId in container.itemIds)
+                          if (tasks[itemId.value] != null) itemId,
+                      ];
+                      return ListView.builder(
+                        padding: EdgeInsets.zero,
+                        itemCount: visibleIds.length,
+                        // Relocate keyed cards when the order changes instead of
+                        // rebuilding them, so dnd_kit registrations stay stable
+                        // across reorders in a lazy list.
+                        findChildIndexCallback: (key) {
+                          final value = (key as ValueKey<String>).value;
+                          final id = value.replaceFirst('task-padding:', '');
+                          final index =
+                              visibleIds.indexWhere((e) => e.value == id);
+                          return index < 0 ? null : index;
+                        },
+                        itemBuilder: (context, index) {
+                          final itemId = visibleIds[index];
+                          return Padding(
+                            key: ValueKey('task-padding:${itemId.value}'),
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: DraggableCard(
+                              key: ValueKey('task-card:${itemId.value}'),
+                              task: tasks[itemId.value]!,
+                              onDragEnd: onDragEnd,
                             ),
-                        ],
-                      ],
-                    ),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ),
               ],

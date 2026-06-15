@@ -1,7 +1,16 @@
 import 'dart:async' show unawaited;
 
 import 'package:dnd_kit_core/dnd_kit_core.dart';
-import 'package:flutter/gestures.dart' show PointerDeviceKind;
+import 'package:flutter/gestures.dart'
+    show
+        DelayedMultiDragGestureRecognizer,
+        Drag,
+        DragEndDetails,
+        DragUpdateDetails,
+        ImmediateMultiDragGestureRecognizer,
+        MultiDragGestureRecognizer,
+        PointerDeviceKind,
+        kLongPressTimeout;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
@@ -124,6 +133,8 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
   DndController? _registeredController;
   DndDraggableRegistration? _registration;
   DndPointerSensor? _pointerSensor;
+  MultiDragGestureRecognizer? _dragRecognizer;
+  MultiDragGestureRecognizer? _detachedRecognizer;
   bool _disabledCancelScheduled = false;
   bool _handlePointerActive = false;
   int _handleCount = 0;
@@ -147,8 +158,18 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
 
   @override
   void dispose() {
-    _pointerSensor?.dispose();
-    _unregister();
+    if (_isWidgetGestureDrag) {
+      // A lazy list (e.g. ListView.builder) is recycling this element while it
+      // is the active drag source. Keep the in-flight gesture, registration,
+      // and measured rect alive for the rest of the session instead of
+      // cancelling the drag. The recognizer disposes itself once the gesture
+      // completes (see _handlePanEnd / _handlePanCancel).
+      _detachedRecognizer = _dragRecognizer;
+    } else {
+      _pointerSensor?.dispose();
+      _dragRecognizer?.dispose();
+      _unregister();
+    }
     _focusNode.dispose();
     super.dispose();
   }
@@ -183,7 +204,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     final next = _currentRegistration;
     if (_registeredController != controller || _registration?.id != next.id) {
       _unregister();
-      controller.registry.registerDraggable(next);
+      controller.registry.registerDraggable(next, owner: this);
       _registeredController = controller;
       _registration = next;
       _markMeasurementDirty();
@@ -201,8 +222,12 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     final controller = _registeredController;
     final registration = _registration;
     if (controller != null && registration != null) {
-      controller.registry.unregisterDraggable(registration.id);
-      controller.measuring.removeDraggableRect(registration.id);
+      // Only drop the measured rect if we still owned the registration; a newer
+      // owner (lazy list rebuild) may have already taken it over.
+      final removed = controller.registry.unregisterDraggable(registration.id, owner: this);
+      if (removed != null) {
+        controller.measuring.removeDraggableRect(registration.id);
+      }
     }
 
     _registeredController = null;
@@ -280,16 +305,105 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     _handlePointerActive = false;
   }
 
-  void _handlePanStart(DragStartDetails details, {required bool fromHandle}) {
-    if (_usesLongPressActivation) {
+  /// Routes a raw pointer-down into an arena-winning drag recognizer.
+  ///
+  /// Long-press activation keeps using the [Listener] path. Other activations
+  /// use a [MultiDragGestureRecognizer] so the drag can win the gesture arena
+  /// against an enclosing [Scrollable].
+  void _routePointer(PointerDownEvent event) {
+    if (widget.disabled || _usesLongPressActivation) {
       return;
     }
 
+    final startedFromHandle = _handlePointerActive;
+    if (_handleCount > 0 && !startedFromHandle) {
+      return;
+    }
+
+    final controller = _controller;
+    if (controller == null || !controller.isIdle) {
+      return;
+    }
+
+    _dragRecognizer?.dispose();
+    final recognizer = _createDragRecognizer(event.kind, startedFromHandle);
+    _dragRecognizer = recognizer;
+    recognizer.addPointer(event);
+  }
+
+  MultiDragGestureRecognizer _createDragRecognizer(
+    PointerDeviceKind kind,
+    bool fromHandle,
+  ) {
+    final inputKind = _inputKindFromPointerKind(kind);
+    if (_usesDelayedRecognizer(kind)) {
+      return DelayedMultiDragGestureRecognizer(
+        delay: kLongPressTimeout,
+        debugOwner: this,
+      )..onStart = (position) => _onRecognizerStart(
+            position,
+            inputKind: inputKind,
+            fromHandle: fromHandle,
+            // The recognizer already enforced the activation delay.
+            constraint: DndSensorActivationConstraint.none,
+          );
+    }
+
+    return ImmediateMultiDragGestureRecognizer(debugOwner: this)
+      ..onStart = (position) => _onRecognizerStart(
+            position,
+            inputKind: inputKind,
+            fromHandle: fromHandle,
+            constraint: widget.activationConstraint,
+          );
+  }
+
+  /// Touch with the default activation drags after a hold so it can coexist
+  /// with scrolling; precise pointers and explicit constraints drag eagerly.
+  bool _usesDelayedRecognizer(PointerDeviceKind kind) {
+    if (widget.activationConstraint != DndSensorActivationConstraint.none) {
+      return false;
+    }
+
+    return switch (kind) {
+      PointerDeviceKind.touch ||
+      PointerDeviceKind.stylus ||
+      PointerDeviceKind.invertedStylus ||
+      PointerDeviceKind.unknown =>
+        true,
+      PointerDeviceKind.mouse || PointerDeviceKind.trackpad => false,
+    };
+  }
+
+  Drag? _onRecognizerStart(
+    Offset position, {
+    required DndInputKind inputKind,
+    required bool fromHandle,
+    required DndSensorActivationConstraint constraint,
+  }) {
     _startPointerSensor(
-      _pointFromOffset(details.globalPosition),
-      inputKind: _inputKindFromPointerKind(details.kind),
+      _pointFromOffset(position),
+      inputKind: inputKind,
       fromHandle: fromHandle,
+      constraint: constraint,
     );
+
+    if (_pointerSensor == null) {
+      return null;
+    }
+
+    return _DndDrag(
+      onUpdate: (details) => _pointerSensor?.move(_pointFromOffset(details.globalPosition)),
+      onEnd: (_) => _handlePanEnd(),
+      onCancel: _handlePanCancel,
+    );
+  }
+
+  /// Single Listener entry point: drives the long-press path and the
+  /// arena-winning recognizer path; each ignores the other's activation mode.
+  void _handlePointerDownEvent(PointerDownEvent event) {
+    _handlePointerDown(event);
+    _routePointer(event);
   }
 
   void _handlePointerDown(PointerDownEvent event) {
@@ -301,6 +415,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
       _pointFromOffset(event.position),
       inputKind: _inputKindFromPointerKind(event.kind),
       fromHandle: false,
+      constraint: _effectiveActivationConstraint,
     );
   }
 
@@ -334,6 +449,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     DndPoint initialPointer, {
     required DndInputKind inputKind,
     required bool fromHandle,
+    required DndSensorActivationConstraint constraint,
   }) {
     final startedFromHandle = fromHandle || _handlePointerActive;
     if (_handleCount > 0 && !startedFromHandle) {
@@ -355,7 +471,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     final sensor = DndPointerSensor(
       controller: controller,
       activeRect: activeRect,
-      constraint: _effectiveActivationConstraint,
+      constraint: constraint,
       onDragStart: _handleDragStart,
       onDragMove: widget.onDragMove,
       onDragEnd: widget.onDragEnd,
@@ -438,24 +554,35 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     widget.onDragStart?.call(event);
   }
 
-  void _handlePanUpdate(DragUpdateDetails details) {
-    final currentPointer = _pointFromOffset(details.globalPosition);
-    _pointerSensor?.move(currentPointer);
-  }
-
-  void _handlePanEnd(DragEndDetails details) {
+  void _handlePanEnd() {
     _pointerSensor?.end();
     _pointerSensor = null;
     _handlePointerActive = false;
+    _disposeDetachedRecognizer();
   }
 
   void _handlePanCancel() {
-    if (!_isWidgetGestureDrag) {
+    if (mounted && !_isWidgetGestureDrag) {
+      _handlePointerActive = false;
       return;
     }
 
     _cancelDrag(reason: DndCancelReason.sensor);
     _handlePointerActive = false;
+    _disposeDetachedRecognizer();
+  }
+
+  /// Disposes a recognizer that outlived this element after a lazy recycle,
+  /// once its in-flight gesture has finished.
+  void _disposeDetachedRecognizer() {
+    if (mounted) {
+      return;
+    }
+
+    _detachedRecognizer?.dispose();
+    _detachedRecognizer = null;
+    _pointerSensor?.dispose();
+    _pointerSensor = null;
   }
 
   void _cancelDrag({required DndCancelReason reason}) {
@@ -608,25 +735,14 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
           onKeyEvent: _handleKeyEvent,
           child: Listener(
             behavior: widget.hitTestBehavior ?? HitTestBehavior.opaque,
-            onPointerDown: widget.disabled ? null : _handlePointerDown,
+            onPointerDown: widget.disabled ? null : _handlePointerDownEvent,
             onPointerMove: widget.disabled ? null : _handlePointerMove,
             onPointerUp: widget.disabled ? null : _handlePointerUp,
             onPointerCancel: widget.disabled ? null : _handlePointerCancel,
             child: DndMeasuredBox(
               key: _measureKey,
               onLayout: _markMeasurementDirty,
-              child: GestureDetector(
-                behavior: widget.hitTestBehavior ?? HitTestBehavior.opaque,
-                onPanStart: widget.disabled || _usesLongPressActivation
-                    ? null
-                    : (details) {
-                        _handlePanStart(details, fromHandle: false);
-                      },
-                onPanUpdate: widget.disabled || _usesLongPressActivation ? null : _handlePanUpdate,
-                onPanEnd: widget.disabled || _usesLongPressActivation ? null : _handlePanEnd,
-                onPanCancel: widget.disabled || _usesLongPressActivation ? null : _handlePanCancel,
-                child: _buildVisual(context, widget.child),
-              ),
+              child: _buildVisual(context, widget.child),
             ),
           ),
         ),
@@ -668,4 +784,26 @@ abstract interface class DndDraggableHandleController {
 
 DndPoint _pointFromOffset(Offset offset) {
   return DndPoint(offset.dx, offset.dy);
+}
+
+/// Adapts a [MultiDragGestureRecognizer] drag into pointer-sensor callbacks.
+class _DndDrag extends Drag {
+  _DndDrag({
+    required this.onUpdate,
+    required this.onEnd,
+    required this.onCancel,
+  });
+
+  final void Function(DragUpdateDetails details) onUpdate;
+  final void Function(DragEndDetails details) onEnd;
+  final VoidCallback onCancel;
+
+  @override
+  void update(DragUpdateDetails details) => onUpdate(details);
+
+  @override
+  void end(DragEndDetails details) => onEnd(details);
+
+  @override
+  void cancel() => onCancel();
 }

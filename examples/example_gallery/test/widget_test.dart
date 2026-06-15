@@ -1,4 +1,5 @@
 import 'package:example_gallery/main.dart';
+import 'package:flutter/gestures.dart' show PointerDeviceKind;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -44,7 +45,10 @@ void main() {
 
     final redCard = find.text('Red');
     final initialTextTopLeft = tester.getTopLeft(redCard);
-    final gesture = await tester.startGesture(tester.getCenter(redCard));
+    final gesture = await tester.startGesture(
+      tester.getCenter(redCard),
+      kind: PointerDeviceKind.mouse,
+    );
     await tester.pump();
     await gesture.moveBy(const Offset(40, 20));
     await tester.pump();
