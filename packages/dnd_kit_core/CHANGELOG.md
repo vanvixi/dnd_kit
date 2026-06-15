@@ -1,7 +1,10 @@
 # Changelog
 
-## 0.1.0-dev.2
+## 0.1.0
 
+- First public release of the pure Dart engine: stable
+  identifiers, geometry, drag state and events, collision detectors, modifiers,
+  sensor and registry contracts, and diagnostics.
 - `DndRegistry.registerDraggable`/`registerDroppable` and their unregister
   counterparts accept an optional `owner`. Owner-aware registration is
   last-wins and lets a new owner take over an id without tripping duplicate

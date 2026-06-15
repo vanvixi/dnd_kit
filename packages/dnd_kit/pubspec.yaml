@@ -1,6 +1,6 @@
 name: dnd_kit
 description: Stable Flutter entry point for the dnd_kit drag-and-drop toolkit; re-exports dnd_kit_flutter. For Jaspr, use dnd_kit_jaspr.
-version: 0.1.0-dev.2
+version: 0.1.0
 homepage: https://github.com/vanvixi/dnd_kit
 repository: https://github.com/vanvixi/dnd_kit/tree/main/packages/dnd_kit
 issue_tracker: https://github.com/vanvixi/dnd_kit/issues
@@ -17,7 +17,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  dnd_kit_flutter: ^0.1.0-dev.2
+  dnd_kit_flutter: ^0.1.0
   flutter:
     sdk: flutter
 

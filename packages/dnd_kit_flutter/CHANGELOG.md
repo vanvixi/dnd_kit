@@ -1,7 +1,13 @@
 # Changelog
 
-## 0.1.0-dev.2
+## 0.1.0
 
+- First public release of the Flutter adapter under the
+  `dnd_kit_flutter` name (previously published as `dnd_kit`). Includes
+  scope/controller, draggable, droppable, drag handle, overlay,
+  pointer/long-press/keyboard sensors, measuring, auto-scroll, diagnostics, and
+  stable sortable presets.
+- Depends on `dnd_kit_core: ^0.1.0`.
 - **Breaking:** removed `DndLongPressActivation.hapticFeedback`. Haptic
   feedback is now configured through `DndDraggable.enableHapticFeedback` or the
   nearest `DndScope.enableHapticFeedback` default, which defaults to `true`.
@@ -38,7 +44,6 @@
   vertical task list. Their task cards use the default platform-adaptive
   activation (immediate with a mouse, hold-to-drag on touch) so a quick swipe
   scrolls the list instead of starting a drag.
-- Requires `dnd_kit_core` `^0.1.0-dev.2`.
 
 ## 0.1.0-dev.1
 
