@@ -127,3 +127,12 @@ Core behavior is intentionally open:
   activation;
 - attach `DndDiagnosticsConfig.onWarning` to surface duplicate ID and registry
   warnings.
+
+## dnd_kit family
+
+| Package                                                       | Use it for                                                                            |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [`dnd_kit`](https://pub.dev/packages/dnd_kit)                 | Flutter apps — the stable, recommended Flutter entry point (re-exports this package). |
+| [`dnd_kit_flutter`](https://pub.dev/packages/dnd_kit_flutter) | Flutter apps that want dev releases or the explicit adapter package.                  |
+| `dnd_kit_jaspr`                                               | Jaspr (Dart web) apps. _Planned._                                                     |
+| [`dnd_kit_core`](https://pub.dev/packages/dnd_kit_core)       | The shared, framework-agnostic engine.                                                |

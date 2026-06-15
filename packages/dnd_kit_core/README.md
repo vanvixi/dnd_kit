@@ -35,4 +35,13 @@ import 'package:dnd_kit_core/dnd_kit_core.dart';
 or `Size`.
 
 Flutter widgets, measuring, overlays, auto-scroll, and stable sortable presets
-live in the main `dnd_kit` package.
+live in the `dnd_kit_flutter` adapter (re-exported by `dnd_kit`).
+
+## dnd_kit family
+
+| Package                                                       | Use it for                                                                                 |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| [`dnd_kit`](https://pub.dev/packages/dnd_kit)                 | Flutter apps — the stable, recommended Flutter entry point (re-exports `dnd_kit_flutter`). |
+| [`dnd_kit_flutter`](https://pub.dev/packages/dnd_kit_flutter) | Flutter apps that want dev releases or the explicit adapter package.                       |
+| `dnd_kit_jaspr`                                               | Jaspr (Dart web) apps. _Planned._                                                          |
+| [`dnd_kit_core`](https://pub.dev/packages/dnd_kit_core)       | The shared, framework-agnostic engine.                                                     |

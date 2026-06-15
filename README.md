@@ -40,15 +40,27 @@ docs/
 
 ## Packages
 
-| Package | Role |
-| --- | --- |
-| `dnd_kit_core` | Pure Dart geometry, state, collision, modifier, sensor, and sortable math contracts. Framework-agnostic and shared by every adapter. |
+| Package           | Role                                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dnd_kit_core`    | Pure Dart geometry, state, collision, modifier, sensor, and sortable math contracts. Framework-agnostic and shared by every adapter.            |
 | `dnd_kit_flutter` | Flutter adapter with scope, controller, draggable, droppable, overlay, sensors, measuring, auto-scroll, semantics, and stable sortable presets. |
-| `dnd_kit` | Thin umbrella that re-exports `dnd_kit_flutter` under the shorter name; the canonical `package:dnd_kit/dnd_kit.dart` import keeps working. |
+| `dnd_kit`         | Thin umbrella that re-exports `dnd_kit_flutter` under the shorter name; the canonical `package:dnd_kit/dnd_kit.dart` import keeps working.      |
 
 This split keeps the framework-agnostic engine reusable so additional adapters
 (for example a future `dnd_kit_jaspr`) can build on `dnd_kit_core` without
 depending on the Flutter adapter.
+
+### Which package should I use?
+
+- **Flutter app:** depend on `dnd_kit` (stable entry point) or `dnd_kit_flutter`
+  (for dev releases / the explicit adapter).
+- **Jaspr (Dart web) app:** depend on `dnd_kit_jaspr` _(planned)_. `dnd_kit`
+  requires the Flutter SDK and is not usable in a pure Jaspr project.
+- **Shared engine only:** depend on `dnd_kit_core`.
+
+`dnd_kit` publishes stable releases only; `dnd_kit_core` and the adapters carry
+the faster dev releases. The neutral project home is the repository README and
+the gallery at https://vanvixi.github.io/dnd_kit/.
 
 ## Current Status
 
