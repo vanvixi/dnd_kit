@@ -8,6 +8,7 @@ class DndScope extends StatefulWidget {
   const DndScope({
     super.key,
     this.controller,
+    this.enableHapticFeedback = true,
     required this.child,
   });
 
@@ -16,12 +17,22 @@ class DndScope extends StatefulWidget {
   /// When omitted, the scope creates and disposes an internal controller.
   final DndController? controller;
 
+  /// Default haptic feedback behavior for draggable touch activation.
+  ///
+  /// Defaults to true.
+  final bool enableHapticFeedback;
+
   /// The subtree that can read this scope's controller.
   final Widget child;
 
   /// Returns the nearest [DndController], or null when no scope exists.
   static DndController? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_DndControllerScope>()?.controller;
+  }
+
+  /// Returns the nearest scope-level haptic feedback default, if any.
+  static bool? maybeEnableHapticFeedbackOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<_DndControllerScope>()?.enableHapticFeedback;
   }
 
   /// Returns the nearest [DndController].
@@ -86,6 +97,7 @@ class _DndScopeState extends State<DndScope> {
   Widget build(BuildContext context) {
     return _DndControllerScope(
       controller: _controller,
+      enableHapticFeedback: widget.enableHapticFeedback,
       child: widget.child,
     );
   }
@@ -94,8 +106,17 @@ class _DndScopeState extends State<DndScope> {
 class _DndControllerScope extends InheritedNotifier<DndController> {
   const _DndControllerScope({
     required DndController controller,
+    required this.enableHapticFeedback,
     required super.child,
   }) : super(notifier: controller);
 
   DndController get controller => notifier!;
+
+  final bool enableHapticFeedback;
+
+  @override
+  bool updateShouldNotify(_DndControllerScope oldWidget) {
+    return enableHapticFeedback != oldWidget.enableHapticFeedback ||
+        super.updateShouldNotify(oldWidget);
+  }
 }

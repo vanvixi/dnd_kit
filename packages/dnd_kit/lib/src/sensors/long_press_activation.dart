@@ -6,7 +6,6 @@ final class DndLongPressActivation {
   const DndLongPressActivation({
     this.delay = kLongPressTimeout,
     this.tolerance = kTouchSlop,
-    this.hapticFeedback = false,
   }) : assert(tolerance >= 0, 'Long-press tolerance must be non-negative.');
 
   /// How long the pointer must remain down before the drag starts.
@@ -14,7 +13,4 @@ final class DndLongPressActivation {
 
   /// Maximum movement allowed before [delay] elapses.
   final double tolerance;
-
-  /// Whether to emit platform haptic feedback when the drag starts.
-  final bool hapticFeedback;
 }

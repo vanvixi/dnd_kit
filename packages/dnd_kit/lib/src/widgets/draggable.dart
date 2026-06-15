@@ -71,6 +71,7 @@ class DndDraggable extends StatefulWidget {
     this.data,
     this.activationConstraint = DndSensorActivationConstraint.none,
     this.longPressActivation,
+    this.enableHapticFeedback,
     this.keyboardDragStep = 25,
     this.hitTestBehavior,
     this.onDragStart,
@@ -104,6 +105,12 @@ class DndDraggable extends StatefulWidget {
   /// Optional long-press activation behavior for pointer drags.
   final DndLongPressActivation? longPressActivation;
 
+  /// Whether touch drag activation emits haptic feedback.
+  ///
+  /// When null, this inherits the nearest [DndScope] default and then the
+  /// library default of true. Haptics only fire for touch activation.
+  final bool? enableHapticFeedback;
+
   /// Logical pixels moved for each keyboard arrow key press.
   final double keyboardDragStep;
 
@@ -135,6 +142,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
   DndPointerSensor? _pointerSensor;
   MultiDragGestureRecognizer? _dragRecognizer;
   MultiDragGestureRecognizer? _detachedRecognizer;
+  bool? _scopeEnableHapticFeedback;
   bool _disabledCancelScheduled = false;
   bool _handlePointerActive = false;
   int _handleCount = 0;
@@ -143,6 +151,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
   void didChangeDependencies() {
     super.didChangeDependencies();
     _controller = DndScope.of(context);
+    _scopeEnableHapticFeedback = DndScope.maybeEnableHapticFeedbackOf(context);
     _syncRegistration();
   }
 
@@ -547,7 +556,10 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
   }
 
   void _handleDragStart(DndDragStartEvent event) {
-    if (widget.longPressActivation?.hapticFeedback == true) {
+    final shouldEmitHaptic = event.inputKind == DndInputKind.touch &&
+        (widget.enableHapticFeedback ?? _scopeEnableHapticFeedback ?? true);
+
+    if (shouldEmitHaptic) {
       unawaited(HapticFeedback.selectionClick());
     }
 

@@ -14,6 +14,34 @@ void main() {
       await tester.pump();
     }
 
+    List<MethodCall> recordHapticFeedback(WidgetTester tester) {
+      final calls = <MethodCall>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'HapticFeedback.vibrate') {
+            calls.add(call);
+          }
+          return null;
+        },
+      );
+      addTearDown(() {
+        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        );
+      });
+      return calls;
+    }
+
+    void expectSelectionClickCalls(List<MethodCall> calls, int count) {
+      expect(calls, hasLength(count));
+      for (final call in calls) {
+        expect(call.method, 'HapticFeedback.vibrate');
+        expect(call.arguments, 'HapticFeedbackType.selectionClick');
+      }
+    }
+
     testWidgets('registers and unregisters draggable metadata', (tester) async {
       final controller = DndController();
       addTearDown(controller.dispose);
@@ -368,6 +396,192 @@ void main() {
       await hold.up();
       await tester.pump();
       expect(controller.state, const DndIdle());
+    });
+
+    testWidgets('emits one haptic pulse for default touch drag activation', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      final hapticCalls = recordHapticFeedback(tester);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: const DndDraggable(
+            id: DndId('task-1'),
+            child: SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      final gesture = await tester.startGesture(
+        const Offset(10, 10),
+        kind: PointerDeviceKind.touch,
+      );
+      await tester.pump(kLongPressTimeout + const Duration(milliseconds: 10));
+
+      expect(controller.state, isA<DndDragging>());
+      expectSelectionClickCalls(hapticCalls, 1);
+
+      await gesture.moveBy(const Offset(15, 20));
+      await tester.pump();
+
+      expectSelectionClickCalls(hapticCalls, 1);
+
+      await gesture.up();
+      await tester.pump();
+    });
+
+    testWidgets('emits one haptic pulse for explicit long-press touch activation', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      final hapticCalls = recordHapticFeedback(tester);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: DndDraggable(
+            id: const DndId('task-1'),
+            longPressActivation: const DndLongPressActivation(
+              delay: Duration(milliseconds: 300),
+            ),
+            child: const SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      final gesture = await tester.startGesture(
+        const Offset(10, 10),
+        kind: PointerDeviceKind.touch,
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(controller.state, isA<DndDragging>());
+      expectSelectionClickCalls(hapticCalls, 1);
+
+      await gesture.moveBy(const Offset(15, 20));
+      await tester.pump();
+
+      expectSelectionClickCalls(hapticCalls, 1);
+
+      await gesture.up();
+      await tester.pump();
+    });
+
+    testWidgets('does not emit haptic feedback for mouse drag activation', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      final hapticCalls = recordHapticFeedback(tester);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: const DndDraggable(
+            id: DndId('task-1'),
+            child: SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      final gesture = await tester.startGesture(
+        const Offset(10, 10),
+        kind: PointerDeviceKind.mouse,
+      );
+      await gesture.moveBy(const Offset(15, 20));
+      await tester.pump();
+
+      expect(controller.state, isA<DndDragging>());
+      expectSelectionClickCalls(hapticCalls, 0);
+
+      await gesture.up();
+      await tester.pump();
+    });
+
+    testWidgets('widget haptic override disables touch activation feedback', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      final hapticCalls = recordHapticFeedback(tester);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: const DndDraggable(
+            id: DndId('task-1'),
+            enableHapticFeedback: false,
+            child: SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      final gesture = await tester.startGesture(
+        const Offset(10, 10),
+        kind: PointerDeviceKind.touch,
+      );
+      await tester.pump(kLongPressTimeout + const Duration(milliseconds: 10));
+
+      expect(controller.state, isA<DndDragging>());
+      expectSelectionClickCalls(hapticCalls, 0);
+
+      await gesture.up();
+      await tester.pump();
+    });
+
+    testWidgets('scope haptic default disables touch activation feedback', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      final hapticCalls = recordHapticFeedback(tester);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          enableHapticFeedback: false,
+          child: const DndDraggable(
+            id: DndId('task-1'),
+            child: SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      final gesture = await tester.startGesture(
+        const Offset(10, 10),
+        kind: PointerDeviceKind.touch,
+      );
+      await tester.pump(kLongPressTimeout + const Duration(milliseconds: 10));
+
+      expect(controller.state, isA<DndDragging>());
+      expectSelectionClickCalls(hapticCalls, 0);
+
+      await gesture.up();
+      await tester.pump();
+    });
+
+    testWidgets('widget haptic override wins over scope default', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      final hapticCalls = recordHapticFeedback(tester);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          enableHapticFeedback: false,
+          child: const DndDraggable(
+            id: DndId('task-1'),
+            enableHapticFeedback: true,
+            child: SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      final gesture = await tester.startGesture(
+        const Offset(10, 10),
+        kind: PointerDeviceKind.touch,
+      );
+      await tester.pump(kLongPressTimeout + const Duration(milliseconds: 10));
+
+      expect(controller.state, isA<DndDragging>());
+      expectSelectionClickCalls(hapticCalls, 1);
+
+      await gesture.up();
+      await tester.pump();
     });
 
     testWidgets('waits for pointer distance before starting a drag', (tester) async {
@@ -1131,6 +1345,32 @@ void main() {
       expect(endEvent?.activeId, const DndId('task-1'));
       expect(endEvent?.currentPointer, const DndPoint(410, 310));
       expect(controller.state, const DndIdle());
+    });
+
+    testWidgets('does not emit haptic feedback for keyboard drag activation', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      final hapticCalls = recordHapticFeedback(tester);
+
+      await tester.pumpWidget(
+        DndScope(
+          controller: controller,
+          child: const DndDraggable(
+            id: DndId('task-1'),
+            child: SizedBox(width: 40, height: 40),
+          ),
+        ),
+      );
+
+      await focusDraggable(tester);
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+
+      expect(controller.state, isA<DndDragging>());
+      expectSelectionClickCalls(hapticCalls, 0);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
     });
 
     testWidgets('applies controller modifiers during keyboard dragging', (tester) async {

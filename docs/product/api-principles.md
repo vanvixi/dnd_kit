@@ -101,6 +101,12 @@ lists (`ListView.builder`).
 - The default activation is platform-adaptive: precise pointers (mouse) drag
   immediately; touch uses a short hold (delayed) so a quick touch still scrolls
   an ancestor list. This matches `ReorderableListView` conventions.
+- Touch activation emits one selection-style haptic pulse when the drag starts
+  by default. Resolve haptic feedback with
+  `DndDraggable.enableHapticFeedback` first, then the nearest `DndScope`
+  default, which is non-null and defaults to `true`, then the library default
+  of `true` only when no scope exists. Mouse, trackpad, and keyboard
+  activations do not emit haptics.
 - `activationConstraint` and `longPressActivation` override the default:
   `distance` drags immediately on all pointers after the threshold, `delay`
   (and `longPressActivation`) drag after a hold.

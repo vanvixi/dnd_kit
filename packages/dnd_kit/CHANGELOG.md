@@ -2,6 +2,13 @@
 
 ## 0.1.0-dev.2
 
+- **Breaking:** removed `DndLongPressActivation.hapticFeedback`. Haptic
+  feedback is now configured through `DndDraggable.enableHapticFeedback` or the
+  nearest `DndScope.enableHapticFeedback` default, which defaults to `true`.
+- Touch drag activation now emits one `HapticFeedback.selectionClick()` pulse
+  by default when the drag starts, including both the platform-adaptive delayed
+  touch path and explicit `longPressActivation`. Mouse, trackpad, and keyboard
+  activations emit no haptic feedback.
 - Fixed active drag geometry so overlays and collision detection stay aligned
   with the pointer when a scrollable ancestor moves during the drag.
 - Draggables now work inside scrollables, including lazy `ListView.builder`.
