@@ -26,21 +26,27 @@ The seed specification remains in `SPEC.md` as historical input material.
 
 ```text
 dnd_kit_core
-  <- dnd_kit
+  <- dnd_kit_flutter   <- dnd_kit (umbrella)
+  <- dnd_kit_jaspr
 ```
 
-Sortable source lives inside `dnd_kit` as a preset layer so the canonical app
-import, `package:dnd_kit/dnd_kit.dart`, can expose both drag/drop widgets and
-stable sortable APIs without a package dependency cycle.
+`dnd_kit_core` is the shared engine. `dnd_kit_flutter` and `dnd_kit_jaspr` are
+peer adapters over it; neither depends on the other. `dnd_kit` is a Flutter-only
+umbrella that re-exports `dnd_kit_flutter`. Flutter sortable widgets live in
+`dnd_kit_flutter`; the sortable move/strategy math they use is shared from
+`dnd_kit_core`.
 
 ## Dependency Rule
 
-Inner packages must not depend on outer packages.
+Inner packages must not depend on outer packages, and adapters must not depend on
+each other.
 
 | Package | May depend on | Must not depend on |
 | --- | --- | --- |
-| `dnd_kit_core` | `collection`, `meta`, Dart SDK | Flutter, `dart:ui`, widget/render/gesture APIs, state management packages |
-| `dnd_kit` | Flutter SDK, `dnd_kit_core`, small annotations/utilities | external state management |
+| `dnd_kit_core` | `collection`, `meta`, Dart SDK | Flutter, Jaspr, `dart:ui`, DOM/browser types, widget/render/gesture APIs, state management packages |
+| `dnd_kit_flutter` | Flutter SDK, `dnd_kit_core`, small annotations/utilities | Jaspr, `dnd_kit_jaspr`, external state management |
+| `dnd_kit_jaspr` | `dnd_kit_core`, `jaspr`, `universal_web` (for DOM), `meta` | Flutter, `dart:ui`, the `dnd_kit` umbrella, `dnd_kit_flutter`, external state management |
+| `dnd_kit` | Flutter SDK, `dnd_kit_core`, small annotations/utilities | Jaspr, external state management |
 
 ## Boundary Rules
 

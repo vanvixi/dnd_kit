@@ -1,0 +1,23 @@
+/// Jaspr (web) adapter for the dnd_kit drag-and-drop family.
+///
+/// `dnd_kit_jaspr` is built on the shared `dnd_kit_core` engine, so Jaspr and
+/// Flutter behave as peer adapters over one drag runtime. Applications import
+/// this library directly:
+///
+/// ```dart
+/// import 'package:dnd_kit_jaspr/dnd_kit_jaspr.dart';
+/// ```
+///
+/// It re-exports the pure Dart core (geometry, state, events, collision,
+/// modifiers, sortable math, the drag runtime, and diagnostics) and adds the
+/// Jaspr component layer: [DndScope] and [DndController].
+///
+/// Applications own their item, board, or document data. `dnd_kit_jaspr`
+/// reports drag/drop intent so app code can update its own state.
+///
+library;
+
+export 'package:dnd_kit_core/dnd_kit_core.dart';
+
+export 'src/scope/controller.dart';
+export 'src/scope/scope.dart';

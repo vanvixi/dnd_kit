@@ -4,9 +4,10 @@ environment:
   sdk: ">=3.5.0 <4.0.0"
 
 workspace:
+  - packages/dnd_kit
   - packages/dnd_kit_core
   - packages/dnd_kit_flutter
-  - packages/dnd_kit
+  - packages/dnd_kit_jaspr
   - examples/kanban_board
   - examples/basic_drag_drop
   - examples/multi_container_sortable
@@ -27,6 +28,7 @@ melos:
         dart format --set-exit-if-changed .
         dart run melos run analyze
         dart test packages/dnd_kit_core
+        dart test packages/dnd_kit_jaspr
         flutter test packages/dnd_kit_flutter
         flutter test examples/kanban_board
         flutter test examples/multi_container_sortable
