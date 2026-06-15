@@ -32,6 +32,7 @@ The release package layout is:
 ```text
 packages/
   dnd_kit_core/
+  dnd_kit_flutter/
   dnd_kit/
 examples/
 docs/
@@ -41,8 +42,13 @@ docs/
 
 | Package | Role |
 | --- | --- |
-| `dnd_kit_core` | Pure Dart geometry, state, collision, modifier, sensor, and sortable math contracts. |
-| `dnd_kit` | Main Flutter package with scope, controller, draggable, droppable, overlay, sensors, measuring, auto-scroll, semantics, and stable sortable presets. |
+| `dnd_kit_core` | Pure Dart geometry, state, collision, modifier, sensor, and sortable math contracts. Framework-agnostic and shared by every adapter. |
+| `dnd_kit_flutter` | Flutter adapter with scope, controller, draggable, droppable, overlay, sensors, measuring, auto-scroll, semantics, and stable sortable presets. |
+| `dnd_kit` | Thin umbrella that re-exports `dnd_kit_flutter` under the shorter name; the canonical `package:dnd_kit/dnd_kit.dart` import keeps working. |
+
+This split keeps the framework-agnostic engine reusable so additional adapters
+(for example a future `dnd_kit_jaspr`) can build on `dnd_kit_core` without
+depending on the Flutter adapter.
 
 ## Current Status
 

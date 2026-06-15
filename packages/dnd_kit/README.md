@@ -4,20 +4,14 @@
 grids, Kanban boards, dashboards, canvas editors, and other drag-heavy
 interfaces.
 
+This package is a thin umbrella: it re-exports the Flutter adapter from
+[`dnd_kit_flutter`](https://pub.dev/packages/dnd_kit_flutter), which is built on
+the framework-agnostic [`dnd_kit_core`](https://pub.dev/packages/dnd_kit_core)
+engine. Importing `dnd_kit` and `dnd_kit_flutter` gives you the exact same API;
+`dnd_kit` simply offers the shorter name.
+
 Try the hosted example gallery:
 https://vanvixi.github.io/dnd_kit.flutter/
-
-The package is centered on Flutter-native widgets and controllers:
-
-- `DndScope` and `DndController` coordinate drag state.
-- `DndDraggable` registers draggable widgets.
-- `DndDroppable` registers drop targets.
-- `DndDragOverlay` renders an independent drag visual.
-- `SortableScope` and `SortableItem` provide stable same-container list and
-  grid sorting presets.
-
-Applications own their data. The library reports drag, drop, and sortable move
-intent; your app updates its own lists, boards, stores, or documents.
 
 ## Import
 
@@ -25,97 +19,19 @@ intent; your app updates its own lists, boards, stores, or documents.
 import 'package:dnd_kit/dnd_kit.dart';
 ```
 
-The main package also exports the pure Dart `dnd_kit_core` primitives such as
-`DndId`, `DndRect`, collision detectors, modifiers, events, and drag state.
+This re-exports the full Flutter widget layer (`DndScope`, `DndController`,
+`DndDraggable`, `DndDroppable`, `DndDragOverlay`, auto-scroll helpers, and the
+stable `SortableScope` / `SortableItem` presets) plus the pure Dart
+`dnd_kit_core` primitives such as `DndId`, `DndRect`, collision detectors,
+modifiers, events, and drag state.
 
-## Basic Drag And Drop
+See the [`dnd_kit_flutter` documentation](https://pub.dev/packages/dnd_kit_flutter)
+for the full API guide and usage examples.
 
-Wrap the drag-and-drop area in a `DndScope`, then place draggables and
-droppables inside it.
+## Package family
 
-```dart
-DndScope(
-  child: Stack(
-    children: [
-      DndDroppable(
-        id: const DndId('inbox'),
-        builder: (context, details, child) {
-          return DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: details.isOver ? const Color(0xff2563eb) : const Color(0xffd1d5db),
-              ),
-            ),
-            child: child,
-          );
-        },
-        child: const SizedBox(width: 240, height: 160),
-      ),
-      DndDraggable(
-        id: const DndId('task-1'),
-        onDragEnd: (event) {
-          final overId = event.overId;
-          if (overId == const DndId('inbox')) {
-            // Update application-owned state here.
-          }
-        },
-        child: const Card(child: ListTile(title: Text('Task 1'))),
-      ),
-      DndDragOverlay(
-        builder: (context, details) {
-          return const Card(child: ListTile(title: Text('Task 1')));
-        },
-      ),
-    ],
-  ),
-)
-```
-
-Use `DndDraggable.builder` and `DndDroppable.builder` when visuals need to
-react to active, dragging, dropping, or over states.
-
-## Sortable Lists And Grids
-
-Use `SortableScope` to provide the current item order and `SortableItem` for
-each child. The callback tells the app what moved; it does not mutate the list.
-
-```dart
-SortableScope(
-  itemIds: items.map((item) => DndId(item.id)),
-  strategy: SortableStrategies.verticalList,
-  onMove: (details) {
-    setState(() {
-      final item = items.removeAt(details.fromIndex);
-      items.insert(details.toIndex, item);
-    });
-  },
-  child: ListView(
-    children: [
-      for (final item in items)
-        SortableItem(
-          id: DndId(item.id),
-          child: ListTile(title: Text(item.title)),
-        ),
-    ],
-  ),
-)
-```
-
-Stable strategies include:
-
-- `SortableStrategies.verticalList`
-- `SortableStrategies.horizontalList`
-- `SortableStrategies.grid`
-
-## Customization
-
-Core behavior is intentionally open:
-
-- pass a custom `DndCollisionDetector` to `DndController`;
-- compose built-in detectors with `DndCollisionDetectors.compose`;
-- constrain movement with `DndModifier` values such as
-  `DndModifiers.restrictToVerticalAxis` or `DndModifiers.snapToGrid`;
-- use `DndLongPressActivation` or `DndSensorActivationConstraint` to tune
-  activation;
-- attach `DndDiagnosticsConfig.onWarning` to surface duplicate ID and registry
-  warnings.
+| Package | Role |
+| --- | --- |
+| `dnd_kit_core` | Pure Dart engine: geometry, collision, modifiers, sensors, state, sortable math. Framework-agnostic. |
+| `dnd_kit_flutter` | Flutter adapter: widgets, controllers, sensors, measuring, overlay, auto-scroll, sortable presets. |
+| `dnd_kit` | Umbrella re-export of `dnd_kit_flutter` under the shorter name. |

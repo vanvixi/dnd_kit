@@ -4,12 +4,19 @@
 
 ```text
 packages/
-  dnd_kit_core/
-  dnd_kit/
+  dnd_kit_core/     # pure Dart engine, shared by every adapter
+  dnd_kit_flutter/  # Flutter adapter
+  dnd_kit/          # umbrella that re-exports dnd_kit_flutter
 examples/
   basic_drag_drop/
 docs/
 ```
+
+The framework-agnostic `dnd_kit_core` is the shared engine. `dnd_kit_flutter`
+is the Flutter adapter built on top of it. `dnd_kit` is a thin umbrella that
+re-exports `dnd_kit_flutter` under the shorter, brand name. This layout leaves
+room for additional framework adapters (for example a future `dnd_kit_jaspr`)
+that reuse `dnd_kit_core` without touching the Flutter adapter.
 
 ## Package Boundaries
 
@@ -37,9 +44,11 @@ Must not import:
 - `Offset`, `Rect`, or `Size` from Flutter
 - animation or overlay APIs
 
-### `dnd_kit`
+### `dnd_kit_flutter`
 
-Primary Flutter package depending on `dnd_kit_core` and Flutter.
+Flutter adapter package depending on `dnd_kit_core` and Flutter. This is the
+package that owns the Flutter widget, sensor, measuring, overlay, and sortable
+implementation.
 
 Owns:
 
@@ -68,6 +77,17 @@ Also owns sortable preset source:
 
 Stable V1 strategies are vertical list, horizontal list, and grid.
 Multi-container, nested sortable, and virtualized adapters remain experimental.
+
+### `dnd_kit`
+
+Thin umbrella package depending only on `dnd_kit_flutter`. Its single library
+`package:dnd_kit/dnd_kit.dart` re-exports `package:dnd_kit_flutter/dnd_kit_flutter.dart`
+so applications can use the shorter import with an identical API.
+
+Must not:
+
+- contain adapter logic of its own
+- be depended on by `dnd_kit_core` or `dnd_kit_flutter` (no upward dependency)
 
 ## Dependency Policy
 

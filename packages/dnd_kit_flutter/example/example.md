@@ -1,13 +1,12 @@
-# dnd_kit Example
+# dnd_kit_flutter Example
 
-`dnd_kit` re-exports the Flutter adapter from `dnd_kit_flutter`, so usage is
-identical — import `package:dnd_kit/dnd_kit.dart` and use the same API. Full
+This package-local example gives pub.dev a compact, illustrative sample. Full
 runnable Flutter apps live in the repository-level
 [`examples/`](https://github.com/vanvixi/dnd_kit.flutter/tree/main/examples)
 directory.
 
 ```dart
-import 'package:dnd_kit/dnd_kit.dart';
+import 'package:dnd_kit_flutter/dnd_kit_flutter.dart';
 import 'package:flutter/material.dart';
 
 class TaskDropZone extends StatelessWidget {
@@ -61,5 +60,11 @@ class TaskDropZone extends StatelessWidget {
 }
 ```
 
-See the [`dnd_kit_flutter`](https://pub.dev/packages/dnd_kit_flutter) package for
-the full API guide.
+More complete examples:
+
+- [`examples/basic_drag_drop`](https://github.com/vanvixi/dnd_kit.flutter/tree/main/examples/basic_drag_drop)
+  shows a small runnable drag/drop app.
+- [`examples/kanban_board`](https://github.com/vanvixi/dnd_kit.flutter/tree/main/examples/kanban_board)
+  shows a realistic board built with generic drag/drop APIs.
+- [`examples/multi_container_sortable`](https://github.com/vanvixi/dnd_kit.flutter/tree/main/examples/multi_container_sortable)
+  documents the experimental multi-container sortable shape.

@@ -4,7 +4,8 @@ Date: 2026-06-10
 
 ## Status
 
-Accepted
+Accepted (naming amended by ADR 0013: the Flutter adapter is `dnd_kit_flutter`
+and `dnd_kit` is a re-export umbrella; the layering decisions below still hold).
 
 ## Context
 

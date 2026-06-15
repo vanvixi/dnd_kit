@@ -1,8 +1,8 @@
-name: dnd_kit
-description: Umbrella package that re-exports the dnd_kit_flutter drag-and-drop toolkit under the shorter dnd_kit name.
+name: dnd_kit_flutter
+description: Flutter drag-and-drop toolkit with core widgets, sensors, measuring, overlays, and sortable presets.
 version: 0.1.0-dev.2
 homepage: https://github.com/vanvixi/dnd_kit.flutter
-repository: https://github.com/vanvixi/dnd_kit.flutter/tree/main/packages/dnd_kit
+repository: https://github.com/vanvixi/dnd_kit.flutter/tree/main/packages/dnd_kit_flutter
 issue_tracker: https://github.com/vanvixi/dnd_kit.flutter/issues
 topics:
   - drag-and-drop
@@ -17,9 +17,10 @@ environment:
 resolution: workspace
 
 dependencies:
-  dnd_kit_flutter: ^0.1.0-dev.2
+  dnd_kit_core: ^0.1.0-dev.2
   flutter:
     sdk: flutter
+  meta: ^1.15.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0
