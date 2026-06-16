@@ -5,3 +5,5 @@
 - Initial scaffold of the Jaspr adapter on the shared `dnd_kit_core` runtime.
 - `DndController`: a Jaspr `ChangeNotifier` wrapper over `DndRuntime`.
 - `DndScope` + `DndScope.of(context)` for providing the controller to a subtree.
+- `DndDraggable` with the shared pointer sensor and DOM measuring hooks.
+- `DndDroppable` with shared-runtime collision wiring and visual-state details.

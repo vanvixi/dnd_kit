@@ -8,10 +8,11 @@ Flutter behave as peer adapters over one drag runtime — the same domain model,
 drag lifecycle, collision logic, modifiers, and sortable math. It depends only
 on `dnd_kit_core` and `jaspr` (no Flutter).
 
-> Status: early development. This release provides the package foundation —
-> `DndScope` and `DndController` over the shared runtime. Draggable, droppable,
-> drag handle, sensors, overlay, and sortable presets are in progress. See
-> `SPEC_JASPR.md` and `docs/stories/phase-14-jaspr-foundation/`.
+> Status: early development. This release provides `DndScope`,
+> `DndController`, `DndDraggable`, and `DndDroppable` over the shared runtime.
+> Drag handle, overlay, richer input specialization, and sortable presets are
+> still in progress. See `SPEC_JASPR.md` and
+> `docs/stories/phase-14-jaspr-foundation/`.
 
 ## Usage
 

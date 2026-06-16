@@ -198,9 +198,8 @@ class _DndDraggableState extends State<DndDraggable> {
     if (node == null) {
       return;
     }
-    node.style.transform = transform.isIdentity
-        ? ''
-        : 'translate(${transform.offset.x}px, ${transform.offset.y}px)';
+    node.style.transform =
+        transform.isIdentity ? '' : 'translate(${transform.offset.x}px, ${transform.offset.y}px)';
   }
 
   DndInputKind _inputKindFor(web.PointerEvent event) {
