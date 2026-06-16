@@ -43,6 +43,68 @@ void main() {
       expect(controller.registry.droppable(const DndId('column-1')), isNull);
     });
 
+    testComponents('warns when duplicate droppables persist after reconciliation', (tester) async {
+      final warnings = <DndWarning>[];
+      final controller = DndController(
+        diagnosticsConfig: DndDiagnosticsConfig(onWarning: warnings.add),
+      );
+      addTearDown(controller.dispose);
+
+      tester.pumpComponent(
+        DndScope(
+          controller: controller,
+          child: div([
+            const DndDroppable(
+              key: ValueKey('first'),
+              id: DndId('column-1'),
+              child: RawText('first'),
+            ),
+            const DndDroppable(
+              key: ValueKey('second'),
+              id: DndId('column-1'),
+              child: RawText('second'),
+            ),
+          ]),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        warnings,
+        [
+          isA<DndWarning>()
+              .having((warning) => warning.code, 'code', 'duplicate-droppable-id')
+              .having((warning) => warning.id, 'id', const DndId('column-1'))
+              .having((warning) => warning.message, 'message', contains('after reconciliation')),
+        ],
+      );
+
+      await tester.pump();
+      expect(warnings, hasLength(1));
+    });
+
+    testComponents('owner handoff keeps a droppable id without duplicate warnings', (tester) async {
+      final warnings = <DndWarning>[];
+      final controller = DndController(
+        diagnosticsConfig: DndDiagnosticsConfig(onWarning: warnings.add),
+      );
+      addTearDown(controller.dispose);
+
+      tester.pumpComponent(
+        DndScope(
+          controller: controller,
+          child: _DroppableOwnerHandoff(),
+        ),
+      );
+      expect(controller.registry.hasDroppable(const DndId('column-1')), isTrue);
+
+      await tester.click(find.tag('button'));
+      await tester.pump();
+
+      expect(warnings, isEmpty);
+      expect(controller.registry.hasDroppable(const DndId('column-1')), isTrue);
+    });
+
     testComponents('builder receives visual state as drag moves over target', (tester) async {
       final controller = DndController();
       addTearDown(controller.dispose);
@@ -164,6 +226,27 @@ class _ToggleDroppableState extends State<_ToggleDroppable> {
     return div([
       button(onClick: () => setState(() => _show = false), []),
       if (_show) const DndDroppable(id: DndId('column-1'), child: RawText('drop')),
+    ]);
+  }
+}
+
+class _DroppableOwnerHandoff extends StatefulComponent {
+  @override
+  State<_DroppableOwnerHandoff> createState() => _DroppableOwnerHandoffState();
+}
+
+class _DroppableOwnerHandoffState extends State<_DroppableOwnerHandoff> {
+  int _generation = 0;
+
+  @override
+  Component build(BuildContext context) {
+    return div([
+      button(onClick: () => setState(() => _generation += 1), []),
+      DndDroppable(
+        key: ValueKey('generation-$_generation'),
+        id: const DndId('column-1'),
+        child: RawText('drop'),
+      ),
     ]);
   }
 }

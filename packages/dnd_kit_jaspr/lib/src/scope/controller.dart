@@ -7,10 +7,13 @@ import 'package:jaspr/jaspr.dart';
 ///
 /// This is the Jaspr counterpart of the Flutter `DndController`: a thin wrapper
 /// over the framework-neutral [DndRuntime] in `dnd_kit_core`. It exposes the
-/// runtime as a Jaspr [ChangeNotifier] and defers the registry's duplicate-id
-/// diagnostics to a microtask. All drag lifecycle, collision, modifier, and
-/// measuring behavior lives in the shared runtime so the Flutter and Jaspr
-/// adapters share one drag engine.
+/// runtime as a Jaspr [ChangeNotifier]. When used under [DndScope], duplicate-id
+/// diagnostics are deferred to the Jaspr post-frame boundary so owner-aware
+/// registration settles at a frame boundary appropriate for Jaspr component
+/// reconciliation; without a scope the controller falls back to a microtask.
+/// All drag lifecycle, collision,
+/// modifier, and measuring behavior lives in the shared runtime so the Flutter
+/// and Jaspr adapters share one drag engine.
 class DndController extends ChangeNotifier {
   /// Creates a drag controller.
   DndController({

@@ -126,7 +126,7 @@ final class DndRegistry {
         _scheduleDeferredTask = scheduleDeferredTask;
 
   final DndDiagnosticsConfig _diagnosticsConfig;
-  final DndDeferredTaskScheduler? _scheduleDeferredTask;
+  DndDeferredTaskScheduler? _scheduleDeferredTask;
   final Map<DndId, DndDraggableRegistration> _draggables = <DndId, DndDraggableRegistration>{};
   final Map<DndId, DndDroppableRegistration> _droppables = <DndId, DndDroppableRegistration>{};
 
@@ -173,6 +173,15 @@ final class DndRegistry {
 
   /// Returns the registered droppable with [id], when one exists.
   DndDroppableRegistration? droppable(DndId id) => _droppables[id];
+
+  /// Reconfigures how owner-aware duplicate checks are deferred.
+  ///
+  /// Adapters use this to align duplicate warnings with their own frame
+  /// boundary. Any already-scheduled callback keeps the scheduler it was
+  /// created with.
+  set scheduleDeferredTask(DndDeferredTaskScheduler? value) {
+    _scheduleDeferredTask = value;
+  }
 
   /// Registers [registration] as a draggable entry.
   ///

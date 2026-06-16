@@ -42,6 +42,68 @@ void main() {
 
       expect(controller.registry.draggable(const DndId('task-1')), isNull);
     });
+
+    testComponents('warns when duplicate draggables persist after reconciliation', (tester) async {
+      final warnings = <DndWarning>[];
+      final controller = DndController(
+        diagnosticsConfig: DndDiagnosticsConfig(onWarning: warnings.add),
+      );
+      addTearDown(controller.dispose);
+
+      tester.pumpComponent(
+        DndScope(
+          controller: controller,
+          child: div([
+            DndDraggable(
+              key: const ValueKey('first'),
+              id: const DndId('task-1'),
+              child: div([]),
+            ),
+            DndDraggable(
+              key: const ValueKey('second'),
+              id: const DndId('task-1'),
+              child: div([]),
+            ),
+          ]),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        warnings,
+        [
+          isA<DndWarning>()
+              .having((warning) => warning.code, 'code', 'duplicate-draggable-id')
+              .having((warning) => warning.id, 'id', const DndId('task-1'))
+              .having((warning) => warning.message, 'message', contains('after reconciliation')),
+        ],
+      );
+
+      await tester.pump();
+      expect(warnings, hasLength(1));
+    });
+
+    testComponents('owner handoff keeps a draggable id without duplicate warnings', (tester) async {
+      final warnings = <DndWarning>[];
+      final controller = DndController(
+        diagnosticsConfig: DndDiagnosticsConfig(onWarning: warnings.add),
+      );
+      addTearDown(controller.dispose);
+
+      tester.pumpComponent(
+        DndScope(
+          controller: controller,
+          child: _DraggableOwnerHandoff(),
+        ),
+      );
+      expect(controller.registry.hasDraggable(const DndId('task-1')), isTrue);
+
+      await tester.click(find.tag('button'));
+      await tester.pump();
+
+      expect(warnings, isEmpty);
+      expect(controller.registry.hasDraggable(const DndId('task-1')), isTrue);
+    });
   });
 }
 
@@ -60,6 +122,27 @@ class _ToggleState extends State<_Toggle> {
     return div([
       button(onClick: () => setState(() => _show = false), []),
       if (_show) DndDraggable(id: const DndId('task-1'), child: div([])),
+    ]);
+  }
+}
+
+class _DraggableOwnerHandoff extends StatefulComponent {
+  @override
+  State<_DraggableOwnerHandoff> createState() => _DraggableOwnerHandoffState();
+}
+
+class _DraggableOwnerHandoffState extends State<_DraggableOwnerHandoff> {
+  int _generation = 0;
+
+  @override
+  Component build(BuildContext context) {
+    return div([
+      button(onClick: () => setState(() => _generation += 1), []),
+      DndDraggable(
+        key: ValueKey('generation-$_generation'),
+        id: const DndId('task-1'),
+        child: div([]),
+      ),
     ]);
   }
 }

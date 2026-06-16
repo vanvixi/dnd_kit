@@ -67,8 +67,10 @@ class _DndScopeState extends State<DndScope> {
 
   @override
   Component build(BuildContext context) {
+    final controller = _controller;
+    controller.runtime.registry.scheduleDeferredTask = context.binding.addPostFrameCallback;
     return _DndScopeProvider(
-      controller: _controller,
+      controller: controller,
       announcements: component.announcements,
       child: component.child,
     );
@@ -87,7 +89,6 @@ class _DndScopeProvider extends InheritedComponent {
 
   @override
   bool updateShouldNotify(_DndScopeProvider oldComponent) {
-    return controller != oldComponent.controller ||
-        announcements != oldComponent.announcements;
+    return controller != oldComponent.controller || announcements != oldComponent.announcements;
   }
 }

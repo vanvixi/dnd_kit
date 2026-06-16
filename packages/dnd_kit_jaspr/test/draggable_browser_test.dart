@@ -223,6 +223,66 @@ void main() {
       expect(controller.state, const DndIdle());
     });
 
+    testClient('surfaces duplicate draggable diagnostics after reconciliation', (tester) async {
+      final warnings = <DndWarning>[];
+      final controller = DndController(
+        diagnosticsConfig: DndDiagnosticsConfig(onWarning: warnings.add),
+      );
+      addTearDown(controller.dispose);
+
+      tester.pumpComponent(
+        DndScope(
+          controller: controller,
+          child: div([
+            DndDraggable(
+              key: const ValueKey('first'),
+              id: const DndId('task-1'),
+              child: button([Component.text('first')]),
+            ),
+            DndDraggable(
+              key: const ValueKey('second'),
+              id: const DndId('task-1'),
+              child: section([Component.text('second')]),
+            ),
+          ]),
+        ),
+      );
+
+      await Future<void>.delayed(Duration.zero);
+
+      expect(
+        warnings,
+        [
+          isA<DndWarning>()
+              .having((warning) => warning.code, 'code', 'duplicate-draggable-id')
+              .having((warning) => warning.id, 'id', const DndId('task-1'))
+              .having((warning) => warning.message, 'message', contains('after reconciliation')),
+        ],
+      );
+    });
+
+    testClient('does not warn for a draggable owner handoff that settles in one frame',
+        (tester) async {
+      final warnings = <DndWarning>[];
+      final controller = DndController(
+        diagnosticsConfig: DndDiagnosticsConfig(onWarning: warnings.add),
+      );
+      addTearDown(controller.dispose);
+
+      tester.pumpComponent(
+        DndScope(
+          controller: controller,
+          child: _BrowserDraggableOwnerHandoff(),
+        ),
+      );
+
+      await tester.click(find.tag('button'));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(warnings, isEmpty);
+      expect(controller.registry.hasDraggable(const DndId('task-1')), isTrue);
+    });
+
     testClient('applies controller modifiers during pointer dragging', (tester) async {
       final controller = DndController(
         modifiers: const <DndModifier>[
@@ -518,6 +578,27 @@ class _ControllerListeningShellState extends State<_ControllerListeningShell> {
       controller: component.controller,
       child: component.child,
     );
+  }
+}
+
+class _BrowserDraggableOwnerHandoff extends StatefulComponent {
+  @override
+  State<_BrowserDraggableOwnerHandoff> createState() => _BrowserDraggableOwnerHandoffState();
+}
+
+class _BrowserDraggableOwnerHandoffState extends State<_BrowserDraggableOwnerHandoff> {
+  int _generation = 0;
+
+  @override
+  Component build(BuildContext context) {
+    return div([
+      button(onClick: () => setState(() => _generation += 1), [Component.text('swap')]),
+      DndDraggable(
+        key: ValueKey('generation-$_generation'),
+        id: const DndId('task-1'),
+        child: article([Component.text('item')]),
+      ),
+    ]);
   }
 }
 
