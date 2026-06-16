@@ -21,8 +21,8 @@ const DndSensorActivationConstraint _kDefaultTouchActivationConstraint =
 /// needs no document-level listeners and stays safe to import in any Jaspr
 /// render mode — all DOM access is guarded by `kIsWeb`.
 ///
-/// During an active drag the element follows the pointer via a CSS transform.
-/// A dedicated drag overlay arrives in a later story.
+/// Active drag visuals are rendered through [DndDragOverlay], keeping the
+/// source subtree stable while the shared runtime updates pointer state.
 class DndDraggable extends StatefulComponent {
   /// Creates a draggable wrapping [child].
   const DndDraggable({
@@ -181,10 +181,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
       activeRect: _measure(),
       constraint: _effectivePointerConstraint(inputKind),
       onDragStart: component.onDragStart,
-      onDragMove: (moveEvent) {
-        _applyTransform(moveEvent.transform);
-        component.onDragMove?.call(moveEvent);
-      },
+      onDragMove: component.onDragMove,
       onDragEnd: (endEvent) {
         _endGesture();
         component.onDragEnd?.call(endEvent);
@@ -220,19 +217,9 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
   }
 
   void _endGesture() {
-    _applyTransform(DndTransform.identity);
     _sensor?.dispose();
     _sensor = null;
     _handlePointerActive = false;
-  }
-
-  void _applyTransform(DndTransform transform) {
-    final node = _nodeKey.currentNode;
-    if (node == null) {
-      return;
-    }
-    node.style.transform =
-        transform.isIdentity ? '' : 'translate(${transform.offset.x}px, ${transform.offset.y}px)';
   }
 
   DndInputKind _inputKindFor(web.PointerEvent event) {
@@ -289,7 +276,6 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
         return false;
       }
 
-      _applyTransform(DndTransform.identity);
       component.onDragEnd?.call(event);
       _controller?.reset();
       return true;
@@ -335,7 +321,6 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
       return false;
     }
 
-    _applyTransform(event.transform);
     component.onDragMove?.call(event);
     return true;
   }
@@ -350,7 +335,6 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
       return false;
     }
 
-    _applyTransform(DndTransform.identity);
     component.onDragCancel?.call(event);
     _controller?.reset();
     return true;

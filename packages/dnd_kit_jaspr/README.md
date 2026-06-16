@@ -9,9 +9,9 @@ drag lifecycle, collision logic, modifiers, and sortable math. It depends only
 on `dnd_kit_core` and `jaspr` (no Flutter).
 
 > Status: early development. This release provides `DndScope`,
-> `DndController`, `DndDraggable`, `DndDroppable`, and `DndDragHandle` over
-> the shared runtime. Overlay and sortable presets are still in progress. See
-> `SPEC_JASPR.md` and
+> `DndController`, `DndDraggable`, `DndDroppable`, `DndDragHandle`, and
+> `DndDragOverlay` over the shared runtime. Sortable presets are still in
+> progress. See `SPEC_JASPR.md` and
 > `docs/stories/phase-14-jaspr-foundation/`.
 
 ## Usage
