@@ -11,7 +11,7 @@
 /// It re-exports the pure Dart core (geometry, state, events, collision,
 /// modifiers, sortable math, the drag runtime, and diagnostics) and adds the
 /// Jaspr component layer: [DndScope], [DndController], [DndDraggable],
-/// [DndDroppable], [DndDragHandle], and [DndDragOverlay].
+/// [DndDroppable], [DndDragHandle], [DndDragOverlay], and [DndAutoScroll].
 ///
 /// Applications own their item, board, or document data. `dnd_kit_jaspr`
 /// reports drag/drop intent so app code can update its own state.
@@ -22,6 +22,7 @@ export 'package:dnd_kit_core/dnd_kit_core.dart';
 
 export 'src/scope/controller.dart';
 export 'src/scope/scope.dart';
+export 'src/widgets/auto_scroll.dart';
 export 'src/widgets/drag_handle.dart';
 export 'src/widgets/drag_overlay.dart';
 export 'src/widgets/draggable.dart';

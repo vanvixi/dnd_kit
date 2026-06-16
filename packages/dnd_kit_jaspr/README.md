@@ -9,12 +9,13 @@ drag lifecycle, collision logic, modifiers, and sortable math. It depends only
 on `dnd_kit_core` and `jaspr` (no Flutter).
 
 > Status: early development. This release provides `DndScope`,
-> `DndController`, `DndDraggable`, `DndDroppable`, `DndDragHandle`, and
-> `DndDragOverlay` over the shared runtime. Shared modifiers are exercised in
-> browser tests, and `examples/jaspr_basic_drag_drop` is the runnable app used
-> for the current browser-proof work. Sortable presets are still in progress.
-> See `SPEC_JASPR.md` and
-> `docs/stories/phase-14-jaspr-foundation/`.
+> `DndController`, `DndDraggable`, `DndDroppable`, `DndDragHandle`,
+> `DndDragOverlay`, and `DndAutoScroll` over the shared runtime. Shared modifiers
+> are exercised in browser tests, and `examples/jaspr_basic_drag_drop` is the
+> runnable app used for the current browser-proof work. Sortable presets are
+> still in progress. See `SPEC_JASPR.md`,
+> `docs/stories/phase-14-jaspr-foundation/`, and
+> `docs/stories/phase-15-jaspr-hardening/`.
 
 ## Usage
 
@@ -30,6 +31,26 @@ DndScope(
 
 Applications own their item, board, or document data. `dnd_kit_jaspr` reports
 drag/drop intent so app code updates its own state.
+
+### Auto-scroll
+
+Wrap a scroll container in `DndAutoScroll` to scroll it while a drag rests near
+its top or bottom edge. The edge/velocity math is shared with Flutter via
+`dnd_kit_core`; the Jaspr component only adds the browser scroll execution.
+Style the rendered viewport so it scrolls vertically (a bounded height plus
+`overflow`):
+
+```dart
+DndAutoScroll(
+  styles: Styles(
+    height: 400.px,
+    overflow: Overflow.only(y: Overflow.auto),
+  ),
+  child: longDraggableList,
+);
+```
+
+Horizontal auto-scroll is not yet supported.
 
 ## Example
 

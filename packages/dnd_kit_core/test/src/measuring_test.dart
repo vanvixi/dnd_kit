@@ -59,5 +59,50 @@ void main() {
       expect(
           measuring.droppableRect(dirtyId), const DndRect(left: 20, top: 0, width: 10, height: 10));
     });
+
+    test('markAllDirty re-measures every draggable and droppable on next refresh', () {
+      final measuring = DndMeasuringRegistry();
+      const draggableId = DndId('drag');
+      const droppableId = DndId('drop');
+      var draggableMeasureCount = 0;
+      var droppableMeasureCount = 0;
+
+      measuring.markDraggableDirty(
+        draggableId,
+        measure: () {
+          draggableMeasureCount += 1;
+          return DndRect(left: draggableMeasureCount.toDouble(), top: 0, width: 10, height: 10);
+        },
+      );
+      measuring.markDroppableDirty(
+        droppableId,
+        measure: () {
+          droppableMeasureCount += 1;
+          return DndRect(left: 0, top: droppableMeasureCount.toDouble(), width: 10, height: 10);
+        },
+      );
+
+      measuring.refreshDirty();
+      expect(draggableMeasureCount, 1);
+      expect(droppableMeasureCount, 1);
+      expect(measuring.draggableStatus(draggableId), DndMeasurementStatus.clean);
+      expect(measuring.droppableStatus(droppableId), DndMeasurementStatus.clean);
+
+      // Without markAllDirty, refresh is a no-op for clean entries.
+      measuring.refreshDirty();
+      expect(draggableMeasureCount, 1);
+      expect(droppableMeasureCount, 1);
+
+      // markAllDirty forces both to re-measure on the next refresh.
+      measuring.markAllDirty();
+      expect(measuring.draggableStatus(draggableId), DndMeasurementStatus.dirty);
+      expect(measuring.droppableStatus(droppableId), DndMeasurementStatus.dirty);
+
+      measuring.refreshDirty();
+      expect(draggableMeasureCount, 2);
+      expect(droppableMeasureCount, 2);
+      expect(measuring.draggableRect(draggableId)?.left, 2);
+      expect(measuring.droppableRect(droppableId)?.top, 2);
+    });
   });
 }

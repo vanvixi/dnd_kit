@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- `DndAutoScroll`: drag-driven vertical auto-scroll for a Jaspr scroll
+  container. It reuses the shared `dndAutoScrollVelocity` edge/velocity math from
+  `dnd_kit_core` and only adds the browser execution layer (DOM measuring + a
+  frame-interval `scrollTop` loop), staying SSR-safe. Collision re-resolves
+  against post-scroll coordinates so a target scrolled into view is reachable.
+  Horizontal auto-scroll is not yet supported.
+
 ## 0.1.0-dev.0
 
 - Initial scaffold of the Jaspr adapter on the shared `dnd_kit_core` runtime.

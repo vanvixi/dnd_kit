@@ -93,6 +93,17 @@ class DndMeasuringRegistry {
     _refreshDirty(_droppableEntries);
   }
 
+  /// Marks every cached draggable and droppable measurement as needing a
+  /// refresh, so the next [refreshDirty] re-measures them.
+  ///
+  /// This is the framework-neutral hook adapters use when something outside the
+  /// component tree invalidates every measurement at once — for example a
+  /// drag-driven auto-scroll that moves all targets without rebuilding them.
+  void markAllDirty() {
+    _markAllDirty(_draggableEntries);
+    _markAllDirty(_droppableEntries);
+  }
+
   /// Removes measured draggable data for [id].
   DndRect? removeDraggableRect(DndId id) {
     return _removeRect(id, _draggableEntries, _removedDraggableIds);
@@ -163,6 +174,12 @@ class DndMeasuringRegistry {
         ..measurer = measure ?? entry.measurer;
     }
     removedIds.remove(id);
+  }
+
+  void _markAllDirty(Map<DndId, _DndMeasurementEntry> entries) {
+    for (final entry in entries.values) {
+      entry.dirty = true;
+    }
   }
 
   void _refreshDirty(Map<DndId, _DndMeasurementEntry> entries) {
