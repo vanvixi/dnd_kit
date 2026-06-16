@@ -10,8 +10,10 @@ on `dnd_kit_core` and `jaspr` (no Flutter).
 
 > Status: early development. This release provides `DndScope`,
 > `DndController`, `DndDraggable`, `DndDroppable`, `DndDragHandle`, and
-> `DndDragOverlay` over the shared runtime. Sortable presets are still in
-> progress. See `SPEC_JASPR.md` and
+> `DndDragOverlay` over the shared runtime. Shared modifiers are exercised in
+> browser tests, and `examples/jaspr_basic_drag_drop` is the runnable app used
+> for the current browser-proof work. Sortable presets are still in progress.
+> See `SPEC_JASPR.md` and
 > `docs/stories/phase-14-jaspr-foundation/`.
 
 ## Usage
@@ -28,3 +30,9 @@ DndScope(
 
 Applications own their item, board, or document data. `dnd_kit_jaspr` reports
 drag/drop intent so app code updates its own state.
+
+## Example
+
+See `examples/jaspr_basic_drag_drop` for a runnable Jaspr browser app that
+wires `DndScope`, `DndDraggable`, `DndDroppable`, `DndDragHandle`,
+`DndDragOverlay`, and shared-runtime modifiers into one small flow.

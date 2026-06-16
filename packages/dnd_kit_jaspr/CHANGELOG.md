@@ -15,3 +15,6 @@
   pickup/move/drop flows report `DndInputKind.keyboard`.
 - `DndDraggable` no longer mutates the source DOM node with the interim drag
   transform; active visuals now belong in `DndDragOverlay`.
+- Browser tests now prove shared modifier effects for Jaspr drags, and the
+  repository includes `examples/jaspr_basic_drag_drop` as the runnable app used
+  for the current browser-proof work.

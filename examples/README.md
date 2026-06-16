@@ -8,6 +8,7 @@ widgets from standalone examples into one web target for GitHub Pages.
 Planned examples include:
 
 - basic drag and drop;
+- Jaspr basic drag and drop (`examples/jaspr_basic_drag_drop`);
 - hosted example gallery (`examples/example_gallery`);
 - drag overlay;
 - sortable list;
