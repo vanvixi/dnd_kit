@@ -31,6 +31,14 @@ Phase D (stable sortable presets: vertical/horizontal/grid) follows once the
 adapter is hardened. Example-app and documentation updates ride along in each
 story's Release proof layer rather than a separate ceremony story.
 
+## Next Selected Follow-up
+
+Once Phase C closes with US-058, the next selected story is US-059: standardize
+the first public `dnd_kit_jaspr` release surface and publish `0.1.0-dev.1`.
+That story exists to make the initial Jaspr dev release explicit rather than
+letting the current unpublished `0.1.0-dev.0` changelog state drift into an
+implicit release plan.
+
 ## Validation Ladder
 
 - Shared contract proof: pure-Dart `dart test` reusing `dnd_kit_core`
