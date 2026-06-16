@@ -1,5 +1,6 @@
 import 'package:jaspr/jaspr.dart';
 
+import '../a11y/announcements.dart';
 import 'controller.dart';
 
 /// Provides a [DndController] to a Jaspr subtree.
@@ -7,11 +8,13 @@ import 'controller.dart';
 /// `DndScope` mirrors the Flutter adapter's scope: it owns a controller's
 /// lifecycle (creating one when none is injected, disposing what it created)
 /// and exposes it to descendants through an [InheritedComponent], looked up via
-/// [DndScope.of].
+/// [DndScope.of]. It also provides the [DndAnnouncements] used by
+/// `DndLiveRegion`, read via [DndScope.announcementsOf].
 class DndScope extends StatefulComponent {
   /// Creates a drag scope around [child].
   const DndScope({
     this.controller,
+    this.announcements = const DndAnnouncements(),
     required this.child,
     super.key,
   });
@@ -21,6 +24,9 @@ class DndScope extends StatefulComponent {
   /// When null, the scope creates and disposes its own [DndController].
   final DndController? controller;
 
+  /// Screen-reader announcements provided to descendant `DndLiveRegion`s.
+  final DndAnnouncements announcements;
+
   /// The subtree that can access the controller via [DndScope.of].
   final Component child;
 
@@ -29,6 +35,13 @@ class DndScope extends StatefulComponent {
     final provider = context.dependOnInheritedComponentOfExactType<_DndScopeProvider>();
     assert(provider != null, 'DndScope.of() called without an enclosing DndScope.');
     return provider!.controller;
+  }
+
+  /// Returns the nearest [DndAnnouncements], or sensible defaults when no scope
+  /// is found.
+  static DndAnnouncements announcementsOf(BuildContext context) {
+    final provider = context.dependOnInheritedComponentOfExactType<_DndScopeProvider>();
+    return provider?.announcements ?? const DndAnnouncements();
   }
 
   @override
@@ -56,6 +69,7 @@ class _DndScopeState extends State<DndScope> {
   Component build(BuildContext context) {
     return _DndScopeProvider(
       controller: _controller,
+      announcements: component.announcements,
       child: component.child,
     );
   }
@@ -64,13 +78,16 @@ class _DndScopeState extends State<DndScope> {
 class _DndScopeProvider extends InheritedComponent {
   const _DndScopeProvider({
     required this.controller,
+    required this.announcements,
     required super.child,
   });
 
   final DndController controller;
+  final DndAnnouncements announcements;
 
   @override
   bool updateShouldNotify(_DndScopeProvider oldComponent) {
-    return controller != oldComponent.controller;
+    return controller != oldComponent.controller ||
+        announcements != oldComponent.announcements;
   }
 }

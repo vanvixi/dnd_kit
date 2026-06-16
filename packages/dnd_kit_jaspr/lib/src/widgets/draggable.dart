@@ -5,6 +5,7 @@ import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
 import 'package:universal_web/web.dart' as web;
 
+import '../a11y/live_region.dart' show kDndVisuallyHiddenStyle;
 import '../scope/controller.dart';
 import '../scope/scope.dart';
 
@@ -34,6 +35,8 @@ class DndDraggable extends StatefulComponent {
     this.disabled = false,
     this.constraint = DndSensorActivationConstraint.none,
     this.keyboardDragStep = 25,
+    this.label,
+    this.description,
     this.onDragStart,
     this.onDragMove,
     this.onDragEnd,
@@ -58,6 +61,16 @@ class DndDraggable extends StatefulComponent {
 
   /// Logical pixels moved for each keyboard arrow key press.
   final double keyboardDragStep;
+
+  /// Optional accessible label applied as `aria-label`.
+  final String? label;
+
+  /// Optional keyboard-usage instructions exposed to assistive tech.
+  ///
+  /// When set, a visually-hidden description element is rendered and referenced
+  /// via `aria-describedby` so screen-reader users hear how to drag with the
+  /// keyboard.
+  final String? description;
 
   /// Called when a drag session starts.
   final DndDragStartCallback? onDragStart;
@@ -87,7 +100,10 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
   static const web.EventStreamProvider<web.MouseEvent> _mouseUpEvents =
       web.EventStreamProvider<web.MouseEvent>('mouseup');
 
+  static int _descriptionSeq = 0;
+
   final GlobalNodeKey<web.HTMLElement> _nodeKey = GlobalNodeKey<web.HTMLElement>();
+  final String _descriptionId = 'dnd-draggable-desc-${_descriptionSeq++}';
 
   DndController? _controller;
   DndDraggableRegistration? _registration;
@@ -531,6 +547,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
 
   @override
   Component build(BuildContext context) {
+    final description = component.description;
     return DndDraggableHandleScope(
       draggable: this,
       child: div(
@@ -540,6 +557,8 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
           'role': 'button',
           'aria-disabled': component.disabled ? 'true' : 'false',
           'aria-roledescription': 'draggable',
+          if (component.label != null) 'aria-label': component.label!,
+          if (description != null) 'aria-describedby': _descriptionId,
         },
         events: component.disabled
             ? null
@@ -548,7 +567,17 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
                 'mousedown': _handleMouseDown,
                 if (_handleCount == 0) 'keydown': _handleHostKeyDown,
               },
-        [component.child],
+        [
+          component.child,
+          if (description != null)
+            span(
+              attributes: <String, String>{
+                'id': _descriptionId,
+                'style': kDndVisuallyHiddenStyle,
+              },
+              [Component.text(description)],
+            ),
+        ],
       ),
     );
   }

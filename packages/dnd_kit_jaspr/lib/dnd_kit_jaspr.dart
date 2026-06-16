@@ -20,6 +20,8 @@ library;
 
 export 'package:dnd_kit_core/dnd_kit_core.dart';
 
+export 'src/a11y/announcements.dart';
+export 'src/a11y/live_region.dart' show DndLiveRegion;
 export 'src/scope/controller.dart';
 export 'src/scope/scope.dart';
 export 'src/widgets/auto_scroll.dart';

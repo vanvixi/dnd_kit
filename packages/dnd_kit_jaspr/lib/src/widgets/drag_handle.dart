@@ -10,6 +10,7 @@ class DndDragHandle extends StatefulComponent {
   const DndDragHandle({
     required this.child,
     this.disabled = false,
+    this.label,
     super.key,
   });
 
@@ -18,6 +19,9 @@ class DndDragHandle extends StatefulComponent {
 
   /// Whether this handle should ignore drag gestures.
   final bool disabled;
+
+  /// Optional accessible label applied as `aria-label` on the handle.
+  final String? label;
 
   @override
   State<DndDragHandle> createState() => _DndDragHandleState();
@@ -86,6 +90,7 @@ class _DndDragHandleState extends State<DndDragHandle> {
         'role': 'button',
         'aria-disabled': component.disabled ? 'true' : 'false',
         'aria-roledescription': 'drag handle',
+        if (component.label != null) 'aria-label': component.label!,
       },
       events: component.disabled || draggable == null
           ? null

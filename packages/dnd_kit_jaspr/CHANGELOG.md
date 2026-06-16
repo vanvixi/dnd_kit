@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Accessibility hardening: `DndLiveRegion` announces drag start, drag-over
+  changes, drop, and cancel to screen readers via a configurable
+  `DndAnnouncements` (English defaults), provided through `DndScope`. `DndDraggable`
+  and `DndDragHandle` accept an accessible `label`; `DndDraggable` also accepts a
+  keyboard-usage `description` exposed via `aria-describedby`. Keyboard drags keep
+  focus on the activator. Derived from the shared runtime state, so it works for
+  pointer, mouse, and keyboard drags alike.
 - `DndAutoScroll`: drag-driven vertical auto-scroll for a Jaspr scroll
   container. It reuses the shared `dndAutoScrollVelocity` edge/velocity math from
   `dnd_kit_core` and only adds the browser execution layer (DOM measuring + a

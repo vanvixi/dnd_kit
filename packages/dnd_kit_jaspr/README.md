@@ -10,7 +10,8 @@ on `dnd_kit_core` and `jaspr` (no Flutter).
 
 > Status: early development. This release provides `DndScope`,
 > `DndController`, `DndDraggable`, `DndDroppable`, `DndDragHandle`,
-> `DndDragOverlay`, and `DndAutoScroll` over the shared runtime. Shared modifiers
+> `DndDragOverlay`, `DndAutoScroll`, and `DndLiveRegion` over the shared runtime.
+> Shared modifiers
 > are exercised in browser tests, and `examples/jaspr_basic_drag_drop` is the
 > runnable app used for the current browser-proof work. Sortable presets are
 > still in progress. See `SPEC_JASPR.md`,
@@ -51,6 +52,32 @@ DndAutoScroll(
 ```
 
 Horizontal auto-scroll is not yet supported.
+
+### Accessibility
+
+Mount a `DndLiveRegion` inside the scope to announce drag start, drag-over
+changes, drop, and cancel to screen readers. Messages come from a configurable
+`DndAnnouncements` (with English defaults) provided through `DndScope`, and
+draggables/handles accept an accessible `label` plus optional keyboard
+`description`:
+
+```dart
+DndScope(
+  announcements: const DndAnnouncements(),
+  child: Component.fragment([
+    DndDraggable(
+      id: const DndId('task-1'),
+      label: 'Task one',
+      description: 'Press space to lift, arrow keys to move, space to drop.',
+      child: myCard,
+    ),
+    const DndLiveRegion(),
+  ]),
+);
+```
+
+Keyboard drags keep focus on the activator throughout pickup, movement, and
+drop/cancel.
 
 ## Example
 
