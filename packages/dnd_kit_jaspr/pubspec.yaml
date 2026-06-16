@@ -18,6 +18,7 @@ resolution: workspace
 dependencies:
   dnd_kit_core: ^0.1.0
   jaspr: ^0.23.0
+  universal_web: ^1.1.0
 
 dev_dependencies:
   jaspr_test: ^0.23.0

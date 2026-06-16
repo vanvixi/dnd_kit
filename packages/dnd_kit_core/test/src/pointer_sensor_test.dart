@@ -1,13 +1,11 @@
-import 'package:dnd_kit_flutter/dnd_kit_flutter.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:dnd_kit_core/dnd_kit_core.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('DndPointerSensor', () {
     test('implements the core sensor runtime contract', () {
-      final controller = DndController();
-      addTearDown(controller.dispose);
-
-      final sensor = DndPointerSensor(controller: controller);
+      final runtime = DndRuntime();
+      final sensor = DndPointerSensor(runtime: runtime);
 
       expect(sensor, isA<DndSensor>());
       expect(sensor.descriptor.kind, DndSensorKind.pointer);
@@ -55,15 +53,14 @@ void main() {
       );
     });
 
-    test('drives controller start, move, and end lifecycle', () {
-      final controller = DndController();
-      addTearDown(controller.dispose);
+    test('drives runtime start, move, and end lifecycle', () {
+      final runtime = DndRuntime();
       DndDragStartEvent? startEvent;
       DndDragMoveEvent? moveEvent;
       DndDragEndEvent? endEvent;
 
       final sensor = DndPointerSensor(
-        controller: controller,
+        runtime: runtime,
         onDragStart: (event) {
           startEvent = event;
         },
@@ -89,16 +86,15 @@ void main() {
       expect(startEvent?.inputKind, DndInputKind.pointer);
       expect(moveEvent?.currentPointer, const DndPoint(20, 30));
       expect(endEvent?.currentPointer, const DndPoint(20, 30));
-      expect(controller.state, const DndIdle());
+      expect(runtime.state, const DndIdle());
     });
 
     test('preserves specialized input kind in lifecycle events', () {
-      final controller = DndController();
-      addTearDown(controller.dispose);
+      final runtime = DndRuntime();
       DndDragStartEvent? startEvent;
 
       final sensor = DndPointerSensor(
-        controller: controller,
+        runtime: runtime,
         onDragStart: (event) {
           startEvent = event;
         },
@@ -117,13 +113,12 @@ void main() {
       sensor.cancel();
     });
 
-    test('cancels pending activation through the controller', () {
-      final controller = DndController();
-      addTearDown(controller.dispose);
+    test('cancels pending activation through the runtime', () {
+      final runtime = DndRuntime();
       DndDragCancelEvent? cancelEvent;
 
       final sensor = DndPointerSensor(
-        controller: controller,
+        runtime: runtime,
         constraint: const DndSensorActivationConstraint(distance: 100),
         onDragCancel: (event) {
           cancelEvent = event;
@@ -141,7 +136,7 @@ void main() {
 
       expect(cancelEvent?.activeId, const DndId('task-1'));
       expect(cancelEvent?.reason, DndCancelReason.sensor);
-      expect(controller.state, const DndIdle());
+      expect(runtime.state, const DndIdle());
     });
   });
 }

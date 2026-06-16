@@ -17,6 +17,7 @@ export 'src/diagnostics.dart';
 export 'src/events.dart';
 export 'src/measuring.dart';
 export 'src/modifier.dart';
+export 'src/pointer_sensor.dart';
 export 'src/registry.dart';
 export 'src/runtime.dart';
 export 'src/sensor.dart';

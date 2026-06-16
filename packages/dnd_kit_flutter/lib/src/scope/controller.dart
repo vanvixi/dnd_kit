@@ -31,6 +31,12 @@ class DndController extends ChangeNotifier {
 
   late final DndRuntime _runtime;
 
+  /// The shared framework-neutral runtime this controller wraps.
+  ///
+  /// Adapter sensors (such as [DndPointerSensor]) are driven against the
+  /// runtime directly.
+  DndRuntime get runtime => _runtime;
+
   /// Registered draggable and droppable metadata for this controller.
   DndRegistry get registry => _runtime.registry;
 

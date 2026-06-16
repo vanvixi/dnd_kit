@@ -21,3 +21,4 @@ export 'package:dnd_kit_core/dnd_kit_core.dart';
 
 export 'src/scope/controller.dart';
 export 'src/scope/scope.dart';
+export 'src/widgets/draggable.dart';

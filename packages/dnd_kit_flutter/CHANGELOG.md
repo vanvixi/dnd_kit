@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking:** `DndPointerSensor` moved to `dnd_kit_core` and is now driven by a
+  `DndRuntime` instead of a `DndController`. Construct it with
+  `DndPointerSensor(runtime: controller.runtime, ...)`. The class remains
+  importable from `package:dnd_kit_flutter/dnd_kit_flutter.dart` via re-export.
+  This lets the Flutter and Jaspr adapters share one pointer-activation state
+  machine.
+- Added `DndController.runtime` to expose the shared runtime to adapter sensors.
+
 ## 0.1.0
 
 - First public release of the Flutter adapter under the

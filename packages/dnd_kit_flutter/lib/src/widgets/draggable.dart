@@ -19,7 +19,6 @@ import '../measuring/measuring.dart';
 import '../scope/controller.dart';
 import '../scope/scope.dart';
 import '../sensors/long_press_activation.dart';
-import '../sensors/pointer_sensor.dart';
 
 /// Builds a draggable visual from the current drag state.
 typedef DndDraggableBuilder = Widget Function(
@@ -478,7 +477,7 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     final activeRect = _refreshDraggableMeasurement();
 
     final sensor = DndPointerSensor(
-      controller: controller,
+      runtime: controller.runtime,
       activeRect: activeRect,
       constraint: constraint,
       onDragStart: _handleDragStart,
