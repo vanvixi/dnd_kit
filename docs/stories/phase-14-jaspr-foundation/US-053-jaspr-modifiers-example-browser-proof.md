@@ -2,7 +2,7 @@
 
 ## Status
 
-in_progress
+implemented
 
 ## Lane
 
@@ -87,10 +87,13 @@ gap left by US-049 through US-052.
   passed, including extra coverage for controller modifiers and an ancestor
   rebuild case.
 - `cd examples/jaspr_basic_drag_drop && dart analyze` passed.
-- Real browser verification was re-run in the Codex in-app browser on
-  `http://localhost:8080` after reloading the updated app.
-- Browser automation against the live example now moves the drag through the
-  real runtime path: the header updates to `State: DndDragging`,
-  `Delta: 144, 0`, `Over: lane-brief`, and `Drag: s:1 m:3 e:0 c:0`.
-- That proves real-browser drag start/move plus modifier-constrained collision
-  state in the example, while drop/end proof still needs a follow-up pass.
+- Follow-up `US-055` fixed the real-browser drag handle regression by keeping
+  pointer move/up/cancel tracking alive at the window level after the pointer
+  leaves the draggable subtree.
+- `fvm dart test packages/dnd_kit_jaspr` passed after the regression fix.
+- `cd examples/jaspr_basic_drag_drop && ~/.pub-cache/bin/jaspr build` passed.
+- Real-browser verification in the Codex in-app browser on
+  `http://localhost:8080` now completes a lane-crossing drag through the live
+  example: the session returns to `State: DndIdle`, drag metrics show
+  `s:1 m:5 e:1 c:0`, and the example updates app-owned lane state from
+  `Brief` to `Ship`.

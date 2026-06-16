@@ -10,12 +10,8 @@ class BasicDragDropApp extends StatefulComponent {
 }
 
 class _BasicDragDropAppState extends State<BasicDragDropApp> {
-  late final DndController _controller = DndController(
-    modifiers: <DndModifier>[
-      DndModifiers.restrictToHorizontalAxis,
-      DndModifiers.snapToGrid(width: 24, height: 24),
-    ],
-  )..addListener(_handleControllerChanged);
+  late final DndController _controller = DndController()
+    ..addListener(_handleControllerChanged);
 
   DndId _activeLaneId = _lanes.first.id;
   int _dragStartCount = 0;
@@ -49,6 +45,7 @@ class _BasicDragDropAppState extends State<BasicDragDropApp> {
   @override
   Component build(BuildContext context) {
     final session = _controller.activeSession;
+    final isDragging = session != null;
     final activeLane = _lanes.firstWhere((lane) => lane.id == _activeLaneId);
     final overId = _controller.overId?.value ?? 'none';
     final delta = session?.delta ?? DndPoint.zero;
@@ -57,7 +54,8 @@ class _BasicDragDropAppState extends State<BasicDragDropApp> {
     return div(
       attributes: _style(
         'min-height:100vh; padding:32px; background:#f4efe7; color:#1f2937; '
-        'font-family:IBM Plex Sans, Avenir Next, Segoe UI, sans-serif;',
+        'font-family:IBM Plex Sans, Avenir Next, Segoe UI, sans-serif; '
+        'cursor:${isDragging ? 'grabbing' : 'default'};',
       ),
       [
         DndScope(
@@ -90,6 +88,7 @@ class _BasicDragDropAppState extends State<BasicDragDropApp> {
                       isActiveLane: lane.id == _activeLaneId,
                       child: lane.id == _activeLaneId
                           ? _DraggableTask(
+                              isDragging: isDragging,
                               onDragStart: (_) {
                                 setState(() {
                                   _dragStartCount += 1;
@@ -121,8 +120,9 @@ class _BasicDragDropAppState extends State<BasicDragDropApp> {
                   return _TaskCard(
                     title: 'Design API review',
                     subtitle:
-                        'Overlay follows the shared runtime. Motion is horizontal and snaps to 24px.',
+                        'Overlay follows the shared runtime during free-form dragging.',
                     chipLabel: overlayDetails.overId?.value ?? 'moving',
+                    isDragging: true,
                     showHandle: false,
                     attributes: const <String, String>{
                       'data-example-overlay': 'true',
@@ -170,7 +170,7 @@ class _Header extends StatelessComponent {
           attributes: _style('margin:0; font-size:40px; line-height:1.1;'),
           const [
             Component.text(
-                'Jaspr drag and drop, with shared modifiers in the loop.'),
+                'Jaspr drag and drop, with the shared runtime live.'),
           ],
         ),
         p(
@@ -178,8 +178,9 @@ class _Header extends StatelessComponent {
               'margin:0; font-size:18px; line-height:1.5; color:#5b6470;'),
           const [
             Component.text(
-              'The card moves through a browser pointer drag, but the shared runtime trims '
-              'motion to a horizontal rail and snaps it to a 24px grid.',
+              'The card moves through a browser pointer drag, tracks the live '
+              'pointer delta, and stays free-form so the demo fits mobile '
+              'layouts that stack vertically.',
             ),
           ],
         ),
@@ -321,12 +322,14 @@ class _Lane extends StatelessComponent {
 
 class _DraggableTask extends StatelessComponent {
   const _DraggableTask({
+    required this.isDragging,
     required this.onDragStart,
     required this.onDragMove,
     required this.onDragEnd,
     required this.onDragCancel,
   });
 
+  final bool isDragging;
   final void Function(DndDragStartEvent event) onDragStart;
   final void Function(DndDragMoveEvent event) onDragMove;
   final void Function(DndDragEndEvent event) onDragEnd;
@@ -343,8 +346,9 @@ class _DraggableTask extends StatelessComponent {
       child: _TaskCard(
         title: 'Design API review',
         subtitle:
-            'Grab the handle, drag horizontally, and watch the live delta snap to the grid.',
+            'Grab the handle, drag in any direction, and watch the live delta update.',
         chipLabel: 'active task',
+        isDragging: isDragging,
         handleId: 'task-handle',
         attributes: <String, String>{
           'data-draggable-card': 'true',
@@ -359,6 +363,7 @@ class _TaskCard extends StatelessComponent {
     required this.title,
     required this.subtitle,
     required this.chipLabel,
+    required this.isDragging,
     this.handleId,
     this.showHandle = true,
     this.attributes,
@@ -367,6 +372,7 @@ class _TaskCard extends StatelessComponent {
   final String title;
   final String subtitle;
   final String chipLabel;
+  final bool isDragging;
   final String? handleId;
   final bool showHandle;
   final Map<String, String>? attributes;
@@ -377,7 +383,8 @@ class _TaskCard extends StatelessComponent {
       attributes: _mergeAttributes(
         _style(
           'padding:18px; border-radius:22px; background:#fffdf8; border:1px solid #d9c4a2; '
-          'display:flex; flex-direction:column; gap:14px;',
+          'display:flex; flex-direction:column; gap:14px; '
+          'cursor:${isDragging ? 'grabbing' : 'default'};',
         ),
         attributes,
       ),
@@ -416,14 +423,15 @@ class _TaskCard extends StatelessComponent {
                   attributes: _style(
                     'display:inline-flex; align-items:center; justify-content:center; '
                     'border-radius:999px; background:#9a3412; color:#fff7ed; '
-                    'padding:10px 14px; cursor:grab; user-select:none;',
+                    'padding:10px 14px; cursor:${isDragging ? 'grabbing' : 'grab'}; '
+                    'user-select:none;',
                   ),
                   const [Component.text('Drag handle')],
                 ),
               ),
               span(
                 attributes: _style('font-size:13px; color:#7a8391;'),
-                const [Component.text('Shared runtime modifiers are active')],
+                const [Component.text('Free drag is active')],
               ),
             ],
           ),
@@ -477,7 +485,7 @@ const _lanes = <_LaneModel>[
     label: 'Build',
     tone: 'Transit',
     description:
-        'Horizontal-only movement makes the card feel like it rides a production rail.',
+        'Free movement keeps the example natural on desktop and mobile layouts.',
   ),
   _LaneModel(
     id: DndId('lane-ship'),

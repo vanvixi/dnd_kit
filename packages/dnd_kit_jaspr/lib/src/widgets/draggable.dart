@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:dnd_kit_core/dnd_kit_core.dart';
-import 'package:jaspr/jaspr.dart';
 import 'package:jaspr/dom.dart';
+import 'package:jaspr/jaspr.dart';
 import 'package:universal_web/web.dart' as web;
 
 import '../scope/controller.dart';
@@ -74,11 +76,29 @@ class DndDraggable extends StatefulComponent {
 }
 
 class _DndDraggableState extends State<DndDraggable> implements DndDraggableHandleController {
+  static const web.EventStreamProvider<web.PointerEvent> _pointerMoveEvents =
+      web.EventStreamProvider<web.PointerEvent>('pointermove');
+  static const web.EventStreamProvider<web.PointerEvent> _pointerUpEvents =
+      web.EventStreamProvider<web.PointerEvent>('pointerup');
+  static const web.EventStreamProvider<web.PointerEvent> _pointerCancelEvents =
+      web.EventStreamProvider<web.PointerEvent>('pointercancel');
+  static const web.EventStreamProvider<web.MouseEvent> _mouseMoveEvents =
+      web.EventStreamProvider<web.MouseEvent>('mousemove');
+  static const web.EventStreamProvider<web.MouseEvent> _mouseUpEvents =
+      web.EventStreamProvider<web.MouseEvent>('mouseup');
+
   final GlobalNodeKey<web.HTMLElement> _nodeKey = GlobalNodeKey<web.HTMLElement>();
 
   DndController? _controller;
   DndDraggableRegistration? _registration;
   DndPointerSensor? _sensor;
+  StreamSubscription<web.PointerEvent>? _windowPointerMoveSubscription;
+  StreamSubscription<web.PointerEvent>? _windowPointerUpSubscription;
+  StreamSubscription<web.PointerEvent>? _windowPointerCancelSubscription;
+  StreamSubscription<web.MouseEvent>? _windowMouseMoveSubscription;
+  StreamSubscription<web.MouseEvent>? _windowMouseUpSubscription;
+  int? _activePointerId;
+  _ActiveGestureKind? _activeGestureKind;
   int _handleCount = 0;
   bool _handlePointerActive = false;
   bool _handleSyncScheduled = false;
@@ -107,6 +127,8 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
 
   @override
   void dispose() {
+    _clearWindowPointerListeners();
+    _clearWindowMouseListeners();
     _sensor?.dispose();
     _unregister();
     super.dispose();
@@ -174,8 +196,105 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
       // pointer-capture lifecycle; ignore capture failures and keep the drag
       // session logic testable.
     }
-    final inputKind = _inputKindFor(pointer);
+    _activeGestureKind = _ActiveGestureKind.pointer;
+    _activePointerId = pointer.pointerId;
+    _attachWindowPointerListeners();
+    _startSensor(
+      controller: controller,
+      position: _eventPosition(pointer),
+      inputKind: _inputKindFor(pointer),
+    );
+  }
 
+  void _handleMouseDown(web.Event event) {
+    if (component.disabled || !kIsWeb) {
+      return;
+    }
+    final controller = _controller;
+    if (controller == null || !controller.isIdle) {
+      return;
+    }
+    final mouseEvent = event as web.MouseEvent;
+    final startedFromHandle = _handlePointerActive;
+    if (_handleCount > 0 && !startedFromHandle) {
+      return;
+    }
+
+    _activeGestureKind = _ActiveGestureKind.mouse;
+    _attachWindowMouseListeners();
+    _startSensor(
+      controller: controller,
+      position: _eventPosition(mouseEvent),
+      inputKind: DndInputKind.mouse,
+    );
+  }
+
+  void _handlePointerMove(web.Event event) {
+    if (_activeGestureKind != _ActiveGestureKind.pointer) {
+      return;
+    }
+    final pointer = event as web.PointerEvent;
+    if (_activePointerId != pointer.pointerId) {
+      return;
+    }
+    _sensor?.move(_eventPosition(pointer));
+  }
+
+  void _handlePointerUp(web.Event event) {
+    if (_activeGestureKind != _ActiveGestureKind.pointer) {
+      return;
+    }
+    final pointer = event as web.PointerEvent;
+    if (_activePointerId != pointer.pointerId) {
+      return;
+    }
+    _sensor?.end();
+    _handlePointerActive = false;
+  }
+
+  void _handlePointerCancel(web.Event event) {
+    if (_activeGestureKind != _ActiveGestureKind.pointer) {
+      return;
+    }
+    final pointer = event as web.PointerEvent;
+    if (_activePointerId != pointer.pointerId) {
+      return;
+    }
+    _sensor?.cancel();
+    _handlePointerActive = false;
+  }
+
+  void _handleMouseMove(web.Event event) {
+    if (_activeGestureKind != _ActiveGestureKind.mouse) {
+      return;
+    }
+    final mouseEvent = event as web.MouseEvent;
+    _sensor?.move(_eventPosition(mouseEvent));
+  }
+
+  void _handleMouseUp(web.Event event) {
+    if (_activeGestureKind != _ActiveGestureKind.mouse) {
+      return;
+    }
+    _sensor?.end();
+    _handlePointerActive = false;
+  }
+
+  void _endGesture() {
+    _clearWindowPointerListeners();
+    _clearWindowMouseListeners();
+    _sensor?.dispose();
+    _sensor = null;
+    _activePointerId = null;
+    _activeGestureKind = null;
+    _handlePointerActive = false;
+  }
+
+  void _startSensor({
+    required DndController controller,
+    required DndPoint position,
+    required DndInputKind inputKind,
+  }) {
     final sensor = DndPointerSensor(
       runtime: controller.runtime,
       activeRect: _measure(),
@@ -195,31 +314,50 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
     sensor.start(
       DndSensorActivationEvent(
         activeId: component.id,
-        position: DndPoint(pointer.clientX.toDouble(), pointer.clientY.toDouble()),
+        position: position,
         inputKind: inputKind,
       ),
     );
   }
 
-  void _handlePointerMove(web.Event event) {
-    final pointer = event as web.PointerEvent;
-    _sensor?.move(DndPoint(pointer.clientX.toDouble(), pointer.clientY.toDouble()));
+  void _attachWindowPointerListeners() {
+    if (!kIsWeb) {
+      return;
+    }
+
+    _windowPointerMoveSubscription ??=
+        _pointerMoveEvents.forTarget(web.window, useCapture: true).listen(_handlePointerMove);
+    _windowPointerUpSubscription ??=
+        _pointerUpEvents.forTarget(web.window, useCapture: true).listen(_handlePointerUp);
+    _windowPointerCancelSubscription ??=
+        _pointerCancelEvents.forTarget(web.window, useCapture: true).listen(_handlePointerCancel);
   }
 
-  void _handlePointerUp(web.Event event) {
-    _sensor?.end();
-    _handlePointerActive = false;
+  void _clearWindowPointerListeners() {
+    _windowPointerMoveSubscription?.cancel();
+    _windowPointerMoveSubscription = null;
+    _windowPointerUpSubscription?.cancel();
+    _windowPointerUpSubscription = null;
+    _windowPointerCancelSubscription?.cancel();
+    _windowPointerCancelSubscription = null;
   }
 
-  void _handlePointerCancel(web.Event event) {
-    _sensor?.cancel();
-    _handlePointerActive = false;
+  void _attachWindowMouseListeners() {
+    if (!kIsWeb) {
+      return;
+    }
+
+    _windowMouseMoveSubscription ??=
+        _mouseMoveEvents.forTarget(web.window, useCapture: true).listen(_handleMouseMove);
+    _windowMouseUpSubscription ??=
+        _mouseUpEvents.forTarget(web.window, useCapture: true).listen(_handleMouseUp);
   }
 
-  void _endGesture() {
-    _sensor?.dispose();
-    _sensor = null;
-    _handlePointerActive = false;
+  void _clearWindowMouseListeners() {
+    _windowMouseMoveSubscription?.cancel();
+    _windowMouseMoveSubscription = null;
+    _windowMouseUpSubscription?.cancel();
+    _windowMouseUpSubscription = null;
   }
 
   DndInputKind _inputKindFor(web.PointerEvent event) {
@@ -407,15 +545,22 @@ class _DndDraggableState extends State<DndDraggable> implements DndDraggableHand
             ? null
             : <String, EventCallback>{
                 'pointerdown': _handlePointerDown,
-                'pointermove': _handlePointerMove,
-                'pointerup': _handlePointerUp,
-                'pointercancel': _handlePointerCancel,
+                'mousedown': _handleMouseDown,
                 if (_handleCount == 0) 'keydown': _handleHostKeyDown,
               },
         [component.child],
       ),
     );
   }
+}
+
+enum _ActiveGestureKind {
+  pointer,
+  mouse,
+}
+
+DndPoint _eventPosition(web.MouseEvent event) {
+  return DndPoint(event.x, event.y);
 }
 
 class DndDraggableHandleScope extends InheritedComponent {

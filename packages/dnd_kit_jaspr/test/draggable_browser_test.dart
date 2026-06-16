@@ -73,6 +73,51 @@ void main() {
       expect(controller.state, const DndIdle());
     });
 
+    testClient('starts from a handle when the browser only emits mouse events', (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      DndDragStartEvent? startEvent;
+      final moveEvents = <DndDragMoveEvent>[];
+      DndDragEndEvent? endEvent;
+
+      tester.pumpComponent(
+        DndScope(
+          controller: controller,
+          child: DndDraggable(
+            id: const DndId('task-1'),
+            onDragStart: (event) => startEvent = event,
+            onDragMove: moveEvents.add,
+            onDragEnd: (event) => endEvent = event,
+            child: div([
+              DndDragHandle(
+                child: button([Component.text('handle')]),
+              ),
+            ]),
+          ),
+        ),
+      );
+
+      await tester.dispatchEvent(
+        find.tag('button'),
+        _mouseEvent('mousedown', x: 10, y: 10, buttons: 1),
+      );
+      await tester.dispatchEvent(
+        find.tag('button'),
+        _mouseEvent('mousemove', x: 40, y: 10, buttons: 1),
+      );
+      await tester.dispatchEvent(
+        find.tag('button'),
+        _mouseEvent('mouseup', x: 40, y: 10, buttons: 0),
+      );
+
+      expect(startEvent?.activeId, const DndId('task-1'));
+      expect(startEvent?.inputKind, DndInputKind.mouse);
+      expect(moveEvents, isNotEmpty);
+      expect(endEvent?.activeId, const DndId('task-1'));
+      expect(endEvent?.inputKind, DndInputKind.mouse);
+      expect(controller.state, const DndIdle());
+    });
+
     testClient('touch waits for the default hold while mouse starts immediately', (tester) async {
       final controller = DndController();
       addTearDown(controller.dispose);
@@ -255,6 +300,78 @@ void main() {
       expect(controller.state, const DndIdle());
     });
 
+    testClient('keeps handle dragging alive after the pointer leaves the draggable subtree',
+        (tester) async {
+      final controller = DndController();
+      addTearDown(controller.dispose);
+      DndDragStartEvent? startEvent;
+      final moveEvents = <DndDragMoveEvent>[];
+      DndDragEndEvent? endEvent;
+
+      tester.pumpComponent(
+        DndScope(
+          controller: controller,
+          child: div([
+            div(
+              styles: Styles(
+                position: Position.fixed(left: 240.px, top: 0.px),
+              ),
+              [
+                DndDroppable(
+                  id: DndId('column-2'),
+                  child: article(
+                    styles: Styles(
+                      width: 120.px,
+                      height: 120.px,
+                    ),
+                    const [Component.text('drop zone')],
+                  ),
+                ),
+              ],
+            ),
+            div(
+              styles: Styles(
+                position: Position.fixed(left: 0.px, top: 0.px),
+              ),
+              [
+                DndDraggable(
+                  id: const DndId('task-1'),
+                  onDragStart: (event) => startEvent = event,
+                  onDragMove: moveEvents.add,
+                  onDragEnd: (event) => endEvent = event,
+                  child: div([
+                    DndDragHandle(
+                      child: button([Component.text('handle')]),
+                    ),
+                  ]),
+                ),
+              ],
+            ),
+          ]),
+        ),
+      );
+
+      await tester.dispatchEvent(
+        find.tag('button'),
+        _pointerEvent('pointerdown', x: 20, y: 20, pointerType: 'mouse', pointerId: 6),
+      );
+      await tester.dispatchEvent(
+        find.tag('article'),
+        _pointerEvent('pointermove', x: 280, y: 20, pointerType: 'mouse', pointerId: 6),
+      );
+      expect(controller.overId, const DndId('column-2'));
+      await tester.dispatchEvent(
+        find.tag('article'),
+        _pointerEvent('pointerup', x: 280, y: 20, pointerType: 'mouse', pointerId: 6),
+      );
+
+      expect(startEvent?.activeId, const DndId('task-1'));
+      expect(moveEvents, isNotEmpty);
+      expect(moveEvents.last.currentPointer, const DndPoint(280, 20));
+      expect(endEvent?.overId, const DndId('column-2'));
+      expect(controller.state, const DndIdle());
+    });
+
     testClient('applies controller modifiers during keyboard dragging', (tester) async {
       final controller = DndController(
         modifiers: const <DndModifier>[
@@ -433,6 +550,26 @@ web.KeyboardEvent _keyboardEvent(String type, String key) {
       cancelable: true,
       composed: true,
       key: key,
+    ),
+  );
+}
+
+web.MouseEvent _mouseEvent(
+  String type, {
+  required int x,
+  required int y,
+  required int buttons,
+}) {
+  return web.MouseEvent(
+    type,
+    web.MouseEventInit(
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      clientX: x,
+      clientY: y,
+      buttons: buttons,
+      button: 0,
     ),
   );
 }

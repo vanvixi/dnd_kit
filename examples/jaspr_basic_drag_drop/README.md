@@ -8,11 +8,11 @@ It demonstrates:
 - `DndDraggable`, `DndDroppable`, and `DndDragHandle`;
 - `DndDragOverlay` for the active drag visual;
 - application-owned drop state;
-- shared-runtime modifiers (`restrictToHorizontalAxis` + `snapToGrid`).
+- free-form drag movement driven by the shared runtime.
 
 Current status: this example is the local app used for the US-053 browser-proof
-work. Shared modifiers are covered by browser tests, and the browser-driven
-proof now uses this app to verify real drag state and modifier behavior.
+work. Browser tests still cover shared modifiers, and the browser-driven proof
+uses this app to verify real drag state, handle activation, and lane updates.
 
 ## Run
 

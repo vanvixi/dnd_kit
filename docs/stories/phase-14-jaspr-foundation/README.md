@@ -24,6 +24,7 @@ This mirrors how the Flutter adapter was built (US-010 → US-013 …).
 | US-051 | `DndDragHandle` + mouse/touch/keyboard activation kinds | §5.1, §7 |
 | US-052 | `DndDragOverlay` via top-level/portal DOM layer | §6.3 |
 | US-053 | Modifiers wiring + `jaspr_basic_drag_drop` example + browser proof | §5.1, §8.2 |
+| US-055 | Real-browser drag handle activation regression follow-up for US-053 | §5.1, §8.2 |
 Phase C (hardening: keyboard/a11y, auto-scroll execution, diagnostics alignment)
 and Phase D (sortable presets: vertical/horizontal/grid) follow in later phases.
 

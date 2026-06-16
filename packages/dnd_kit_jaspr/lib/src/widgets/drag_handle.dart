@@ -54,6 +54,13 @@ class _DndDragHandleState extends State<DndDragHandle> {
     _scope?.draggable.markHandlePointerActive();
   }
 
+  void _handleMouseDown(web.Event event) {
+    if (component.disabled) {
+      return;
+    }
+    _scope?.draggable.markHandlePointerActive();
+  }
+
   void _clearPointerHandle(web.Event event) {
     _scope?.draggable.clearHandlePointerActive();
   }
@@ -84,8 +91,10 @@ class _DndDragHandleState extends State<DndDragHandle> {
           ? null
           : <String, EventCallback>{
               'pointerdown': _handlePointerDown,
+              'mousedown': _handleMouseDown,
               'pointerup': _clearPointerHandle,
               'pointercancel': _clearPointerHandle,
+              'mouseup': _clearPointerHandle,
               'keydown': _handleKeyDown,
             },
       [component.child],
