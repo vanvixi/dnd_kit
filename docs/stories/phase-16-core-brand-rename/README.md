@@ -27,5 +27,5 @@ pure Dart. Git history of the engine code must be preserved (whole-directory
   `dart test`, Flutter adapter + example `flutter test`).
 - Publish proof: `fvm dart pub publish --dry-run` from `packages/dnd_kit`,
   `packages/dnd_kit_flutter`, and `packages/dnd_kit_jaspr`.
-- Release act (publish + discontinue `dnd_kit_core`) is deferred to explicit
-  human go-ahead; it is irreversible.
+- The actual `0.3.0-dev.0` publish + `dnd_kit_core` discontinue act has since
+  been completed; the story packet records the dry-run proof and release order.

@@ -1,8 +1,8 @@
 # API Principles
 
-## Flutter-Style Naming
+## Shared Family Naming
 
-Use Flutter-native names:
+Use family-consistent names across adapters where practical:
 
 - `DndScope`
 - `DndController`
@@ -16,11 +16,18 @@ Use Flutter-native names:
 Avoid React-specific API shapes such as `DndContext`, `useDraggable`,
 `useDroppable`, or hook-style naming.
 
-## Controlled And Uncontrolled Scope
+Adapter barrels stay framework-specific:
 
-`DndScope` must support both lifecycle modes.
+- Flutter apps import `package:dnd_kit_flutter/dnd_kit_flutter.dart`.
+- Jaspr apps import `package:dnd_kit_jaspr/dnd_kit_jaspr.dart`.
+- Engine-only users import `package:dnd_kit/dnd_kit.dart`.
 
-Uncontrolled:
+## Shared Scope And Controller Lifecycle
+
+Adapters that expose `DndScope` / `DndController` pairing must support both
+controlled and uncontrolled lifecycle modes.
+
+Flutter-style example:
 
 ```dart
 DndScope(
@@ -91,10 +98,23 @@ Recoverable registry diagnostics should also be available through
 `DndDiagnosticsConfig.onWarning` so applications can surface actionable
 warnings without depending only on debug assertions.
 
-## Activation Principles
+## Shared Drag And Registry Principles
 
-Drag activation must coexist with scrolling so draggables work inside lazy
-lists (`ListView.builder`).
+- Drag activation must coexist with scrolling; adapters should specialize the
+  exact activation mechanics to their platform without changing the core drag
+  contract.
+- Sortable strategies operate on the measured (visible) item subset, so reorder
+  intent stays correct when off-screen items are not currently measured.
+- An active drag and its registration survive the source element being recycled
+  during the drag.
+- Registration is owner-aware: a new owner can take over an id before the old
+  owner disposes, and a departing owner cannot remove a registration a newer
+  owner already took over. If duplicate owners still remain after
+  reconciliation, `DndDiagnosticsConfig.onWarning` emits a deferred duplicate
+  warning. The strict duplicate-id debug assertion still applies only to direct
+  `DndRegistry` usage without an `owner`.
+
+## Flutter Adapter Notes
 
 - `DndDraggable` activates through an arena-winning `MultiDragGestureRecognizer`,
   not a plain pan recognizer, so a drag can start inside a `Scrollable`.
@@ -112,25 +132,20 @@ lists (`ListView.builder`).
   (and `longPressActivation`) drag after a hold.
 - For immediate touch drag (e.g. outside a scrollable), set an explicit
   `activationConstraint: DndSensorActivationConstraint(distance: …)`.
-
-## Lazy List Principles
-
-- Sortable strategies operate on the measured (visible) item subset, so reorder
-  intent stays correct when off-screen items are not built.
-- An active drag and its registration survive the source element being recycled
-  by a lazy list mid-drag.
-- Registration is owner-aware: a lazy list may re-mount a keyed item (new owner)
-  before disposing the old element without tripping duplicate-id detection, and
-  a departing owner cannot remove a registration a newer owner took over. As a
-  result, registering an id through a widget is last-wins during the current
-  frame; if multiple widget owners still claim the same id after reconciliation,
-  `DndDiagnosticsConfig.onWarning` emits a deferred duplicate warning. The
-  strict duplicate-id debug assertion still applies only to direct
-  `DndRegistry` use without an `owner`.
 - When using `ListView.builder` with reorderable content, providing
   `findChildIndexCallback` is recommended so keyed items are relocated (not
   rebuilt) on reorder. It is a performance optimization, not a correctness
   requirement.
+
+## Jaspr Adapter Notes
+
+- The browser adapter supports pointer, mouse, touch, and keyboard activation,
+  DOM measuring, overlay rendering, browser auto-scroll execution, and
+  live-region accessibility over the shared engine.
+- Browser access must remain SSR-safe: no DOM requirement at import time, and
+  browser-only behavior stays guarded behind runtime checks.
+- Where parity is portable, Flutter and Jaspr should preserve the same
+  drag/drop meaning even when the framework-specific event wiring differs.
 
 ## Performance Principles
 
@@ -138,4 +153,4 @@ lists (`ListView.builder`).
 - Update overlays independently from source layout.
 - Cache measuring data during drag where possible.
 - Run collision detection at most once per frame.
-- Keep core algorithms testable without Flutter.
+- Keep core algorithms testable without Flutter or Jaspr.

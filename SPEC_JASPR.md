@@ -1,5 +1,13 @@
 # `dnd_kit_jaspr` — Product & Technical SPEC v0.1
 
+> Historical input note:
+> This file is retained as the original Jaspr design spec. It is not the living
+> product contract. Parts of its package naming and topology, including
+> references to `dnd_kit_core` and the old Flutter umbrella shape, were
+> superseded by ADR 0017 / US-060 and ADR 0018 / US-061. For current truth, use
+> `docs/product/*`, `docs/ARCHITECTURE.md`, the phase 14-17 story docs, and the
+> relevant decision records under `docs/decisions/`.
+
 ## 1. Product Summary
 
 `dnd_kit_jaspr` is a Jaspr adapter for the `dnd_kit` family. It brings the

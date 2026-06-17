@@ -1,5 +1,9 @@
 # Release Roadmap
 
+This roadmap captures the major product phases that shaped the current
+`dnd_kit` family. Durable implementation/proof status lives in
+`scripts/bin/harness-cli query matrix`.
+
 ## Phase 0 - Repo Foundation And Architecture Freeze
 
 Set up the monorepo, package structure, coding conventions, API direction, and
@@ -88,3 +92,80 @@ Adoption hardening also makes draggables and sortables work inside scrollables
 and lazy `ListView.builder` lists through
 `docs/stories/phase-10-post-publish-adoption/US-040-drag-inside-scrollable-and-lazy-lists/`
 (see `docs/decisions/0010-draggable-arena-gesture.md`).
+
+## Phase 11 - First Public Release
+
+Cut the first stable public release line for the original engine, Flutter
+adapter, and umbrella topology.
+
+First story: `docs/stories/phase-11-first-public-release/US-046-publish-core-and-flutter-0-1-0.md`.
+
+## Phase 12 - Multi-Framework Foundation
+
+Prepare the package family for multiple adapters:
+
+- rename the Flutter adapter package to `dnd_kit_flutter`;
+- keep `dnd_kit` as the Flutter umbrella during the transitional topology;
+- clarify family cross-links and package-selection guidance.
+
+Key stories:
+
+- `docs/stories/phase-12-multi-framework-foundation/US-043-rename-flutter-package-for-multi-framework.md`
+- `docs/stories/phase-12-multi-framework-foundation/US-045-clarify-dnd-kit-scope-and-cross-link-family.md`
+
+## Phase 13 - Shared Runtime Extraction
+
+Move the framework-neutral drag runtime and measuring-cache contract into the
+pure Dart engine so multiple adapters can share one drag engine.
+
+Key story:
+
+- `docs/stories/phase-13-shared-runtime-extraction/US-047-extract-shared-drag-runtime/overview.md`
+
+## Phase 14 - Jaspr Adapter Foundation
+
+Establish `dnd_kit_jaspr` as a browser/Jaspr peer adapter over the shared
+engine:
+
+- package scaffold;
+- scope/controller;
+- draggable/droppable;
+- drag handle;
+- drag overlay;
+- browser modifier wiring and example proof.
+
+Phase README: `docs/stories/phase-14-jaspr-foundation/README.md`.
+
+## Phase 15 - Jaspr Adapter Hardening
+
+Harden the Jaspr adapter for production browser behavior:
+
+- browser auto-scroll execution;
+- keyboard and accessibility support;
+- diagnostics alignment with Flutter;
+- first public Jaspr dev-release standardization.
+
+Phase README: `docs/stories/phase-15-jaspr-hardening/README.md`.
+
+## Phase 16 - Core As Brand Rename
+
+Make the bare brand name `dnd_kit` the pure Dart engine, remove the Flutter
+umbrella, and repoint both adapters to the renamed engine package.
+
+Phase README: `docs/stories/phase-16-core-brand-rename/README.md`.
+
+## Phase 17 - Flutter Upgrade And Workspace Unification
+
+Upgrade the development Flutter SDK to 3.44.2 and fold the Jaspr example into
+the shared workspace so the repository resolves as one package graph.
+
+Phase README: `docs/stories/phase-17-flutter-upgrade-workspace/README.md`.
+
+## Current State
+
+The repository has implemented work through `US-061`. The Flutter adapter, the
+pure Dart engine, and the Jaspr adapter now share the `dnd_kit` brand family
+under the post-US-060 topology, and the workspace is unified under the Phase 17
+toolchain. Future work should extend this roadmap through new product docs,
+story packets, and decisions rather than by reviving the old umbrella/core
+topology from the historical specs.

@@ -1,5 +1,11 @@
 # `dnd_kit` Flutter — Product & Technical SPEC v0.1
 
+> Historical input note:
+> This file is retained as the original seed spec for the repository. It is not
+> the living product contract. For current truth, use `docs/product/*`,
+> `docs/stories/*`, and `docs/decisions/*`. For the Jaspr initiative, see
+> `SPEC_JASPR.md` only as historical design input.
+
 ## 1. Product Summary
 
 `dnd_kit` is a drag-and-drop toolkit for Flutter, inspired by React dnd-kit but redesigned around Flutter’s widget, render, gesture, and state models.

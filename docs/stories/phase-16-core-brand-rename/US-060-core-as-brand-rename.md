@@ -61,8 +61,6 @@ preserved through the rename.
 - Queries:
   `rg -n "dnd_kit_core|umbrella" packages examples docs`
 - Domain rules: package-topology and release change; no runtime API change.
-- The publish + `dnd_kit_core` discontinue act is irreversible and deferred to
-  explicit human go-ahead.
 
 ## Validation
 
@@ -74,7 +72,7 @@ preserved through the rename.
 | Integration | Not required beyond release/validation. |
 | E2E | Not required for the rename act. |
 | Platform | `dart pub get` + `fvm dart run melos run validate` + `fvm dart pub publish --dry-run` for the three packages pass with the finalized names/versions. |
-| Release | Story records the publish order (`dnd_kit` -> `dnd_kit_flutter` -> `dnd_kit_jaspr`) and the `dnd_kit_core` discontinue step, or the exact blocker if deferred. |
+| Release | Story records the published order (`dnd_kit` -> `dnd_kit_flutter` -> `dnd_kit_jaspr`) and the completed `dnd_kit_core` discontinue step. |
 
 ## Harness Delta
 
@@ -104,14 +102,15 @@ explicit and auditable, with ADR 0017 superseding ADR 0014.
 - `fvm dart pub publish --dry-run` passed for `packages/dnd_kit`,
   `packages/dnd_kit_flutter`, and `packages/dnd_kit_jaspr` — only the expected
   dirty-git-tree warning and the intentional version-bump hint.
+- Owner confirmed after implementation that the `0.3.0-dev.0` line was
+  published and `dnd_kit_core` was discontinued on pub.dev, so the release act
+  is no longer pending.
 - Harness: intake #117, decision `0017-core-as-brand-package`, trace #133
   (detailed 3/3), `story verify US-060` = pass.
 
 ## Release
 
-- Publish order when going live: `dnd_kit 0.3.0-dev.0` ->
-  `dnd_kit_flutter 0.3.0-dev.0` -> `dnd_kit_jaspr 0.3.0-dev.0`.
-- Then mark `dnd_kit_core` discontinued on pub.dev (published `0.1.0` /
+- Published order: `dnd_kit 0.3.0-dev.0` -> `dnd_kit_flutter 0.3.0-dev.0` ->
+  `dnd_kit_jaspr 0.3.0-dev.0`.
+- `dnd_kit_core` has been marked discontinued on pub.dev (published `0.1.0` /
   `0.2.0-dev.0` versions stay resolvable; no new releases).
-- Actual publish and discontinue are intentionally deferred pending a clean
-  commit and explicit human go-ahead for the irreversible steps.

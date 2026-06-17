@@ -9,6 +9,10 @@ packages/
   dnd_kit_jaspr/    # Jaspr adapter
 examples/
   basic_drag_drop/
+  kanban_board/
+  multi_container_sortable/
+  example_gallery/
+  jaspr_basic_drag_drop/
 docs/
 ```
 
@@ -22,6 +26,10 @@ pattern), so Flutter and Jaspr adapters depend on `dnd_kit` directly.
 > `dnd_kit_flutter`, and the engine was published as `dnd_kit_core`. As of the
 > `0.3.0-dev.0` line (US-060 / ADR 0017), the engine took the `dnd_kit` name and
 > `dnd_kit_core` is discontinued.
+
+For historical design input, see `SPEC.md` and `SPEC_JASPR.md`. For the current
+topology, trust this file, `docs/ARCHITECTURE.md`, the phase 14-17 story docs,
+and ADRs 0016-0018.
 
 ## Package Boundaries
 
@@ -145,3 +153,7 @@ environment:
   sdk: ">=3.5.0 <4.0.0"
   flutter: ">=3.24.0"
 ```
+
+Published package constraints stay at that level. The repository's development
+toolchain pin lives separately in `.fvmrc` and currently tracks Flutter 3.44.2
+per US-061 / ADR 0018.

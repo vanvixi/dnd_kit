@@ -74,7 +74,8 @@ experimental multi-container sortable exploration through `US-030`, the Phase
 through `US-035`, the shared-runtime multi-framework extraction through
 `US-047`, the first Jaspr adapter foundation/hardening plus first public
 dev-release standardization through `US-059`, and the core-as-brand package
-rename (`dnd_kit_core` → `dnd_kit`) through `US-060`.
+rename (`dnd_kit_core` → `dnd_kit`) through `US-060`, plus the Flutter 3.44.2
+workspace unification through `US-061`.
 
 The living source of truth is split from historical [SPEC.md](SPEC.md) input
 material into product docs, story packets, validation expectations, and decision

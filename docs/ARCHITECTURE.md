@@ -1,7 +1,7 @@
 # Architecture
 
-This repository now targets `dnd_kit`, a Flutter drag-and-drop toolkit with a
-pure Dart core and a primary Flutter package that includes sortable presets.
+This repository now targets `dnd_kit`, a drag-and-drop toolkit with a pure
+Dart core plus Flutter and Jaspr adapters.
 
 The detailed living product contract is split across:
 
@@ -10,7 +10,14 @@ The detailed living product contract is split across:
 - `docs/product/api-principles.md`
 - `docs/product/release-roadmap.md`
 
-The seed specification remains in `SPEC.md` as historical input material.
+Historical input material remains in:
+
+- `SPEC.md` for the original repository/product seed specification
+- `SPEC_JASPR.md` for the Jaspr adapter design input that informed the shared
+  runtime extraction and adapter direction
+
+Those specs are no longer the living contract; ongoing truth lives in the
+product docs, story packets, and decision records under `docs/`.
 
 ## Product Surfaces
 
@@ -19,22 +26,23 @@ The seed specification remains in `SPEC.md` as historical input material.
   measuring-cache contract (`DndMeasuringRegistry`).
 - Flutter widget APIs for drag scopes, controllers, draggables, droppables,
   handles, overlays, measuring, sensors, auto-scroll, and accessibility.
+- Jaspr component APIs for drag scopes, controllers, draggables, droppables,
+  handles, overlays, browser measuring, auto-scroll, and accessibility.
 - Sortable preset APIs for vertical lists, horizontal lists, and grids.
-- Example Flutter apps used as adoption guides and integration proof.
+- Example Flutter and Jaspr apps used as adoption guides and integration proof.
 
 ## Package Layers
 
 ```text
-dnd_kit_core
-  <- dnd_kit_flutter   <- dnd_kit (umbrella)
+dnd_kit
+  <- dnd_kit_flutter
   <- dnd_kit_jaspr
 ```
 
-`dnd_kit_core` is the shared engine. `dnd_kit_flutter` and `dnd_kit_jaspr` are
-peer adapters over it; neither depends on the other. `dnd_kit` is a Flutter-only
-umbrella that re-exports `dnd_kit_flutter`. Flutter sortable widgets live in
-`dnd_kit_flutter`; the sortable move/strategy math they use is shared from
-`dnd_kit_core`.
+`dnd_kit` is the shared engine. `dnd_kit_flutter` and `dnd_kit_jaspr` are peer
+adapters over it; neither depends on the other. There is no umbrella package.
+Flutter sortable widgets live in `dnd_kit_flutter`; the sortable
+move/strategy math they use is shared from `dnd_kit`.
 
 ## Dependency Rule
 
@@ -43,10 +51,9 @@ each other.
 
 | Package | May depend on | Must not depend on |
 | --- | --- | --- |
-| `dnd_kit_core` | `collection`, `meta`, Dart SDK | Flutter, Jaspr, `dart:ui`, DOM/browser types, widget/render/gesture APIs, state management packages |
-| `dnd_kit_flutter` | Flutter SDK, `dnd_kit_core`, small annotations/utilities | Jaspr, `dnd_kit_jaspr`, external state management |
-| `dnd_kit_jaspr` | `dnd_kit_core`, `jaspr`, `universal_web` (for DOM), `meta` | Flutter, `dart:ui`, the `dnd_kit` umbrella, `dnd_kit_flutter`, external state management |
-| `dnd_kit` | Flutter SDK, `dnd_kit_core`, small annotations/utilities | Jaspr, external state management |
+| `dnd_kit` | `collection`, `meta`, Dart SDK | Flutter, Jaspr, `dart:ui`, DOM/browser types, widget/render/gesture APIs, state management packages |
+| `dnd_kit_flutter` | Flutter SDK, `dnd_kit`, small annotations/utilities | Jaspr, `dnd_kit_jaspr`, external state management |
+| `dnd_kit_jaspr` | `dnd_kit`, `jaspr`, `universal_web` (for DOM), `meta` | Flutter, `dart:ui`, `dnd_kit_flutter`, external state management |
 
 ## Boundary Rules
 
@@ -71,12 +78,12 @@ intent; applications own mutation.
 
 ## Shared Runtime
 
-`dnd_kit_core` owns the single drag engine. `DndRuntime` holds the drag state
+`dnd_kit` owns the single drag engine. `DndRuntime` holds the drag state
 machine, collision orchestration, modifier application, and measuring-cache
 interactions in pure Dart. Adapters wrap it with their own change-notification:
 `dnd_kit_flutter`'s `DndController extends ChangeNotifier` forwards
-`notifyListeners`, and the future `dnd_kit_jaspr` adapter wraps the same runtime
-for the browser. See `SPEC_JASPR.md` §4.3 and ADR 0015.
+`notifyListeners`, and `dnd_kit_jaspr` wraps the same runtime for the browser.
+See `SPEC_JASPR.md` §4.3 and ADR 0015.
 
 The shared layer also owns the sortable contract and strategy math
 (`SortableMoveDetails`, `SortableStrategies` for vertical/horizontal/grid) and
@@ -89,3 +96,7 @@ scrolling and delegates the math.
 
 - `docs/decisions/0007-dnd-kit-package-architecture.md`
 - `docs/decisions/0015-shared-runtime-in-core.md`
+- `docs/decisions/0017-core-as-brand-package.md`
+- `docs/decisions/0018-flutter-3-44-workspace-unification.md`
+
+For historical Jaspr-specific design context, also see `SPEC_JASPR.md`.
