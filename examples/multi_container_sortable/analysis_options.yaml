@@ -1,5 +1,11 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  errors:
+    # This example intentionally showcases experimental multi-container sortable
+    # APIs (SortableContainer, SortableMultiContainer).
+    experimental_member_use: ignore
+
 linter:
   rules:
     avoid_print: false
