@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0-dev.1
+
+- Adds the Jaspr sortable preset at parity with the Flutter adapter:
+  `SortableScope` (item order + pluggable `SortableStrategy`, default
+  `verticalList`) and `SortableItem` (a draggable + droppable that reports
+  `SortableMoveDetails` reorder intent via `onMove`).
+- Reuses the shared `dnd_kit` engine reorder math, so Jaspr and Flutter compute
+  identical move intent and Jaspr inherits the vertical/horizontal/grid
+  single-container strategies already re-exported from the engine. No engine or
+  Flutter change. See ADR 0019.
+- Multi-container sorting (`SortableContainer`/`SortableMultiContainer`) is not
+  included; it remains a Flutter-only experimental feature for now.
+
 ## 0.3.0-dev.0
 
 - Depends on the renamed engine package `dnd_kit: ^0.3.0-dev.0` (previously

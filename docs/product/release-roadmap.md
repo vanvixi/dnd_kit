@@ -161,11 +161,20 @@ the shared workspace so the repository resolves as one package graph.
 
 Phase README: `docs/stories/phase-17-flutter-upgrade-workspace/README.md`.
 
+## Phase 18 - Jaspr Sortable Preset
+
+Give `dnd_kit_jaspr` a sortable preset at parity with the Flutter adapter
+(`SortableScope`, `SortableItem`) over the shared engine reorder math, so both
+adapters compute identical move intent. Additive and adapter-local;
+`dnd_kit_jaspr` bumps to `0.3.0-dev.1`.
+
+Phase README: `docs/stories/phase-18-jaspr-sortable/README.md`.
+
 ## Current State
 
-The repository has implemented work through `US-061`. The Flutter adapter, the
-pure Dart engine, and the Jaspr adapter now share the `dnd_kit` brand family
-under the post-US-060 topology, and the workspace is unified under the Phase 17
-toolchain. Future work should extend this roadmap through new product docs,
-story packets, and decisions rather than by reviving the old umbrella/core
-topology from the historical specs.
+The repository has implemented work through `US-062`. The Flutter adapter, the
+pure Dart engine, and the Jaspr adapter share the `dnd_kit` brand family under
+the post-US-060 topology, the workspace is unified under the Phase 17 toolchain,
+and both adapters now ship a sortable preset over the shared engine. Future work
+should extend this roadmap through new product docs, story packets, and decisions
+rather than by reviving the old umbrella/core topology from the historical specs.
