@@ -183,14 +183,15 @@ Phase README: `docs/stories/phase-19-horizontal-auto-scroll/README.md`.
 
 ## Current State
 
-The repository has implemented work through `US-064`. The Flutter adapter, the
+The repository has implemented work through `US-065`. The Flutter adapter, the
 pure Dart engine, and the Jaspr adapter share the `dnd_kit` brand family under
 the post-US-060 topology, the workspace is unified under the Phase 17 toolchain,
 and both adapters now ship a sortable preset over the shared engine. Phase 19
-has now closed its discovery slice and its first implementation slice:
-horizontal auto-scroll is considered feasible through an additive shared-core
-axis selector, and `dnd_kit` now exposes axis-aware shared auto-scroll math.
-Adapter execution-layer adoption remains deferred to follow-up stories. Future
-work should extend this roadmap through new product docs, story packets, and
-decisions rather than by reviving the old umbrella/core topology from the
-historical specs.
+has now closed its discovery slice, its shared-core implementation slice, and
+its Flutter execution slice: horizontal auto-scroll is considered feasible
+through an additive shared-core axis selector, `dnd_kit` now exposes axis-aware
+shared auto-scroll math, and `dnd_kit_flutter` plus the Kanban example now use
+that shared contract for horizontal container auto-scroll. Jaspr horizontal
+execution remains deferred to a follow-up story. Future work should extend this
+roadmap through new product docs, story packets, and decisions rather than by
+reviving the old umbrella/core topology from the historical specs.

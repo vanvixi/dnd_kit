@@ -23,7 +23,8 @@ requirements.
 - `packages/dnd_kit/lib/src/auto_scroll.dart`
 - `packages/dnd_kit_flutter/lib/src/widgets/auto_scroll.dart`
 - `packages/dnd_kit_jaspr/lib/src/widgets/auto_scroll.dart`
-- `examples/kanban_board/lib/horizontal_board_auto_scroll.dart`
+- `examples/kanban_board/lib/main.dart` (now the living home of the Kanban
+  horizontal board wiring; discovery originally audited a dedicated helper)
 - Existing auto-scroll tests in Flutter and Jaspr.
 
 ## Commands
@@ -48,10 +49,9 @@ rg -n "dndAutoScrollVelocity|DndAutoScrollOptions|scrollTop|scrollLeft|maxScroll
     reuse posture and can map horizontal execution to `scrollLeft`,
     `scrollWidth`, and `clientWidth` without changing the measurement refresh
     model or SSR guardrails.
-  - `examples/kanban_board/lib/horizontal_board_auto_scroll.dart` proves a
-    real horizontal Flutter use case exists today, but it also shows that the
-    current app-owned implementation duplicates threshold and velocity math that
-    belongs in the shared core.
+  - The Kanban example proved a real horizontal Flutter use case existed at
+    discovery time, but it also showed that the then app-owned implementation
+    duplicated threshold and velocity math that belonged in the shared core.
 - Chosen direction:
   - the feature is feasible without adapter-specific math forks;
   - the preferred additive API shape is one shared `dndAutoScrollVelocity(...)`

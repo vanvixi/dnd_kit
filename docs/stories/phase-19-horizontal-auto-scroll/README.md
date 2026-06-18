@@ -1,8 +1,9 @@
 # Phase 19 — Cross-Adapter Horizontal Auto-Scroll
 
-This phase explores the next parity gap after `US-062`: the shared auto-scroll
-math and both adapter surfaces are still vertical-only, even though the Flutter
-Kanban example already contains app-owned horizontal board auto-scroll logic.
+This phase explores and closes the next parity gap after `US-062`: the shared
+auto-scroll math is now axis-aware, the Flutter adapter now supports horizontal
+container auto-scroll, and the remaining adapter gap is Jaspr execution-layer
+adoption.
 
 ## Principle
 
@@ -27,10 +28,10 @@ package slices so the shared API direction is proven before adapters adopt it.
 
 ## Follow-Up
 
-With the discovery story and the core contract slice now complete, subsequent
-implementation work should continue along package boundaries:
+With discovery, the shared-core contract slice, and the Flutter execution slice
+now complete, subsequent implementation work should continue along package
+boundaries:
 
-- Flutter execution layer adoption;
 - Jaspr execution layer adoption.
 
 The discovery story closed with those slices recommended and with these
@@ -48,5 +49,7 @@ explicit deferrals:
 - Design proof: the story packet records the recommended API shape, scope
   boundaries, and follow-up slices without weakening existing validation.
 - Core implementation proof now exists in `US-064` (`dart test` + `dart analyze`
-  for `packages/dnd_kit`), `US-065` extends that ladder to Flutter widget and
-  example proof, and later stories will add Jaspr browser tests.
+  for `packages/dnd_kit`).
+- Flutter implementation proof now exists in `US-065` (`flutter test` +
+  `dart analyze` for `packages/dnd_kit_flutter`, plus Kanban example proof).
+- Later stories can add Jaspr browser tests for horizontal execution.

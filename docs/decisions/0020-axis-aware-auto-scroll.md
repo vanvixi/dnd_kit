@@ -15,9 +15,10 @@ the current contract is vertical-only:
   `localPointer.y` and `viewportSize.height`.
 - `dnd_kit_flutter` and `dnd_kit_jaspr` both delegate to that function and only
   execute platform scrolling.
-- `examples/kanban_board/lib/horizontal_board_auto_scroll.dart` already carries
-  app-owned horizontal Flutter auto-scroll logic, which duplicates threshold and
-  velocity math outside the shared core.
+- At discovery time, the Kanban example still carried app-owned horizontal
+  Flutter auto-scroll logic, which duplicated threshold and velocity math
+  outside the shared core before `US-065` migrated it onto the shared Flutter
+  surface.
 
 After `US-062`, horizontal auto-scroll is the next parity gap between the two
 adapters. Before implementation, the repo needed one durable answer to these
@@ -75,8 +76,8 @@ Positive:
 
 - One shared velocity curve remains the source of truth for both adapters.
 - Current vertical behavior stays source-compatible through a defaulted axis.
-- The Kanban board's horizontal reference can migrate toward library APIs
-  without inventing new product semantics.
+- The Kanban board's horizontal reference can migrate onto library APIs without
+  inventing new product semantics.
 
 Tradeoffs:
 

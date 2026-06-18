@@ -14,8 +14,8 @@ In scope:
 - Audit the current vertical-only auto-scroll math in `dnd_kit`.
 - Audit the Flutter and Jaspr execution layers that currently consume that
   math.
-- Compare the library gap against the app-owned Flutter reference in
-  `examples/kanban_board/lib/horizontal_board_auto_scroll.dart`.
+- Compare the library gap against the app-owned Flutter horizontal board
+  reference that existed in the Kanban example at discovery time.
 - Choose the preferred shared API direction for horizontal support.
 - Define adapter-facing implications for Flutter and Jaspr.
 - Document follow-up implementation slices and whether an ADR is required.

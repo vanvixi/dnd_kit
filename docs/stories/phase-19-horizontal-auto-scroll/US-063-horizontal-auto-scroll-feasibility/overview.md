@@ -14,9 +14,10 @@ Auto-scroll is implemented today, but only for the vertical axis:
   viewport and drives `scrollTop` vertically. Its docs and source both state
   that horizontal auto-scroll is not yet supported, and `US-056` deferred it
   until the shared core owned a DOM-free horizontal axis.
-- `examples/kanban_board/lib/horizontal_board_auto_scroll.dart` already
-  contains app-owned horizontal board auto-scroll in Flutter, with local
-  threshold/velocity math that is intentionally outside the shared library.
+- At discovery time, the Kanban example still contained app-owned horizontal
+  board auto-scroll in Flutter, with local threshold/velocity math that was
+  intentionally outside the shared library before later migration into the
+  shared Flutter surface.
 
 ## Target Behavior
 

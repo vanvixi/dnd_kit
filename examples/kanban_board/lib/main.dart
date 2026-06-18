@@ -2,7 +2,6 @@ import 'package:dnd_kit_flutter/dnd_kit_flutter.dart';
 import 'package:flutter/material.dart';
 
 import 'collision_detector.dart';
-import 'horizontal_board_auto_scroll.dart';
 import 'kanban_board_utils.dart';
 import 'kanban_column_view.dart';
 import 'kanban_task_tile.dart';
@@ -335,9 +334,14 @@ class _KanbanBoardExampleState extends State<KanbanBoardExample> {
         ),
         body: Stack(
           children: <Widget>[
-            HorizontalBoardAutoScroll(
+            DndAutoScroll(
+              axis: DndScrollAxis.horizontal,
               controller: _controller,
               scrollController: _boardScrollController,
+              options: const DndAutoScrollOptions(
+                edgeThreshold: 96,
+                maxVelocity: 14,
+              ),
               child: ListView.builder(
                 key: const ValueKey<String>('kanban-board-scroll'),
                 controller: _boardScrollController,

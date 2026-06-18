@@ -8,7 +8,7 @@ import '../scope/scope.dart';
 /// [DndAutoScrollOptions] and the edge/velocity math are framework-neutral and
 /// live in `dnd_kit`; the options class is re-exported here so existing
 /// imports keep working.
-export 'package:dnd_kit/dnd_kit.dart' show DndAutoScrollOptions;
+export 'package:dnd_kit/dnd_kit.dart' show DndAutoScrollOptions, DndScrollAxis;
 
 /// Controls drag-driven scrolling for a single [Scrollable].
 final class DndAutoScrollController {
@@ -17,6 +17,7 @@ final class DndAutoScrollController {
     required ScrollPosition position,
     required BuildContext viewportContext,
     required TickerProvider vsync,
+    this.axis = DndScrollAxis.vertical,
     this.options = const DndAutoScrollOptions(),
   })  : _position = position,
         _viewportContext = viewportContext {
@@ -26,6 +27,7 @@ final class DndAutoScrollController {
   ScrollPosition _position;
   BuildContext _viewportContext;
   late Ticker _ticker;
+  DndScrollAxis axis;
   DndAutoScrollOptions options;
   DndPoint? _pointer;
 
@@ -122,12 +124,13 @@ final class DndAutoScrollController {
       scrollPixels: position.pixels,
       minScrollExtent: position.minScrollExtent,
       maxScrollExtent: position.maxScrollExtent,
+      axis: axis,
       options: options,
     );
   }
 }
 
-/// Enables vertical drag auto-scroll for the nearest [Scrollable] descendant.
+/// Enables drag auto-scroll for the nearest [Scrollable] descendant.
 class DndAutoScroll extends StatefulWidget {
   /// Creates an auto-scroll wrapper.
   const DndAutoScroll({
@@ -135,6 +138,7 @@ class DndAutoScroll extends StatefulWidget {
     this.controller,
     this.scrollController,
     this.enabled = true,
+    this.axis = DndScrollAxis.vertical,
     this.options = const DndAutoScrollOptions(),
     required this.child,
   });
@@ -152,10 +156,13 @@ class DndAutoScroll extends StatefulWidget {
   /// Whether auto-scroll should react to active drags.
   final bool enabled;
 
+  /// Which scroll axis to drive.
+  final DndScrollAxis axis;
+
   /// Auto-scroll activation and velocity settings.
   final DndAutoScrollOptions options;
 
-  /// The subtree containing a vertical [Scrollable].
+  /// The subtree containing a [Scrollable] on the selected [axis].
   final Widget child;
 
   @override
@@ -180,7 +187,9 @@ class _DndAutoScrollState extends State<DndAutoScroll> with TickerProviderStateM
     super.didUpdateWidget(oldWidget);
     _syncController();
     _scheduleScrollableLookup();
-    _autoScrollController?.options = widget.options;
+    _autoScrollController
+      ?..axis = widget.axis
+      ..options = widget.options;
     if (!widget.enabled) {
       _autoScrollController?.stop();
     }
@@ -238,8 +247,16 @@ class _DndAutoScrollState extends State<DndAutoScroll> with TickerProviderStateM
   }
 
   bool _handleScrollMetrics(ScrollMetricsNotification notification) {
+    final explicitScrollController = widget.scrollController;
+    if (explicitScrollController != null) {
+      if (explicitScrollController.hasClients) {
+        _handlePositionReady(explicitScrollController.position);
+      }
+      return false;
+    }
+
     final scrollable = Scrollable.maybeOf(notification.context);
-    if (scrollable != null) {
+    if (scrollable != null && _matchesAxis(scrollable)) {
       _handleScrollableReady(scrollable);
     }
     return false;
@@ -261,6 +278,7 @@ class _DndAutoScrollState extends State<DndAutoScroll> with TickerProviderStateM
         position: position,
         viewportContext: viewportContext,
         vsync: this,
+        axis: widget.axis,
         options: widget.options,
       );
     } else {
@@ -268,6 +286,7 @@ class _DndAutoScrollState extends State<DndAutoScroll> with TickerProviderStateM
         ..updatePosition(position)
         ..updateViewport(viewportContext)
         ..updateVsync(this)
+        ..axis = widget.axis
         ..options = widget.options;
     }
 
@@ -311,8 +330,11 @@ class _DndAutoScrollState extends State<DndAutoScroll> with TickerProviderStateM
       }
 
       if (element is StatefulElement && element.state is ScrollableState) {
-        found = element.state as ScrollableState;
-        return;
+        final scrollable = element.state as ScrollableState;
+        if (_matchesAxis(scrollable)) {
+          found = scrollable;
+          return;
+        }
       }
 
       element.visitChildElements(visit);
@@ -320,5 +342,13 @@ class _DndAutoScrollState extends State<DndAutoScroll> with TickerProviderStateM
 
     (context as Element).visitChildElements(visit);
     return found;
+  }
+
+  bool _matchesAxis(ScrollableState scrollable) {
+    final scrollableAxis = axisDirectionToAxis(scrollable.axisDirection);
+    return switch (widget.axis) {
+      DndScrollAxis.vertical => scrollableAxis == Axis.vertical,
+      DndScrollAxis.horizontal => scrollableAxis == Axis.horizontal,
+    };
   }
 }
