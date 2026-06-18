@@ -28,8 +28,8 @@ pattern), so Flutter and Jaspr adapters depend on `dnd_kit` directly.
 > `dnd_kit_core` is discontinued.
 
 For historical design input, see `SPEC.md` and `SPEC_JASPR.md`. For the current
-topology, trust this file, `docs/ARCHITECTURE.md`, the phase 14-17 story docs,
-and ADRs 0016-0018.
+topology, trust this file, `docs/ARCHITECTURE.md`, the phase 14-18 story docs,
+and ADRs 0016-0019.
 
 ## Package Boundaries
 
@@ -111,9 +111,15 @@ Owns:
 - `DndDroppable`
 - `DndDragHandle`
 - `DndDragOverlay`
+- `SortableScope`
+- `SortableItem`
 - browser measuring and collision execution
 - browser auto-scroll execution
 - live-region accessibility hooks and accessible labels/descriptions
+
+Jaspr inherits the shared single-container sortable strategies (vertical list,
+horizontal list, and grid) from `dnd_kit`. Multi-container sorting remains a
+Flutter-only experimental feature for now.
 
 Must not:
 

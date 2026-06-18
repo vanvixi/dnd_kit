@@ -8,14 +8,15 @@ Flutter behave as peer adapters over one drag runtime — the same domain model,
 drag lifecycle, collision logic, modifiers, and sortable math. It depends only
 on `dnd_kit` and `jaspr` (no Flutter).
 
-> Status: first public development release. This package provides `DndScope`,
+> Status: current public development release. This package provides `DndScope`,
 > `DndController`, `DndDraggable`, `DndDroppable`, `DndDragHandle`,
-> `DndDragOverlay`, `DndAutoScroll`, and `DndLiveRegion` over the shared runtime.
-> Shared modifiers are exercised in browser tests, and
+> `DndDragOverlay`, `DndAutoScroll`, `DndLiveRegion`, `SortableScope`, and
+> `SortableItem` over the shared runtime. Shared modifiers and sortable
+> behavior are exercised in browser and component tests, and
 > `examples/jaspr_basic_drag_drop` is the runnable app used for browser proof.
-> Sortable presets are still in progress. See `SPEC_JASPR.md`,
-> `docs/stories/phase-14-jaspr-foundation/`, and
-> `docs/stories/phase-15-jaspr-hardening/`.
+> See `SPEC_JASPR.md`, `docs/stories/phase-14-jaspr-foundation/`,
+> `docs/stories/phase-15-jaspr-hardening/`, and
+> `docs/stories/phase-18-jaspr-sortable/`.
 
 ## Usage
 
@@ -31,6 +32,13 @@ DndScope(
 
 Applications own their item, board, or document data. `dnd_kit_jaspr` reports
 drag/drop intent so app code updates its own state.
+
+### Sortable
+
+Use `SortableScope` and `SortableItem` for single-container sortable UIs.
+The reorder math is shared with Flutter via `dnd_kit`, so both adapters compute
+the same `SortableMoveDetails` intent for vertical, horizontal, and grid
+strategies.
 
 ### Auto-scroll
 

@@ -27,7 +27,8 @@ product docs, story packets, and decision records under `docs/`.
 - Flutter widget APIs for drag scopes, controllers, draggables, droppables,
   handles, overlays, measuring, sensors, auto-scroll, and accessibility.
 - Jaspr component APIs for drag scopes, controllers, draggables, droppables,
-  handles, overlays, browser measuring, auto-scroll, and accessibility.
+  handles, overlays, sortable presets, browser measuring, auto-scroll, and
+  accessibility.
 - Sortable preset APIs for vertical lists, horizontal lists, and grids.
 - Example Flutter and Jaspr apps used as adoption guides and integration proof.
 
@@ -41,8 +42,9 @@ dnd_kit
 
 `dnd_kit` is the shared engine. `dnd_kit_flutter` and `dnd_kit_jaspr` are peer
 adapters over it; neither depends on the other. There is no umbrella package.
-Flutter sortable widgets live in `dnd_kit_flutter`; the sortable
-move/strategy math they use is shared from `dnd_kit`.
+Sortable widgets now live in both adapters, while the sortable move/strategy
+math they use is shared from `dnd_kit`. Experimental multi-container helpers
+remain Flutter-only for now.
 
 ## Dependency Rule
 
