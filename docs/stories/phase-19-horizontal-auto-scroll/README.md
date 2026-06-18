@@ -14,33 +14,30 @@ vertical path:
 - no adapter forks the edge-threshold or velocity curve;
 - Jaspr stays SSR-safe.
 
-The first selected story is discovery/design rather than implementation so the
-repo can answer whether the feature is feasible, how the shared API should
-change, and how to split the eventual implementation safely.
+The phase starts with discovery/design, then lands the implementation in thin
+package slices so the shared API direction is proven before adapters adopt it.
 
 ## Delivery Sequence
 
 | Story | Scope | Decision |
 | --- | --- | --- |
 | **US-063** | Feasibility and design for horizontal auto-scroll across `dnd_kit`, `dnd_kit_flutter`, and `dnd_kit_jaspr` | ADR 0020 |
+| **US-064** | Add axis-aware auto-scroll math to `dnd_kit`, preserving vertical default behavior | ADR 0020 |
 
 ## Follow-Up
 
-If `US-063` concludes the feature is feasible, subsequent implementation work
-should likely split along package boundaries:
+With the discovery story and the core contract slice now complete, subsequent
+implementation work should continue along package boundaries:
 
-- shared core axis-aware math and API;
 - Flutter execution layer adoption;
 - Jaspr execution layer adoption.
 
-The story closes with those slices recommended and with these explicit deferrals:
+The discovery story closed with those slices recommended and with these
+explicit deferrals:
 
 - document-viewport horizontal auto-scroll;
 - simultaneous bi-directional auto-scroll in one surface;
 - nested-scroll policy.
-
-Story ids for those follow-ups are intentionally not reserved until the design
-work closes.
 
 ## Validation Ladder
 
@@ -49,5 +46,6 @@ work closes.
   API would need to own.
 - Design proof: the story packet records the recommended API shape, scope
   boundaries, and follow-up slices without weakening existing validation.
-- Implementation proof remains a later phase concern and will add core, widget,
-  and browser tests once the design is selected.
+- Core implementation proof now exists in `US-064` (`dart test` + `dart analyze`
+  for `packages/dnd_kit`), and later stories will extend the ladder to Flutter
+  widget tests and Jaspr browser tests.

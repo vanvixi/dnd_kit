@@ -90,9 +90,9 @@ See `SPEC_JASPR.md` §4.3 and ADR 0015.
 The shared layer also owns the sortable contract and strategy math
 (`SortableMoveDetails`, `SortableStrategies` for vertical/horizontal/grid) and
 the DOM-free auto-scroll edge/velocity math (`dndAutoScrollVelocity`,
-`DndAutoScrollOptions`). Adapters keep only the framework-specific execution:
-Flutter retains the `Ticker`, render-box measuring, and `ScrollPosition`
-scrolling and delegates the math.
+`DndAutoScrollOptions`, `DndScrollAxis`). Adapters keep only the
+framework-specific execution: Flutter retains the `Ticker`, render-box
+measuring, and `ScrollPosition` scrolling and delegates the math.
 
 ## Decisions
 
@@ -100,5 +100,6 @@ scrolling and delegates the math.
 - `docs/decisions/0015-shared-runtime-in-core.md`
 - `docs/decisions/0017-core-as-brand-package.md`
 - `docs/decisions/0018-flutter-3-44-workspace-unification.md`
+- `docs/decisions/0020-axis-aware-auto-scroll.md`
 
 For historical Jaspr-specific design context, also see `SPEC_JASPR.md`.

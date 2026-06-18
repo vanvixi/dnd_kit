@@ -16,7 +16,16 @@ final class DndAutoScrollOptions {
   final double maxVelocity;
 }
 
-/// Computes the per-frame auto-scroll velocity for a vertical scroll viewport.
+/// The shared axis used by drag-driven auto-scroll math.
+enum DndScrollAxis {
+  /// Scroll along the vertical axis using the viewport height.
+  vertical,
+
+  /// Scroll along the horizontal axis using the viewport width.
+  horizontal,
+}
+
+/// Computes the per-frame auto-scroll velocity for a scroll viewport.
 ///
 /// This is the framework-neutral edge-threshold and speed math: adapters pass a
 /// viewport-local pointer, the viewport size, and the current scroll extents,
@@ -26,13 +35,15 @@ final class DndAutoScrollOptions {
 /// already clamped.
 ///
 /// Only the act of measuring the viewport and pointer is adapter-specific; the
-/// thresholds and velocity curve are shared (SPEC_JASPR §6.4).
+/// thresholds and velocity curve are shared (SPEC_JASPR §6.4). The default
+/// [axis] keeps existing vertical behavior source-compatible.
 double dndAutoScrollVelocity({
   required DndPoint localPointer,
   required DndSize viewportSize,
   required double scrollPixels,
   required double minScrollExtent,
   required double maxScrollExtent,
+  DndScrollAxis axis = DndScrollAxis.vertical,
   DndAutoScrollOptions options = const DndAutoScrollOptions(),
 }) {
   if (localPointer.x < 0 ||
@@ -42,13 +53,21 @@ double dndAutoScrollVelocity({
     return 0;
   }
 
+  final primaryOffset = switch (axis) {
+    DndScrollAxis.vertical => localPointer.y,
+    DndScrollAxis.horizontal => localPointer.x,
+  };
+  final viewportExtent = switch (axis) {
+    DndScrollAxis.vertical => viewportSize.height,
+    DndScrollAxis.horizontal => viewportSize.width,
+  };
   final threshold = options.edgeThreshold;
   final maxVelocity = options.maxVelocity;
-  if (localPointer.y < threshold && scrollPixels > minScrollExtent) {
-    return -maxVelocity * ((threshold - localPointer.y) / threshold);
+  if (primaryOffset < threshold && scrollPixels > minScrollExtent) {
+    return -maxVelocity * ((threshold - primaryOffset) / threshold);
   }
 
-  final trailingDistance = viewportSize.height - localPointer.y;
+  final trailingDistance = viewportExtent - primaryOffset;
   if (trailingDistance < threshold && scrollPixels < maxScrollExtent) {
     return maxVelocity * ((threshold - trailingDistance) / threshold);
   }

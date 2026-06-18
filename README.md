@@ -76,7 +76,8 @@ through `US-035`, the shared-runtime multi-framework extraction through
 dev-release standardization through `US-059`, and the core-as-brand package
 rename (`dnd_kit_core` → `dnd_kit`) through `US-060`, plus the Flutter 3.44.2
 workspace unification through `US-061`, and the Jaspr sortable preset through
-`US-062`.
+`US-062`, plus the horizontal auto-scroll feasibility/design work and first
+shared-core implementation slice through `US-064`.
 
 The living source of truth is split from historical [SPEC.md](SPEC.md) input
 material into product docs, story packets, validation expectations, and decision

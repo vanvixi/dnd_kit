@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Adds additive axis-aware shared auto-scroll math to `dnd_kit` via
+  `DndScrollAxis` and an `axis` parameter on `dndAutoScrollVelocity(...)`.
+  Vertical behavior remains the default; adapter execution-layer adoption lands
+  in later Phase 19 stories.
+
 ## 0.3.0-dev.0
 
 - **Package identity change.** `dnd_kit` is now the pure Dart core engine of the

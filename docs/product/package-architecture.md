@@ -28,8 +28,8 @@ pattern), so Flutter and Jaspr adapters depend on `dnd_kit` directly.
 > `dnd_kit_core` is discontinued.
 
 For historical design input, see `SPEC.md` and `SPEC_JASPR.md`. For the current
-topology, trust this file, `docs/ARCHITECTURE.md`, the phase 14-18 story docs,
-and ADRs 0016-0019.
+topology, trust this file, `docs/ARCHITECTURE.md`, the phase 14-19 story docs,
+and ADRs 0016-0020.
 
 ## Package Boundaries
 
@@ -48,7 +48,7 @@ Owns:
 - modifier contracts and pure Dart modifiers
 - sensor contracts and the shared pointer sensor
 - registry contracts
-- base sortable math and auto-scroll edge/velocity math
+- base sortable math and axis-aware auto-scroll edge/velocity math
 
 Must not import:
 
