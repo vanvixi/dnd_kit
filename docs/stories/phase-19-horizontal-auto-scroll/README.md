@@ -23,6 +23,7 @@ package slices so the shared API direction is proven before adapters adopt it.
 | --- | --- | --- |
 | **US-063** | Feasibility and design for horizontal auto-scroll across `dnd_kit`, `dnd_kit_flutter`, and `dnd_kit_jaspr` | ADR 0020 |
 | **US-064** | Add axis-aware auto-scroll math to `dnd_kit`, preserving vertical default behavior | ADR 0020 |
+| **US-065** | Adopt axis-aware auto-scroll in `dnd_kit_flutter` and replace the Kanban example's custom horizontal helper | ADR 0020 |
 
 ## Follow-Up
 
@@ -47,5 +48,5 @@ explicit deferrals:
 - Design proof: the story packet records the recommended API shape, scope
   boundaries, and follow-up slices without weakening existing validation.
 - Core implementation proof now exists in `US-064` (`dart test` + `dart analyze`
-  for `packages/dnd_kit`), and later stories will extend the ladder to Flutter
-  widget tests and Jaspr browser tests.
+  for `packages/dnd_kit`), `US-065` extends that ladder to Flutter widget and
+  example proof, and later stories will add Jaspr browser tests.
