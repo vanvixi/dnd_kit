@@ -8,30 +8,33 @@ import 'package:universal_web/web.dart' as web;
 import '../scope/controller.dart';
 import '../scope/scope.dart';
 
-/// Drag-driven vertical auto-scroll for a Jaspr scroll container.
+/// Drag-driven auto-scroll for a Jaspr scroll container.
 ///
 /// `DndAutoScroll` renders a scroll viewport (style it via [classes]/[styles]/
 /// [attributes] with `overflow` + a bounded height) and, while a drag is active
 /// over the enclosing [DndScope]'s controller, scrolls that viewport when the
-/// drag pointer enters its leading or trailing edge band.
+/// drag pointer enters its leading or trailing edge band on the selected axis.
 ///
 /// Reuse posture (SPEC_JASPR §6.4): the edge-threshold and velocity math lives
 /// in `dnd_kit` ([dndAutoScrollVelocity]); this component only adds the
 /// browser execution layer — measuring the viewport via `getBoundingClientRect`
-/// and applying `scrollTop`. The shared [DndRuntime] stays the only drag engine.
+/// and applying `scrollTop`/`scrollLeft`. The shared [DndRuntime] stays the
+/// only drag engine.
 ///
 /// The loop is paced by a frame-interval [Timer] (not `requestAnimationFrame`,
 /// which would need `dart:js_interop`), keeping the package SSR-safe: all DOM
 /// access is guarded by `kIsWeb` and the timer only runs during a client drag.
+/// Unlike Flutter's split widget/controller surface, Jaspr keeps this browser
+/// execution inside the component state because the DOM node ownership, timer
+/// lifecycle, and SSR guards all stay local to the rendered viewport.
 ///
-/// Horizontal auto-scroll is intentionally out of scope here; it depends on a
-/// DOM-free horizontal axis being added to the shared math first (US-056).
 class DndAutoScroll extends StatefulComponent {
   /// Creates an auto-scroll viewport around [child].
   const DndAutoScroll({
     required this.child,
     this.controller,
     this.enabled = true,
+    this.axis = DndScrollAxis.vertical,
     this.options = const DndAutoScrollOptions(),
     this.classes,
     this.styles,
@@ -40,8 +43,9 @@ class DndAutoScroll extends StatefulComponent {
     super.key,
   });
 
-  /// The scrollable content. Make the rendered viewport scroll vertically via
-  /// [classes]/[styles]/[attributes] (e.g. `overflow:auto` + a fixed height).
+  /// The scrollable content. Make the rendered viewport scroll on the selected
+  /// axis via [classes]/[styles]/[attributes] (e.g. bounded size plus
+  /// `overflow:auto`).
   final Component child;
 
   /// Optional controller to drive auto-scroll from.
@@ -51,6 +55,9 @@ class DndAutoScroll extends StatefulComponent {
 
   /// Whether auto-scroll should react to active drags.
   final bool enabled;
+
+  /// Which scroll axis to drive.
+  final DndScrollAxis axis;
 
   /// Edge-threshold and velocity settings.
   final DndAutoScrollOptions options;
@@ -171,15 +178,15 @@ class _DndAutoScrollState extends State<DndAutoScroll> {
       return;
     }
 
-    final maxScroll = (node.scrollHeight - node.clientHeight).toDouble();
-    final before = node.scrollTop;
+    final maxScroll = _maxScrollExtent(node);
+    final before = _scrollPixels(node);
     final next = (before + velocity).clamp(0.0, maxScroll);
     if (next == before) {
       _stop();
       return;
     }
 
-    node.scrollTop = next;
+    _setScrollPixels(node, next);
 
     // The viewport moved without rebuilding any draggable/droppable, so every
     // cached rect is stale. Re-measure and re-resolve collision against the
@@ -209,11 +216,35 @@ class _DndAutoScrollState extends State<DndAutoScroll> {
     return dndAutoScrollVelocity(
       localPointer: DndPoint(pointer.x - rect.left, pointer.y - rect.top),
       viewportSize: DndSize(rect.width, rect.height),
-      scrollPixels: node.scrollTop,
+      scrollPixels: _scrollPixels(node),
       minScrollExtent: 0,
-      maxScrollExtent: (node.scrollHeight - node.clientHeight).toDouble(),
+      maxScrollExtent: _maxScrollExtent(node),
+      axis: component.axis,
       options: component.options,
     );
+  }
+
+  double _scrollPixels(web.HTMLElement node) {
+    return switch (component.axis) {
+      DndScrollAxis.vertical => node.scrollTop,
+      DndScrollAxis.horizontal => node.scrollLeft,
+    };
+  }
+
+  void _setScrollPixels(web.HTMLElement node, double next) {
+    switch (component.axis) {
+      case DndScrollAxis.vertical:
+        node.scrollTop = next;
+      case DndScrollAxis.horizontal:
+        node.scrollLeft = next;
+    }
+  }
+
+  double _maxScrollExtent(web.HTMLElement node) {
+    return switch (component.axis) {
+      DndScrollAxis.vertical => (node.scrollHeight - node.clientHeight).toDouble(),
+      DndScrollAxis.horizontal => (node.scrollWidth - node.clientWidth).toDouble(),
+    };
   }
 
   @override

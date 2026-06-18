@@ -5,8 +5,8 @@ drag-and-drop family.
 
 `dnd_kit_jaspr` is built on the shared `dnd_kit` engine, so Jaspr and
 Flutter behave as peer adapters over one drag runtime — the same domain model,
-drag lifecycle, collision logic, modifiers, and sortable math. It depends only
-on `dnd_kit` and `jaspr` (no Flutter).
+drag lifecycle, collision logic, modifiers, sortable math, and auto-scroll
+curve. It depends only on `dnd_kit` and `jaspr` (no Flutter).
 
 > Status: current public development release. This package provides `DndScope`,
 > `DndController`, `DndDraggable`, `DndDroppable`, `DndDragHandle`,
@@ -43,22 +43,25 @@ strategies.
 ### Auto-scroll
 
 Wrap a scroll container in `DndAutoScroll` to scroll it while a drag rests near
-its top or bottom edge. The edge/velocity math is shared with Flutter via
-`dnd_kit`; the Jaspr component only adds the browser scroll execution.
-Style the rendered viewport so it scrolls vertically (a bounded height plus
-`overflow`):
+its leading or trailing edge on the selected axis. The edge/velocity math is
+shared with Flutter via `dnd_kit`; the Jaspr component only adds the browser
+scroll execution. Style the rendered viewport so it scrolls on that axis:
 
 ```dart
 DndAutoScroll(
+  axis: DndScrollAxis.horizontal,
   styles: Styles(
-    height: 400.px,
-    overflow: Overflow.only(y: Overflow.auto),
+    width: 600.px,
+    overflow: Overflow.only(x: Overflow.auto),
   ),
-  child: longDraggableList,
+  child: wideDraggableRow,
 );
 ```
 
-Horizontal auto-scroll is not yet supported.
+Vertical remains the default. Unlike Flutter, Jaspr does not expose a separate
+`DndAutoScrollController`; the component keeps browser execution local so DOM
+node ownership, timer lifecycle, and SSR guards stay tied to the rendered
+viewport.
 
 ### Accessibility
 

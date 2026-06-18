@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Extends `DndAutoScroll` with axis-aware browser execution, so Jaspr scroll
+  containers can auto-scroll horizontally through the shared `dnd_kit`
+  velocity math while preserving the existing vertical default.
+- Keeps Jaspr auto-scroll execution component-owned rather than introducing a
+  separate controller surface, because DOM node ownership, timer lifecycle,
+  and SSR guards still belong to the rendered viewport component.
+
 ## 0.3.0-dev.1
 
 - Adds the Jaspr sortable preset at parity with the Flutter adapter:

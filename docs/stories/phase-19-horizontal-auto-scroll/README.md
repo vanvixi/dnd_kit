@@ -1,9 +1,8 @@
 # Phase 19 — Cross-Adapter Horizontal Auto-Scroll
 
 This phase explores and closes the next parity gap after `US-062`: the shared
-auto-scroll math is now axis-aware, the Flutter adapter now supports horizontal
-container auto-scroll, and the remaining adapter gap is Jaspr execution-layer
-adoption.
+auto-scroll math is now axis-aware, and both adapters now support horizontal
+container auto-scroll over the same shared curve.
 
 ## Principle
 
@@ -29,11 +28,8 @@ package slices so the shared API direction is proven before adapters adopt it.
 
 ## Follow-Up
 
-With discovery, the shared-core contract slice, and the Flutter execution slice
-now complete, subsequent implementation work should continue along package
-boundaries:
-
-- Jaspr execution layer adoption.
+With discovery plus the shared-core, Flutter, and Jaspr execution slices now
+complete, the package-level Phase 19 delivery sequence is closed.
 
 The discovery story closed with those slices recommended and with these
 explicit deferrals:
@@ -53,5 +49,6 @@ explicit deferrals:
   for `packages/dnd_kit`).
 - Flutter implementation proof now exists in `US-065` (`flutter test` +
   `dart analyze` for `packages/dnd_kit_flutter`, plus Kanban example proof).
-- `US-066` is the planned Jaspr execution slice, including the controller-shape
-  decision for Jaspr auto-scroll ownership.
+- Jaspr implementation proof now exists in `US-066` (`dart test` +
+  browser auto-scroll tests + `dart analyze` for `packages/dnd_kit_jaspr`),
+  including the decision to keep Jaspr auto-scroll execution component-owned.

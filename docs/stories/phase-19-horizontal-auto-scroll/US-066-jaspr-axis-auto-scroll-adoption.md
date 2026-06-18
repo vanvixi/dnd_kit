@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+implemented
 
 ## Lane
 
@@ -75,7 +75,7 @@ remains the contract.
 ## Validation
 
 When updating durable proof status, use numeric booleans:
-`scripts/bin/harness-cli story update --id US-066 --unit 1 --integration 1 --e2e 0 --platform 1`.
+`scripts/bin/harness-cli story update --id US-066 --unit 1 --integration 1 --e2e 1 --platform 1`.
 
 | Layer | Expected proof |
 | --- | --- |
@@ -97,3 +97,24 @@ Jaspr execution shape.
 - This story is the planned Jaspr follow-up for Phase 19 and explicitly pulls
   the `DndAutoScrollController` question into scope so the adapter contract is
   decided by code and durable story evidence rather than by ad hoc discussion.
+- Implemented 2026-06-18 in `packages/dnd_kit_jaspr`:
+  - `DndAutoScroll` now exposes `axis`, preserves vertical as the default, and
+    maps horizontal execution to `scrollLeft`, `scrollWidth`, and
+    `clientWidth` while continuing to use shared `dndAutoScrollVelocity(...)`
+    math.
+  - Post-scroll collision refresh remains component-owned through the existing
+    `markAllDirty()` + `moveDrag(currentPointer)` path, so the shared runtime
+    remains the only drag engine.
+  - The controller-abstraction question was resolved in favor of keeping
+    component-owned execution for now: no separate Jaspr auto-scroll
+    controller was introduced because the DOM node ownership, timer lifecycle,
+    and SSR guards are still local to the rendered viewport and no stronger
+    reuse need was proven in this slice.
+- Proof captured 2026-06-18:
+  - `fvm dart test packages/dnd_kit_jaspr` passed with 36 tests, including new
+    component coverage for vertical default behavior and horizontal
+    configuration without a separate controller.
+  - `cd packages/dnd_kit_jaspr && fvm dart test -p chrome test/auto_scroll_browser_test.dart`
+    passed with 6 browser tests, including horizontal trailing-edge scroll,
+    horizontal post-scroll collision refresh, and horizontal extent clamping.
+  - `fvm dart analyze packages/dnd_kit_jaspr` returned no issues.
