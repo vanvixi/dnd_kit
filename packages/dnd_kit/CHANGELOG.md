@@ -1,13 +1,6 @@
 # Changelog
 
-## Unreleased
-
-- Adds additive axis-aware shared auto-scroll math to `dnd_kit` via
-  `DndScrollAxis` and an `axis` parameter on `dndAutoScrollVelocity(...)`.
-  Vertical behavior remains the default; adapter execution-layer adoption lands
-  in later Phase 19 stories.
-
-## 0.3.0-dev.0
+## 0.3.0
 
 - **Package identity change.** `dnd_kit` is now the pure Dart core engine of the
   toolkit — the package formerly published as `dnd_kit_core`. The API surface is
@@ -21,6 +14,9 @@
   `dnd_kit_jaspr`. Both adapters build on this engine.
 - `dnd_kit_core` is discontinued and superseded by this package. See ADR 0017
   for the rationale and the brand-as-core decision that supersedes ADR 0014.
+- Adds additive axis-aware shared auto-scroll math via `DndScrollAxis` and an
+  `axis` parameter on `dndAutoScrollVelocity(...)`. Vertical behavior remains the
+  default; both the Flutter and Jaspr adapters now execute against this contract.
 
 ## 0.2.0-dev.0
 

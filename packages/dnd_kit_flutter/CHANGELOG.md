@@ -1,19 +1,15 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
+- Depends on the renamed engine package `dnd_kit: ^0.3.0` (previously
+  `dnd_kit_core`, now discontinued). The dependency rename tracks the engine
+  package becoming `dnd_kit`. See ADR 0017.
 - Adopts the axis-aware shared auto-scroll contract from `dnd_kit` by adding
   horizontal support to `DndAutoScroll` and `DndAutoScrollController` while
   preserving vertical default behavior.
 - The Kanban example now uses `DndAutoScroll(axis: DndScrollAxis.horizontal)`
   instead of a custom app-owned horizontal board auto-scroll helper.
-
-## 0.3.0-dev.0
-
-- Depends on the renamed engine package `dnd_kit: ^0.3.0-dev.0` (previously
-  `dnd_kit_core`, now discontinued). No Flutter API change — the dependency
-  rename and version bump only track the engine package becoming `dnd_kit`. See
-  ADR 0017.
 
 ## 0.2.0-dev.0
 

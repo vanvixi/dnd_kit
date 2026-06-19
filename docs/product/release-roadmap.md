@@ -195,9 +195,34 @@ demonstrates the adapter's supported public surface in a real browser:
 
 Phase README: `docs/stories/phase-20-jaspr-example-gallery/README.md`.
 
+## Phase 21 - Jaspr Adapter Fixes
+
+Capture bounded adapter regressions found by the expanded browser gallery
+without turning them into example-only work:
+
+- keep the shared runtime as the single drag engine;
+- land the smallest adapter-local contract fix;
+- strengthen focused package/browser proof around the reproduced bug.
+
+Phase README: `docs/stories/phase-21-jaspr-adapter-fixes/README.md`.
+
+## Phase 22 - Coordinated Family Release Publication
+
+Promote the `0.3.0-dev` line to a coordinated stable `0.3.0` pub.dev release
+across the current package family:
+
+- publish the `dnd_kit 0.3.0` engine release first;
+- publish the matching `dnd_kit_flutter 0.3.0` adapter release second;
+- publish the `dnd_kit_jaspr 0.3.0` adapter release third;
+- keep changelog, dependency constraints, and proof aligned with the published
+  order.
+
+First story:
+`docs/stories/phase-22-coordinated-family-release/US-069-publish-current-family-dev-line/overview.md`.
+
 ## Current State
 
-The repository has implemented work through `US-067`. The Flutter adapter, the
+The repository has implemented work through `US-068`. The Flutter adapter, the
 pure Dart engine, and the Jaspr adapter share the `dnd_kit` brand family under
 the post-US-060 topology, the workspace is unified under the Phase 17 toolchain,
 and both adapters now ship a sortable preset over the shared engine. Phase 19
@@ -210,6 +235,8 @@ mirrors the same contract for horizontal browser scroll containers while
 keeping its auto-scroll execution component-owned. Phase 20 closes the runnable
 Jaspr example gap with `examples/jaspr_example_gallery`, a tabbed feature
 gallery covering drag/drop, sortable, auto-scroll, accessibility, and
-modifiers over the shared runtime. Future work should extend this roadmap
-through new product docs, story packets, and decisions rather than by reviving
-the old umbrella/core topology from the historical specs.
+modifiers over the shared runtime. Phase 21 then closes the first gallery-found
+adapter regression by restoring `DndDragOverlay` rebinding after a controlled
+`DndScope` controller swap. Future work should extend this roadmap through new
+product docs, story packets, and decisions rather than by reviving the old
+umbrella/core topology from the historical specs.

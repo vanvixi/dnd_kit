@@ -79,7 +79,8 @@ workspace unification through `US-061`, and the Jaspr sortable preset through
 `US-062`, plus the horizontal auto-scroll feasibility/design work, the
 axis-aware shared-core implementation slice, and the Flutter execution-layer
 adoption through `US-065`, plus the Jaspr execution-layer adoption through
-`US-066`, plus the Jaspr example feature gallery through `US-067`.
+`US-066`, plus the Jaspr example feature gallery through `US-067`, and the
+Jaspr drag overlay controller rebind fix through `US-068`.
 
 The living source of truth is split from historical [SPEC.md](SPEC.md) input
 material into product docs, story packets, validation expectations, and decision

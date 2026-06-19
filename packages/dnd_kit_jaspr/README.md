@@ -17,7 +17,8 @@ curve. It depends only on `dnd_kit` and `jaspr` (no Flutter).
 > See `SPEC_JASPR.md`, `docs/stories/phase-14-jaspr-foundation/`,
 > `docs/stories/phase-15-jaspr-hardening/`, and
 > `docs/stories/phase-18-jaspr-sortable/`, and
-> `docs/stories/phase-20-jaspr-example-gallery/`.
+> `docs/stories/phase-20-jaspr-example-gallery/`, and
+> `docs/stories/phase-21-jaspr-adapter-fixes/`.
 
 ## Usage
 
