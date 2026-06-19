@@ -82,18 +82,10 @@ class DemoIntro extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return div(
-      styles: Styles(
-        display: .flex,
-        flexDirection: .column,
-        gap: .all(10.px),
-      ),
+      styles: Styles(display: .flex, flexDirection: .column, gap: .all(10.px)),
       [
         h2(
-          styles: Styles(
-            margin: .zero,
-            fontSize: 30.px,
-            lineHeight: 1.15.em,
-          ),
+          styles: Styles(margin: .zero, fontSize: 30.px, lineHeight: 1.15.em),
           [.text(title)],
         ),
         p(
@@ -156,11 +148,7 @@ class StatusBar extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return div(
-      styles: Styles(
-        display: .flex,
-        flexWrap: .wrap,
-        gap: .all(12.px),
-      ),
+      styles: Styles(display: .flex, flexWrap: .wrap, gap: .all(12.px)),
       children,
     );
   }

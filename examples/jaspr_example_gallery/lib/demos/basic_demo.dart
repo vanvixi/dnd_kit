@@ -71,7 +71,11 @@ class _BasicDemoState extends State<BasicDemo> {
             children: [
               Pill(id: 'metric-lane', label: 'Lane', value: activeLane.label),
               Pill(id: 'metric-over', label: 'Over', value: overId),
-              Pill(id: 'metric-delta', label: 'Delta', value: formatPoint(delta)),
+              Pill(
+                id: 'metric-delta',
+                label: 'Delta',
+                value: formatPoint(delta),
+              ),
               Pill(
                 id: 'metric-pointer',
                 label: 'Pointer',
@@ -85,7 +89,8 @@ class _BasicDemoState extends State<BasicDemo> {
               Pill(
                 id: 'metric-drag-events',
                 label: 'Drag',
-                value: 's:$_dragStartCount m:$_dragMoveCount '
+                value:
+                    's:$_dragStartCount m:$_dragMoveCount '
                     'e:$_dragEndCount c:$_dragCancelCount',
               ),
             ],
@@ -192,10 +197,9 @@ class _Lane extends StatelessComponent {
                     gap: .all(12.px),
                   ),
                   [
-                    strong(
-                      styles: Styles(fontSize: 20.px),
-                      [.text(lane.label)],
-                    ),
+                    strong(styles: Styles(fontSize: 20.px), [
+                      .text(lane.label),
+                    ]),
                     Tag(label: over ? 'Drop here' : lane.tone, active: over),
                   ],
                 ),
@@ -214,9 +218,7 @@ class _Lane extends StatelessComponent {
                     flexDirection: .column,
                     gap: .all(12.px),
                   ),
-                  [
-                    if (isActiveLane) dropChild else const _EmptyLaneState(),
-                  ],
+                  [if (isActiveLane) dropChild else const _EmptyLaneState()],
                 ),
               ],
             );
@@ -310,17 +312,13 @@ class _TaskCard extends StatelessComponent {
             gap: .all(12.px),
           ),
           [
-            strong(
-              styles: Styles(fontSize: 18.px),
-              [.text(title)],
-            ),
+            strong(styles: Styles(fontSize: 18.px), [.text(title)]),
             Tag(label: chipLabel),
           ],
         ),
-        p(
-          styles: Styles(margin: .zero, color: cMuted, lineHeight: 1.5.em),
-          [.text(subtitle)],
-        ),
+        p(styles: Styles(margin: .zero, color: cMuted, lineHeight: 1.5.em), [
+          .text(subtitle),
+        ]),
         if (showHandle)
           div(
             styles: Styles(
@@ -348,10 +346,9 @@ class _TaskCard extends StatelessComponent {
                   const [.text('Drag handle')],
                 ),
               ),
-              span(
-                styles: Styles(fontSize: 13.px, color: cHint),
-                const [.text('Free drag is active')],
-              ),
+              span(styles: Styles(fontSize: 13.px, color: cHint), const [
+                .text('Free drag is active'),
+              ]),
             ],
           ),
       ],
@@ -378,9 +375,7 @@ class _EmptyLaneState extends StatelessComponent {
         lineHeight: 1.5.em,
         backgroundColor: cEmptyBg,
       ),
-      const [
-        .text('Drop the task here to move app-owned state.'),
-      ],
+      const [.text('Drop the task here to move app-owned state.')],
     );
   }
 }

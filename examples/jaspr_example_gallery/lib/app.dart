@@ -56,8 +56,7 @@ class _GalleryAppState extends State<GalleryApp> {
           styles: Styles(
             display: .flex,
             maxWidth: 1080.px,
-            margin:
-                .only(left: .auto, right: .auto, bottom: 24.px),
+            margin: .only(left: .auto, right: .auto, bottom: 24.px),
             flexDirection: .column,
             gap: .all(18.px),
           ),
@@ -68,10 +67,7 @@ class _GalleryAppState extends State<GalleryApp> {
         ),
         // Re-key the demo subtree per tab so each demo's controller and
         // registrations are created fresh and disposed on switch.
-        div(
-          key: Key('demo-${demo.label}'),
-          [demo.build()],
-        ),
+        div(key: Key('demo-${demo.label}'), [demo.build()]),
       ],
     );
   }
@@ -81,15 +77,10 @@ class _Masthead extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return div(
-      styles: Styles(
-        display: .flex,
-        flexDirection: .column,
-        gap: .all(8.px),
-      ),
+      styles: Styles(display: .flex, flexDirection: .column, gap: .all(8.px)),
       [
         h1(
-          styles:
-              Styles(margin: .zero, fontSize: 38.px, lineHeight: 1.1.em),
+          styles: Styles(margin: .zero, fontSize: 38.px, lineHeight: 1.1.em),
           const [.text('dnd_kit_jaspr feature gallery')],
         ),
         p(
@@ -127,11 +118,7 @@ class _TabBar extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return div(
-      styles: Styles(
-        display: .flex,
-        flexWrap: .wrap,
-        gap: .all(10.px),
-      ),
+      styles: Styles(display: .flex, flexWrap: .wrap, gap: .all(10.px)),
       attributes: const <String, String>{
         'role': 'tablist',
         'aria-label': 'Feature demos',
@@ -164,14 +151,10 @@ class _TabBar extends StatelessComponent {
       },
       onClick: onTap,
       [
-        strong(
-          styles: Styles(fontSize: 15.px),
-          [.text(demo.label)],
-        ),
-        span(
-          styles: Styles(fontSize: 12.px, color: cMuted),
-          [.text(demo.hint)],
-        ),
+        strong(styles: Styles(fontSize: 15.px), [.text(demo.label)]),
+        span(styles: Styles(fontSize: 12.px, color: cMuted), [
+          .text(demo.hint),
+        ]),
       ],
     );
   }

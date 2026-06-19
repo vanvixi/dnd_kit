@@ -212,10 +212,9 @@ class _Column extends StatelessComponent {
                     gap: .all(12.px),
                   ),
                   [
-                    strong(
-                      styles: Styles(fontSize: 18.px),
-                      [.text(column.title)],
-                    ),
+                    strong(styles: Styles(fontSize: 18.px), [
+                      .text(column.title),
+                    ]),
                     Tag(
                       label: over ? 'Drop here' : '${cards.length}',
                       active: over,
@@ -289,14 +288,10 @@ class _CardChrome extends StatelessComponent {
         backgroundColor: cCardBg,
       ),
       [
-        strong(
-          styles: Styles(fontSize: 15.px),
-          [.text(card.title)],
-        ),
-        span(
-          styles: Styles(fontSize: 13.px, color: cMuted),
-          [.text(card.note)],
-        ),
+        strong(styles: Styles(fontSize: 15.px), [.text(card.title)]),
+        span(styles: Styles(fontSize: 13.px, color: cMuted), [
+          .text(card.note),
+        ]),
       ],
     );
   }
@@ -309,8 +304,9 @@ class _AnnouncementLog extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    final recent =
-        messages.length > 6 ? messages.sublist(messages.length - 6) : messages;
+    final recent = messages.length > 6
+        ? messages.sublist(messages.length - 6)
+        : messages;
     return div(
       styles: Styles(
         display: .flex,
@@ -332,10 +328,9 @@ class _AnnouncementLog extends StatelessComponent {
           const [.text('What screen readers hear')],
         ),
         if (recent.isEmpty)
-          span(
-            styles: Styles(fontSize: 14.px, color: cMuted),
-            const [.text('Start a drag to hear announcements.')],
-          )
+          span(styles: Styles(fontSize: 14.px, color: cMuted), const [
+            .text('Start a drag to hear announcements.'),
+          ])
         else
           for (final message in recent)
             span(

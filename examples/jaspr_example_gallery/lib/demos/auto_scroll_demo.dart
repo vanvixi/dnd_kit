@@ -83,7 +83,10 @@ class _AutoScrollDemoState extends State<AutoScrollDemo> {
           ),
           StatusBar(
             children: [
-              Pill(label: 'Axis', value: _horizontal ? 'horizontal' : 'vertical'),
+              Pill(
+                label: 'Axis',
+                value: _horizontal ? 'horizontal' : 'vertical',
+              ),
               Pill(label: 'Token slot', value: '#$_tokenSlot'),
               Pill(label: 'Over', value: overId),
               Pill(label: 'Pointer', value: formatPoint(pointer)),
@@ -228,15 +231,15 @@ class _Slot extends StatelessComponent {
                 ),
           attributes: <String, String>{'data-slot-id': id.value},
           [
-            span(
-              styles: Styles(color: cLabel, fontSize: 14.px),
-              [.text('Slot $slot')],
-            ),
+            span(styles: Styles(color: cLabel, fontSize: 14.px), [
+              .text('Slot $slot'),
+            ]),
             child,
           ],
         );
       },
-      child: token ??
+      child:
+          token ??
           span(
             styles: Styles(fontSize: 13.px, color: const Color('#b3a489')),
             const [.text('empty')],

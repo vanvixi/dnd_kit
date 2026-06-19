@@ -139,8 +139,8 @@ class _SortableDemoState extends State<SortableDemo> {
     final background = isActive
         ? cActiveRow
         : over
-            ? cAccentSoft
-            : cCardBg;
+        ? cAccentSoft
+        : cCardBg;
     return div(
       styles: Styles(
         border: .all(
@@ -204,14 +204,10 @@ class _TrackContent extends StatelessComponent {
             flex: Flex(grow: 1, shrink: 1, basis: .auto),
           ),
           [
-            strong(
-              styles: Styles(fontSize: 16.px),
-              [.text(track.title)],
-            ),
-            span(
-              styles: Styles(fontSize: 13.px, color: cMuted),
-              [.text(track.artist)],
-            ),
+            strong(styles: Styles(fontSize: 16.px), [.text(track.title)]),
+            span(styles: Styles(fontSize: 13.px, color: cMuted), [
+              .text(track.artist),
+            ]),
           ],
         ),
         span(
