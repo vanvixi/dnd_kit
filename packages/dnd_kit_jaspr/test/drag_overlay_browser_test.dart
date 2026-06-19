@@ -114,6 +114,80 @@ void main() {
         _pointerEvent('pointerup', x: 40, y: 25, pointerType: 'mouse', pointerId: 1),
       );
     });
+
+    testClient('rebinds overlay after the scope controller is replaced', (
+      tester,
+    ) async {
+      final controllerA = DndController();
+      final controllerB = DndController();
+      addTearDown(controllerA.dispose);
+      addTearDown(controllerB.dispose);
+
+      Component tree(DndController controller, String hint) {
+        return DndScope(
+          controller: controller,
+          child: div([
+            DndDraggable(
+              id: const DndId('task-1'),
+              label: 'Constrained drag card',
+              description: hint,
+              child: section([Component.text('body')]),
+            ),
+            DndDragOverlay(
+              builder: (context, overlay) {
+                return div(
+                  const [Component.text('overlay')],
+                  attributes: <String, String>{
+                    'data-overlay-active-id': overlay.activeId.value,
+                  },
+                );
+              },
+            ),
+          ]),
+        );
+      }
+
+      tester.pumpComponent(tree(controllerA, 'first controller'));
+
+      await tester.dispatchEvent(
+        find.tag('section'),
+        _keyboardEvent('keydown', 'Enter'),
+      );
+      await tester.dispatchEvent(
+        find.tag('section'),
+        _keyboardEvent('keydown', 'ArrowDown'),
+      );
+      await pumpEventQueue();
+
+      expect(controllerA.activeRect, isNotNull);
+      expect(
+        web.document.querySelector('[data-overlay-active-id="task-1"]'),
+        isNotNull,
+      );
+
+      controllerA.cancelDrag(reason: DndCancelReason.user);
+      controllerA.reset();
+      await pumpEventQueue();
+
+      tester.pumpComponent(tree(controllerB, 'second controller'));
+
+      await tester.dispatchEvent(
+        find.tag('section'),
+        _keyboardEvent('keydown', 'Enter'),
+      );
+      await tester.dispatchEvent(
+        find.tag('section'),
+        _keyboardEvent('keydown', 'ArrowRight'),
+      );
+      await pumpEventQueue();
+
+      expect(controllerB.activeSession, isNotNull);
+      expect(controllerB.activeRect, isNotNull);
+      expect(
+        web.document.querySelector('[data-overlay-active-id="task-1"]'),
+        isNotNull,
+      );
+    });
   });
 }
 
@@ -134,6 +208,18 @@ web.PointerEvent _pointerEvent(
       clientY: y,
       pointerType: pointerType,
       pointerId: pointerId,
+    ),
+  );
+}
+
+web.KeyboardEvent _keyboardEvent(String type, String key) {
+  return web.KeyboardEvent(
+    type,
+    web.KeyboardEventInit(
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      key: key,
     ),
   );
 }

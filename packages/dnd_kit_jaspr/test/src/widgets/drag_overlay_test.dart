@@ -75,5 +75,59 @@ void main() {
       expect(find.text('overlay:task-1:15.0'), findsOneComponent);
       expect(latestDetails?.transform, const DndTransform(x: 15, y: 25));
     });
+
+    testComponents('rebinds to a replaced scope controller', (tester) async {
+      final controllerA = DndController();
+      final controllerB = DndController();
+      addTearDown(controllerA.dispose);
+      addTearDown(controllerB.dispose);
+
+      Component tree(DndController controller) {
+        return DndScope(
+          controller: controller,
+          child: DndDragOverlay(
+            builder: (context, details) {
+              return Component.text(
+                'overlay:${details.activeId.value}:${details.transform.x}',
+              );
+            },
+          ),
+        );
+      }
+
+      tester.pumpComponent(tree(controllerA));
+
+      controllerA.beginDrag(
+        const DndSensorActivationEvent(
+          activeId: DndId('task-a'),
+          position: DndPoint(10, 10),
+        ),
+        activeRect: const DndRect(left: 20, top: 30, width: 40, height: 50),
+      );
+      controllerA.startDrag();
+      await tester.pump();
+
+      expect(find.text('overlay:task-a:0.0'), findsOneComponent);
+
+      controllerA.cancelDrag();
+      await tester.pump();
+      controllerA.reset();
+      await tester.pump();
+      expect(find.text('overlay:task-a:0.0'), findsNothing);
+
+      tester.pumpComponent(tree(controllerB));
+
+      controllerB.beginDrag(
+        const DndSensorActivationEvent(
+          activeId: DndId('task-b'),
+          position: DndPoint(10, 10),
+        ),
+        activeRect: const DndRect(left: 20, top: 30, width: 40, height: 50),
+      );
+      controllerB.startDrag();
+      await tester.pump();
+
+      expect(find.text('overlay:task-b:0.0'), findsOneComponent);
+    });
   });
 }

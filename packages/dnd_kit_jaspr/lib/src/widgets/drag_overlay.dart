@@ -64,26 +64,21 @@ class DndDragOverlay extends StatefulComponent {
 }
 
 class _DndDragOverlayState extends State<DndDragOverlay> {
-  DndController? _scopeController;
   DndController? _listeningController;
 
   DndController get _effectiveController {
-    return component.controller ?? _scopeController ?? DndScope.of(context);
+    return component.controller ?? DndScope.of(context);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _scopeController = component.controller == null ? DndScope.of(context) : null;
     _syncControllerListener();
   }
 
   @override
   void didUpdateComponent(DndDragOverlay oldComponent) {
     super.didUpdateComponent(oldComponent);
-    if (oldComponent.controller != component.controller) {
-      _scopeController = component.controller == null ? DndScope.of(context) : null;
-    }
     _syncControllerListener();
   }
 
