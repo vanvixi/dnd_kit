@@ -16,7 +16,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:meta/meta.dart';
 
-import '../a11y/announcements.dart';
 import '../measuring/measuring.dart';
 import '../scope/controller.dart';
 import '../scope/scope.dart';

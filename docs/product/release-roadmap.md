@@ -250,7 +250,7 @@ Phase README: `docs/stories/phase-24-shared-accessibility-contract/README.md`.
 
 ## Current State
 
-The repository has implemented work through `US-071`. The Flutter adapter, the
+The repository has implemented work through `US-072`. The Flutter adapter, the
 pure Dart engine, and the Jaspr adapter share the `dnd_kit` brand family under
 the post-US-060 topology, the workspace is unified under the Phase 17 toolchain,
 and both adapters now ship a sortable preset over the shared engine. Phase 19
@@ -268,6 +268,9 @@ adapter regressions by restoring `DndDragOverlay` rebinding after a controlled
 `DndScope` controller swap and fixing the Jaspr SSR handle-sync assertion.
 Phase 23 then closes Flutter accessibility hardening by adding semantics
 labels/hints, handle accessibility, and lifecycle announcements in the
-`dnd_kit_flutter 0.3.1` line. Future work should extend this roadmap through
-new product docs, story packets, and decisions rather than by reviving the old
-umbrella/core topology from the historical specs.
+`dnd_kit_flutter 0.3.1` line. Phase 24 then removes duplicate announcement
+contract code by moving `DndAnnouncements` into `dnd_kit` while keeping Flutter
+semantics execution and Jaspr live-region execution adapter-local. Future work
+should extend this roadmap through new product docs, story packets, and
+decisions rather than by reviving the old umbrella/core topology from the
+historical specs.

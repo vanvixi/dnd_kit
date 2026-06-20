@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+implemented
 
 ## Lane
 
@@ -88,3 +88,19 @@ extraction and gives the follow-up parity cleanup a durable matrix row.
 - Created 2026-06-20 as a follow-up to `US-071` after confirming that the new
   Flutter announcement contract duplicated the existing Jaspr pure-Dart
   contract instead of sharing it from `dnd_kit`.
+- Implemented 2026-06-20:
+  - Moved `DndAnnouncements` and its typedefs into `packages/dnd_kit`.
+  - Rewired both adapters to consume the shared core contract while keeping
+    Flutter semantics announcements and Jaspr `DndLiveRegion` execution
+    adapter-local.
+  - Moved default/custom announcement contract unit proof into
+    `packages/dnd_kit/test/src/announcements_test.dart`.
+  - Removed duplicate adapter-local announcement contract files and tests.
+- Proof:
+  - `fvm dart test packages/dnd_kit` -> pass.
+  - `fvm flutter test packages/dnd_kit_flutter` -> pass.
+  - `fvm dart test packages/dnd_kit_jaspr` -> pass.
+  - `fvm dart analyze packages/dnd_kit packages/dnd_kit_flutter packages/dnd_kit_jaspr`
+    -> No issues found.
+  - `pubspec.yaml` metadata updated so `dnd_kit` is `0.3.1` and both adapters
+    now depend on `dnd_kit: ^0.3.1`.

@@ -1,6 +1,6 @@
+import 'package:dnd_kit/dnd_kit.dart' show DndAnnouncements;
 import 'package:flutter/widgets.dart';
 
-import '../a11y/announcements.dart';
 import 'controller.dart';
 
 /// Provides a [DndController] to a subtree.

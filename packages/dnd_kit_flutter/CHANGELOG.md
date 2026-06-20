@@ -2,8 +2,10 @@
 
 ## 0.3.1
 
-- Adds `DndAnnouncements` and scope-level drag lifecycle announcements for
-  assistive technologies through Flutter's announcement APIs.
+- Depends on `dnd_kit: ^0.3.1`, which now owns the shared `DndAnnouncements`
+  accessibility contract reused by both adapters.
+- Adds scope-level drag lifecycle announcements for assistive technologies
+  through Flutter's announcement APIs.
 - `DndDraggable` and `DndDragHandle` now support optional semantics `label`
   and `hint` fields so applications can provide accessible naming and usage
   instructions without forking drag behavior.

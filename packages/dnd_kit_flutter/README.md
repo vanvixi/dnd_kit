@@ -123,9 +123,10 @@ Core behavior is intentionally open:
 ## Accessibility
 
 `dnd_kit_flutter` keeps the Flutter adapter's accessibility model adapter-local
-and Flutter-native. `DndDraggable` and `DndDragHandle` accept optional
-semantics labels and hints, while `DndScope` can opt into drag lifecycle
-announcements for assistive technologies.
+and Flutter-native. `DndAnnouncements` comes from the shared `dnd_kit` engine,
+while `DndDraggable` and `DndDragHandle` accept optional semantics labels and
+hints and `DndScope` can opt into drag lifecycle announcements for assistive
+technologies.
 
 ```dart
 DndScope(
@@ -146,9 +147,10 @@ DndScope(
 )
 ```
 
-Announcements are derived from shared controller state transitions, so keyboard
-and pointer drags speak the same start, over-target, drop, and cancel events
-without introducing a second drag runtime.
+Announcements are derived from shared controller state transitions and the
+shared `DndAnnouncements` contract, so keyboard and pointer drags speak the
+same start, over-target, drop, and cancel events without introducing a second
+drag runtime.
 
 ## dnd_kit family
 
