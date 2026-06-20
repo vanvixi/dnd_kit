@@ -54,7 +54,10 @@ class Hero extends StatelessComponent {
                 ctaGhost('Read the docs', SiteLinks.docs),
               ]),
             ]),
-            const HeroStack(),
+            // The entrance animation lives on this static wrapper, not inside
+            // the @client island — hydration re-mounts the island subtree, so a
+            // mount animation placed there would replay and flicker.
+            div(classes: 'animate-fade-in', const [HeroStack()]),
           ],
         ),
       ],
@@ -118,7 +121,7 @@ class _HeroStackState extends State<HeroStack> {
     return DndScope(
       controller: _controller,
       child: div(
-        classes: 'card flex flex-col gap-4 p-5 shadow-lift animate-fade-in',
+        classes: 'card flex flex-col gap-4 p-5 shadow-lift',
         [
           div(classes: 'flex items-center justify-between', [
             span(
