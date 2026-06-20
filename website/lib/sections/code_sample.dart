@@ -12,11 +12,11 @@ class CodeSample extends StatefulComponent {
 }
 
 class _CodeSampleState extends State<CodeSample> {
-  int _tab = 0; // 0 = Jaspr (web), 1 = Flutter
+  int _tab = 0; // 0 = Flutter, 1 = Jaspr (web)
 
-  static const _tabs = ['Jaspr', 'Flutter'];
+  static const _tabs = ['Flutter', 'Jaspr'];
 
-  String get _code => _tab == 0 ? _jasprCode : _flutterCode;
+  String get _code => _tab == 0 ? _flutterCode : _jasprCode;
 
   @override
   Component build(BuildContext context) {
