@@ -235,6 +235,19 @@ for the next package patch release:
 
 Phase README: `docs/stories/phase-23-flutter-accessibility-hardening/README.md`.
 
+## Phase 24 - Shared Accessibility Contract
+
+Remove duplicate accessibility contract code now that both adapters expose a
+first-class a11y surface:
+
+- move `DndAnnouncements` and its pure-Dart builders into `dnd_kit`;
+- rewire `dnd_kit_flutter` and `dnd_kit_jaspr` to reuse the shared contract;
+- keep Flutter semantics execution and Jaspr live-region execution
+  adapter-local;
+- shift default/custom announcement unit proof into the core package.
+
+Phase README: `docs/stories/phase-24-shared-accessibility-contract/README.md`.
+
 ## Current State
 
 The repository has implemented work through `US-071`. The Flutter adapter, the
