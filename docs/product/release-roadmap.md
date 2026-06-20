@@ -248,9 +248,21 @@ first-class a11y surface:
 
 Phase README: `docs/stories/phase-24-shared-accessibility-contract/README.md`.
 
+## Phase 25 - Coordinated Family Patch Release
+
+Close the prepared `0.3.1` package line as one auditable family publication:
+
+- publish `dnd_kit 0.3.1` first as the shared dependency root;
+- publish `dnd_kit_flutter 0.3.1` second against `dnd_kit: ^0.3.1`;
+- publish `dnd_kit_jaspr 0.3.1` third against `dnd_kit: ^0.3.1`;
+- keep changelog truth, family dry-run proof, and the maintainer-run publish
+  order explicit in one release packet.
+
+Phase README: `docs/stories/phase-25-coordinated-family-patch-release/README.md`.
+
 ## Current State
 
-The repository has implemented work through `US-072`. The Flutter adapter, the
+The repository has implemented work through `US-073`. The Flutter adapter, the
 pure Dart engine, and the Jaspr adapter share the `dnd_kit` brand family under
 the post-US-060 topology, the workspace is unified under the Phase 17 toolchain,
 and both adapters now ship a sortable preset over the shared engine. Phase 19
@@ -270,7 +282,10 @@ Phase 23 then closes Flutter accessibility hardening by adding semantics
 labels/hints, handle accessibility, and lifecycle announcements in the
 `dnd_kit_flutter 0.3.1` line. Phase 24 then removes duplicate announcement
 contract code by moving `DndAnnouncements` into `dnd_kit` while keeping Flutter
-semantics execution and Jaspr live-region execution adapter-local. Future work
+semantics execution and Jaspr live-region execution adapter-local. Phase 25 is
+the closed release packet for those prepared package deltas as a coordinated
+stable `0.3.1` family release; local proof passed and the three packages were
+published in dependency order on 2026-06-20. Future work
 should extend this roadmap through new product docs, story packets, and
 decisions rather than by reviving the old umbrella/core topology from the
 historical specs.
