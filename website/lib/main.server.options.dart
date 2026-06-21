@@ -6,6 +6,7 @@
 
 import 'package:jaspr/server.dart';
 import 'package:dnd_kit_website/drag/telemetry_hud.dart' as _telemetry_hud;
+import 'package:dnd_kit_website/layout/mobile_nav.dart' as _mobile_nav;
 import 'package:dnd_kit_website/layout/nav_bar.dart' as _nav_bar;
 import 'package:dnd_kit_website/sections/code_sample.dart' as _code_sample;
 import 'package:dnd_kit_website/sections/features.dart' as _features;
@@ -37,6 +38,7 @@ ServerOptions get defaultServerOptions => ServerOptions(
     _telemetry_hud.TelemetryHud: ClientTarget<_telemetry_hud.TelemetryHud>(
       'telemetry_hud',
     ),
+    _mobile_nav.MobileNav: ClientTarget<_mobile_nav.MobileNav>('mobile_nav'),
     _nav_bar.ReorderableNav: ClientTarget<_nav_bar.ReorderableNav>('nav_bar'),
     _code_sample.CodeSample: ClientTarget<_code_sample.CodeSample>(
       'code_sample',

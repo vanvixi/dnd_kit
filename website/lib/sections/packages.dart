@@ -12,13 +12,23 @@ class Packages extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return div(classes: 'mx-auto flex max-w-3xl flex-col items-center', [
-      // The engine, centered above the gap between the two adapters.
+      // The engine — full width on mobile, centered above the gap on >= sm.
       div(classes: 'flex w-full justify-center', [
-        div(classes: 'w-full max-w-sm', [_card(enginePackage)]),
+        div(classes: 'w-full sm:max-w-sm', [_card(enginePackage)]),
       ]),
 
-      // Mobile: a single stem (cards stack vertically below).
-      div(classes: 'h-6 w-px bg-line sm:hidden', const []),
+      // Mobile: an indented tree so both adapters visibly branch off the one
+      // engine — a left spine with a tick into each card.
+      div(classes: 'flex flex-col sm:hidden', [
+        // Short stem from the engine down to the first branch.
+        div(classes: 'flex', [
+          div(classes: 'relative h-4 w-6 shrink-0', [
+            div(classes: 'absolute left-3 top-0 h-full w-px bg-line', const []),
+          ]),
+        ]),
+        _treeRow(adapterPackages[0], last: false),
+        _treeRow(adapterPackages[1], last: true),
+      ]),
 
       // Desktop: a branching connector — a short stem from the engine, a
       // horizontal bar, then a drop into the center of each adapter card. The
@@ -61,15 +71,35 @@ class Packages extends StatelessComponent {
         ),
       ]),
 
-      // The adapters: no gap so each cell center is exactly 25% / 75%; spacing
-      // comes from per-cell padding instead.
+      // Desktop adapters: no gap so each cell center is exactly 25% / 75%,
+      // which the tree connector lines up with. (Mobile uses the tree above.)
       div(
-        classes: 'grid w-full grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-0',
+        classes: 'hidden w-full sm:grid sm:grid-cols-2 sm:gap-0',
         [
           for (final pkg in adapterPackages)
             div(classes: 'sm:px-3', [_card(pkg)]),
         ],
       ),
+    ]);
+  }
+
+  // One adapter row of the mobile tree: a rail (spine + branch tick) and the
+  // card. The spine runs full height except the [last] row, which stops at the
+  // branch so the tree ends cleanly.
+  Component _treeRow(Package pkg, {required bool last}) {
+    return div(classes: 'flex items-stretch', [
+      div(classes: 'relative w-6 shrink-0', [
+        div(
+          classes:
+              'absolute left-3 top-0 w-px bg-line ${last ? 'h-1/2' : 'h-full'}',
+          const [],
+        ),
+        div(
+          classes: 'absolute left-3 top-1/2 h-px w-3 -translate-y-1/2 bg-line',
+          const [],
+        ),
+      ]),
+      div(classes: 'flex-1 py-2', [_card(pkg)]),
     ]);
   }
 

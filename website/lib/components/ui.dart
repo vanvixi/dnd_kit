@@ -56,7 +56,9 @@ class Reveal extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     return div(
-      classes: 'reveal${classes == null ? '' : ' $classes'}',
+      classes:
+          'reveal max-w-full overflow-x-hidden'
+          '${classes == null ? '' : ' $classes'}',
       styles: delayMs == 0
           ? null
           : Styles(raw: {'transition-delay': '${delayMs}ms'}),

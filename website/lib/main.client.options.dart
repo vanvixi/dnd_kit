@@ -8,6 +8,7 @@ import 'package:jaspr/client.dart';
 
 import 'package:dnd_kit_website/drag/telemetry_hud.dart'
     deferred as _telemetry_hud;
+import 'package:dnd_kit_website/layout/mobile_nav.dart' deferred as _mobile_nav;
 import 'package:dnd_kit_website/layout/nav_bar.dart' deferred as _nav_bar;
 import 'package:dnd_kit_website/sections/code_sample.dart'
     deferred as _code_sample;
@@ -41,6 +42,10 @@ ClientOptions get defaultClientOptions => ClientOptions(
     'telemetry_hud': ClientLoader(
       (p) => _telemetry_hud.TelemetryHud(),
       loader: _telemetry_hud.loadLibrary,
+    ),
+    'mobile_nav': ClientLoader(
+      (p) => _mobile_nav.MobileNav(),
+      loader: _mobile_nav.loadLibrary,
     ),
     'nav_bar': ClientLoader(
       (p) => _nav_bar.ReorderableNav(),

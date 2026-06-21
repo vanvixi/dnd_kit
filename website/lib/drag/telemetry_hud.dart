@@ -46,20 +46,27 @@ class _TelemetryHudState extends State<TelemetryHud> {
   @override
   Component build(BuildContext context) {
     final s = dragBus.snapshot;
-    final shell = s.active
-        ? 'border-accent bg-accent/10 text-ink'
-        : 'border-line bg-surface/90 text-muted';
+    // Active state warms via border + text (no translucent fill): a near-solid
+    // background avoids the iOS Safari backdrop-filter-on-fixed bug where the
+    // bar only paints after a scroll.
+    final shell = s.active ? 'border-accent text-ink' : 'border-line text-muted';
 
+    // Anchor to the bottom-left on mobile and centre on >= sm. Centring a
+    // fixed element resolves against the initial containing block, which a
+    // device emulator can size to the window (wider than the viewport) and push
+    // the bar off-screen; a left edge anchor stays put. No vw/% widths (those
+    // can also resolve to the window), and fewer fields on mobile keep the bar
+    // narrow enough to never need them.
     return div(
       classes:
-          'pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center '
-          'px-4 pb-4',
+          'pointer-events-none fixed bottom-3 left-3 z-40 '
+          'sm:left-1/2 sm:-translate-x-1/2',
       [
         div(
           classes:
-              'pointer-events-auto flex max-w-full items-center gap-3 '
-              'overflow-x-auto rounded-full border px-4 py-2 font-mono text-xs '
-              'shadow-lift backdrop-blur transition-colors $shell',
+              'pointer-events-auto flex min-w-0 items-center gap-3 '
+              'overflow-x-auto rounded-full border bg-surface/95 px-4 py-2 '
+              'font-mono text-xs shadow-lift transition-colors $shell',
           attributes: const {'role': 'status', 'aria-live': 'off'},
           [
             span(
@@ -68,11 +75,12 @@ class _TelemetryHudState extends State<TelemetryHud> {
                   : 'h-2 w-2 shrink-0 rounded-full bg-muted/50',
               const [],
             ),
-            _field('source', s.source),
+            // Hidden on mobile to keep the bar compact; shown from >= sm.
+            _field('source', s.source, always: false),
             _field('active', s.activeId ?? '—'),
             _field('over', s.overId ?? '—'),
-            _field('Δ', '${s.dx.round()},${s.dy.round()}'),
-            _field('input', s.inputKind),
+            _field('Δ', '${s.dx.round()},${s.dy.round()}', always: false),
+            _field('input', s.inputKind, always: false),
             _field('state', s.state),
           ],
         ),
@@ -80,8 +88,8 @@ class _TelemetryHudState extends State<TelemetryHud> {
     );
   }
 
-  Component _field(String label, String value) {
-    return span(classes: 'whitespace-nowrap', [
+  Component _field(String label, String value, {bool always = true}) {
+    return span(classes: 'whitespace-nowrap ${always ? '' : 'hidden sm:inline'}', [
       span(classes: 'text-accent', [.text('$label ')]),
       .text(value),
     ]);

@@ -30,16 +30,14 @@ class _KanbanShowcaseState extends State<KanbanShowcase> {
       const DndId('card-axis'),
       const DndId('card-grid'),
       const DndId('card-rtl'),
+      const DndId('card-pointer'),
+      const DndId('card-collision'),
+      const DndId('card-modifiers'),
+      const DndId('card-measure'),
     ],
-    'col-progress': [
-      const DndId('card-overlay'),
-      const DndId('card-keyboard'),
-    ],
+    'col-progress': [const DndId('card-overlay'), const DndId('card-keyboard')],
     'col-review': [const DndId('card-scroll')],
-    'col-done': [
-      const DndId('card-engine'),
-      const DndId('card-ssr'),
-    ],
+    'col-done': [const DndId('card-engine'), const DndId('card-ssr')],
   };
 
   int _moves = 0;
@@ -114,13 +112,33 @@ class _KanbanShowcaseState extends State<KanbanShowcase> {
   Component build(BuildContext context) {
     return DndScope(
       controller: _controller,
-      child: div(classes: 'flex flex-col gap-6', [
+      // The board's stacked rows: status bar, the horizontal column rail, the
+      // drag overlay and the a11y live region. (How the rail is kept from
+      // widening the page on mobile is explained on the wrapper below.)
+      child: div(classes: 'space-y-6', [
         _statusBar(),
-        div(
-          classes:
-              'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4',
-          [for (final col in _kanbanColumns) _column(col)],
-        ),
+        // Keep the page width locked to the viewport on mobile by separating
+        // the clip boundary from the actual horizontal scroller. Mobile
+        // browsers can still let wide drag columns expand the page when the
+        // scrollable element is also the direct parent of those columns.
+        div(classes: 'max-w-full overflow-hidden', [
+          // Columns stay side by side and scroll horizontally; the board
+          // auto-scrolls horizontally while a card is dragged near an edge.
+          DndAutoScroll(
+            axis: DndScrollAxis.horizontal,
+            controller: _controller,
+            classes:
+                'block w-full max-w-full overflow-x-auto overflow-y-hidden '
+                'pb-2 [-webkit-overflow-scrolling:touch]',
+            styles: Styles(raw: {'contain': 'layout paint'}),
+            child: div(
+              classes:
+                  'inline-flex min-w-full items-start gap-4 pr-4 '
+                  'sm:flex sm:pr-0',
+              [for (final col in _kanbanColumns) _column(col)],
+            ),
+          ),
+        ]),
         DndDragOverlay(
           controller: _controller,
           builder: (context, overlay) {
@@ -135,20 +153,19 @@ class _KanbanShowcaseState extends State<KanbanShowcase> {
   }
 
   Component _statusBar() {
-    final counts =
-        _kanbanColumns.map((c) => '${c.title} ${_board[c.id]!.length}');
+    final counts = _kanbanColumns.map(
+      (c) => '${c.title} ${_board[c.id]!.length}',
+    );
     return div(
-      classes:
-          'flex flex-wrap items-center gap-2 font-mono text-xs text-muted',
+      classes: 'flex flex-wrap items-center gap-2 font-mono text-xs text-muted',
       [
         for (final c in counts)
-          span(
-            classes:
-                'rounded-full border border-line bg-raised px-3 py-1',
-            [.text(c)],
-          ),
+          span(classes: 'rounded-full border border-line bg-raised px-3 py-1', [
+            .text(c),
+          ]),
         span(
-          classes: 'rounded-full border border-accent/40 bg-accent/10 '
+          classes:
+              'rounded-full border border-accent/40 bg-accent/10 '
               'px-3 py-1 text-accent',
           [.text('moves $_moves')],
         ),
@@ -159,34 +176,55 @@ class _KanbanShowcaseState extends State<KanbanShowcase> {
   Component _column(({String id, String title}) col) {
     final isOver = _overColumn?.value == col.id;
     final cards = _board[col.id]!;
-    return DndDroppable(
-      id: DndId(col.id),
-      child: div(
-        classes:
-            'flex min-h-[160px] flex-col gap-3 rounded-2xl border bg-raised/60 '
-            'p-3 transition-colors duration-200 '
-            '${isOver ? 'border-accent bg-accent/10' : 'border-line'}',
-        attributes: {'data-over': isOver.toString()},
-        [
-          div(
+    // The outer div owns the column width (DndDroppable renders an unstyled
+    // wrapper, so sizing lives here). On mobile each column is a fixed-width
+    // flex item in the horizontal rail; on >= sm the columns become equal
+    // flex children that share the available width.
+    return div(
+      classes:
+          'w-[17rem] min-w-0 shrink-0 flex-none sm:w-auto sm:flex-1 sm:basis-0',
+      [
+        DndDroppable(
+          id: DndId(col.id),
+          child: div(
             classes:
-                'flex items-center justify-between px-1 font-mono text-xs '
-                'uppercase tracking-wider text-muted',
+                'flex w-full flex-col gap-3 rounded-2xl border bg-raised/60 p-3 '
+                'transition-colors duration-200 '
+                '${isOver ? 'border-accent bg-accent/10' : 'border-line'}',
+            attributes: {'data-over': isOver.toString()},
             [
-              span([.text(col.title)]),
-              span(classes: 'text-accent', [.text('${cards.length}')]),
+              div(
+                classes:
+                    'flex items-center justify-between px-1 font-mono text-xs '
+                    'uppercase tracking-wider text-muted',
+                [
+                  span([.text(col.title)]),
+                  span(classes: 'text-accent', [.text('${cards.length}')]),
+                ],
+              ),
+              // Cards scroll vertically inside a bounded column; the column
+              // auto-scrolls vertically while a card is dragged past its edge.
+              DndAutoScroll(
+                axis: DndScrollAxis.vertical,
+                controller: _controller,
+                classes:
+                    'flex min-h-[120px] max-h-[55vh] flex-col gap-3 overflow-y-auto '
+                    'pr-0.5',
+                child: .fragment([
+                  if (cards.isEmpty)
+                    div(
+                      classes:
+                          'flex flex-1 items-center justify-center rounded-xl '
+                          'border border-dashed border-line py-6 text-xs text-muted',
+                      const [.text('drop here')],
+                    ),
+                  for (final id in cards) _card(id),
+                ]),
+              ),
             ],
           ),
-          if (cards.isEmpty)
-            div(
-              classes:
-                  'flex flex-1 items-center justify-center rounded-xl border '
-                  'border-dashed border-line py-6 text-xs text-muted',
-              const [.text('drop here')],
-            ),
-          for (final id in cards) _card(id),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -197,12 +235,13 @@ class _KanbanShowcaseState extends State<KanbanShowcase> {
     final stateClasses = isActive
         ? 'opacity-40'
         : isOver
-            ? 'ring-2 ring-accent ring-offset-2 ring-offset-raised'
-            : '';
+        ? 'ring-2 ring-accent ring-offset-2 ring-offset-raised'
+        : '';
     return DndDroppable(
       id: id,
       child: DndDraggable(
         id: id,
+        constraint: const DndSensorActivationConstraint(distance: 8),
         label: 'Card ${card.title}',
         description:
             'Press space to pick up, arrow keys to move between cards, '
@@ -254,6 +293,10 @@ const _cardData = <String, _Card>{
   'card-axis': _Card('Axis-locked drag', 'modifier'),
   'card-grid': _Card('Snap to grid', 'modifier'),
   'card-rtl': _Card('RTL reordering', 'sortable'),
+  'card-pointer': _Card('Pointer sensor', 'sensor'),
+  'card-collision': _Card('Collision detection', 'core'),
+  'card-modifiers': _Card('Restrict to axis', 'modifier'),
+  'card-measure': _Card('Measuring registry', 'core'),
   'card-overlay': _Card('Drag overlay portal', 'overlay'),
   'card-keyboard': _Card('Keyboard sensor', 'a11y'),
   'card-scroll': _Card('Edge auto-scroll', 'scroll'),

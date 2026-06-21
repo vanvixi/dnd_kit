@@ -63,6 +63,7 @@ class _FeaturesState extends State<Features> {
             for (final id in _order)
               SortableItem(
                 id: id,
+                constraint: const DndSensorActivationConstraint(distance: 8),
                 label: 'Reorder ${_featureFor(id).title}',
                 builder: (context, itemState, child) {
                   final lifted = itemState.isActive || itemState.isDragging;

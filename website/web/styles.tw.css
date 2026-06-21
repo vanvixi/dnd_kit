@@ -27,10 +27,17 @@
 
   html {
     scroll-behavior: smooth;
+    /* Global safety net: nothing may widen the page past the device width on
+       mobile (each horizontal scroller, e.g. the Kanban rail, also contains
+       itself). clip (not hidden) keeps the sticky nav working. */
+    overflow-x: clip;
+    max-width: 100%;
   }
 
   body {
     @apply bg-paper text-ink font-sans antialiased;
+    overflow-x: clip;
+    max-width: 100%;
   }
 
   ::selection {
@@ -52,11 +59,17 @@
   [aria-roledescription="draggable"] {
     -webkit-user-drag: none;
     user-select: none;
-    touch-action: none;
   }
   [aria-roledescription="draggable"] a,
   [aria-roledescription="draggable"] img {
     -webkit-user-drag: none;
+  }
+  /* `touch-action: none` only on the actual drag surface, so a touch there
+     starts a drag instead of scrolling. Card bodies (a draggable WITH a handle)
+     keep default touch-action so the page still scrolls when swiping them. */
+  [aria-roledescription="drag handle"],
+  [aria-roledescription="draggable"]:not(:has([aria-roledescription="drag handle"])) {
+    touch-action: none;
   }
   /* While any drag is active, force the grabbing cursor everywhere. */
   html[data-dragging="true"],

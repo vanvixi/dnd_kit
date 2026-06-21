@@ -5,6 +5,7 @@ import 'package:jaspr/jaspr.dart';
 import '../data/site_data.dart';
 import '../drag/drag_bus.dart';
 import '../theme/theme_toggle.dart';
+import 'mobile_nav.dart';
 
 /// Sticky top navigation. The in-page links are reorderable (drag a pill to
 /// rearrange them) while still navigating on a plain click.
@@ -46,6 +47,7 @@ class NavBar extends StatelessComponent {
                 [.text('Docs')],
               ),
               const ThemeToggle(),
+              const MobileNav(),
             ]),
           ],
         ),
