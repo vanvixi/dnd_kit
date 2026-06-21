@@ -1,10 +1,11 @@
 name: Deploy Website
 
-# Run only when a pull request is merged into main (not on every PR event),
-# plus a manual trigger.
+# Run when changes land on main (a merged PR produces a push to main), plus a
+# manual trigger. Deploying from main is required because the github-pages
+# environment only allows deployments from the default branch — a PR-context
+# run (refs/pull/*/merge) is blocked by environment protection rules.
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches: [main]
   workflow_dispatch:
 
@@ -19,16 +20,12 @@ concurrency:
 
 jobs:
   build:
-    # Skip PRs that were closed without merging; always allow manual runs.
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
 
     steps:
-      # Check out the post-merge main so we deploy exactly what landed.
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.base.ref || github.ref }}
           fetch-depth: 0
 
       - name: Set up Flutter

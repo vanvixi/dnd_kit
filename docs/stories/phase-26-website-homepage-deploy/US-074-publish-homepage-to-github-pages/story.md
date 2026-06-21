@@ -36,8 +36,8 @@ deployment can exist), so the existing gallery deploy is retired or relocated.
   longer competes for the `github-pages` environment / `pages` concurrency group.
 - A `.nojekyll` marker ships in the artifact so Jekyll does not reprocess the
   Jaspr asset filenames.
-- The workflow runs only when a pull request is merged into `main` (a closed PR
-  with `merged == true`) and via `workflow_dispatch` — not on every PR event.
+- The workflow runs when changes land on `main` (a merged PR produces a push to
+  `main`) and via `workflow_dispatch` — not on every PR event.
 
 ## Design Notes
 
@@ -62,13 +62,12 @@ deployment can exist), so the existing gallery deploy is retired or relocated.
 - Gallery replacement: only one Pages site exists per repo. Replace
   `deploy-example-gallery.yml`, or relocate the gallery under a subpath
   (e.g. `/dnd_kit/gallery/`) inside the same Pages artifact. Open decision below.
-- Trigger: `pull_request` `closed` on `main` gated by
-  `github.event.pull_request.merged == true` (deploy the merged result, not
-  preview every PR), plus `workflow_dispatch`. Checkout uses
-  `github.event.pull_request.base.ref` (post-merge `main`) so the artifact is the
-  landed content. If the `github-pages` environment is later restricted to a
-  branch allow-list, a PR-triggered deploy may be blocked and the trigger would
-  need to move to `push: [main]`.
+- Trigger: `push` to `main` (a merged PR lands as a push) plus
+  `workflow_dispatch`. An earlier `pull_request: [closed]` + `merged == true`
+  trigger was blocked at deploy time — the `github-pages` environment only
+  permits deployments from the default branch, so a PR-context run
+  (`refs/pull/*/merge`) fails its environment protection rule. Deploying from a
+  `push` to `main` runs in the `refs/heads/main` context the environment allows.
 - CI ergonomics borrowed from the reference Firebase workflow: cache
   `~/.pub-cache` keyed on `pubspec.lock`, `flutter-action` SDK cache, a
   verify-build-output gate, and `jaspr build --verbose`. Tailwind keeps the repo
