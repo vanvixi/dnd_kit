@@ -1,5 +1,6 @@
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
+import 'package:universal_web/web.dart' as web;
 
 import '../data/site_data.dart';
 
@@ -17,6 +18,23 @@ class _MobileNavState extends State<MobileNav> {
 
   void _toggle() => setState(() => _open = !_open);
   void _close() => setState(() => _open = false);
+
+  // Drive navigation ourselves and then close. Closing re-renders and detaches
+  // the link, which cancels the anchor's default click before it navigates, so
+  // a plain `onClick: _close` closed the menu but never jumped to the section.
+  Map<String, EventCallback> _navTo(String href) => {
+    'click': (event) {
+      event.preventDefault();
+      if (kIsWeb) {
+        if (href.startsWith('#')) {
+          web.window.location.hash = href;
+        } else {
+          web.window.open(href, '_blank');
+        }
+      }
+      _close();
+    },
+  };
 
   @override
   Component build(BuildContext context) {
@@ -48,7 +66,7 @@ class _MobileNavState extends State<MobileNav> {
                 classes:
                     'block rounded-xl px-3 py-2 text-sm font-medium text-ink '
                     'transition-colors hover:bg-raised',
-                onClick: _close,
+                events: _navTo(item.href),
                 [.text(item.label)],
               ),
             div(classes: 'my-1 h-px bg-line', const []),
@@ -59,7 +77,7 @@ class _MobileNavState extends State<MobileNav> {
               classes:
                   'block rounded-xl px-3 py-2 text-sm font-medium text-muted '
                   'transition-colors hover:bg-raised',
-              onClick: _close,
+              events: _navTo(SiteLinks.github),
               [.text('GitHub ↗')],
             ),
             a(
@@ -67,7 +85,7 @@ class _MobileNavState extends State<MobileNav> {
               classes:
                   'block rounded-xl px-3 py-2 text-sm font-medium text-muted '
                   'transition-colors hover:bg-raised',
-              onClick: _close,
+              events: _navTo(SiteLinks.docs),
               [.text('Docs')],
             ),
           ],
