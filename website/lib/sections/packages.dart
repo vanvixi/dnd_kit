@@ -47,13 +47,11 @@ class Packages extends StatelessComponent {
         ),
         // Drops to each card center.
         div(
-          classes:
-              'absolute left-1/4 top-6 h-6 w-px -translate-x-1/2 bg-line',
+          classes: 'absolute left-1/4 top-6 h-6 w-px -translate-x-1/2 bg-line',
           const [],
         ),
         div(
-          classes:
-              'absolute right-1/4 top-6 h-6 w-px translate-x-1/2 bg-line',
+          classes: 'absolute right-1/4 top-6 h-6 w-px translate-x-1/2 bg-line',
           const [],
         ),
         // "powers" label sitting on the bar's midpoint.
@@ -73,13 +71,10 @@ class Packages extends StatelessComponent {
 
       // Desktop adapters: no gap so each cell center is exactly 25% / 75%,
       // which the tree connector lines up with. (Mobile uses the tree above.)
-      div(
-        classes: 'hidden w-full sm:grid sm:grid-cols-2 sm:gap-0',
-        [
-          for (final pkg in adapterPackages)
-            div(classes: 'sm:px-3', [_card(pkg)]),
-        ],
-      ),
+      div(classes: 'hidden w-full sm:grid sm:grid-cols-2 sm:gap-0', [
+        for (final pkg in adapterPackages)
+          div(classes: 'sm:px-3', [_card(pkg)]),
+      ]),
     ]);
   }
 
@@ -115,10 +110,7 @@ class Packages extends StatelessComponent {
           '${accent ? 'border-accent/50 bg-accent/5 hover:border-accent' : 'border-line bg-surface hover:border-accent/50'}',
       [
         div(classes: 'flex items-center justify-between gap-3', [
-          span(
-            classes: 'font-mono text-lg text-ink',
-            [.text(pkg.name)],
-          ),
+          span(classes: 'font-mono text-lg text-ink', [.text(pkg.name)]),
           span(
             classes: accent
                 ? 'rounded-full bg-accent px-2.5 py-0.5 font-mono text-[10px] '

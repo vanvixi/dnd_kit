@@ -42,8 +42,9 @@ class _ThemeToggleState extends State<ThemeToggle> {
           'hover:text-accent',
       attributes: {
         'type': 'button',
-        'aria-label':
-            _isDark ? 'Switch to light theme' : 'Switch to dark theme',
+        'aria-label': _isDark
+            ? 'Switch to light theme'
+            : 'Switch to dark theme',
       },
       onClick: _toggle,
       [

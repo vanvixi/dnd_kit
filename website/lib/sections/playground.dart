@@ -105,8 +105,7 @@ class _PlaygroundState extends State<Playground> {
     return DndDroppable(
       id: const DndId('pool'),
       child: div(
-        classes:
-            'drop-zone flex min-h-[64px] flex-wrap items-center gap-2 p-3',
+        classes: 'drop-zone flex min-h-[64px] flex-wrap items-center gap-2 p-3',
         attributes: {'data-over': isOver.toString()},
         [
           span(
@@ -127,8 +126,7 @@ class _PlaygroundState extends State<Playground> {
     return DndDroppable(
       id: DndId(id),
       child: div(
-        classes:
-            'drop-zone flex min-h-[120px] flex-col gap-2 p-3',
+        classes: 'drop-zone flex min-h-[120px] flex-col gap-2 p-3',
         attributes: {'data-over': isOver.toString()},
         [
           div(
@@ -155,7 +153,9 @@ class _PlaygroundState extends State<Playground> {
       constraint: const DndSensorActivationConstraint(distance: 4),
       label: 'Drag token ${id.value}',
       onDragEnd: _handleEnd,
-      child: div(classes: isActive ? 'opacity-30' : '', [_tokenFace(id, false)]),
+      child: div(classes: isActive ? 'opacity-30' : '', [
+        _tokenFace(id, false),
+      ]),
     );
   }
 

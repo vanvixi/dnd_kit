@@ -115,7 +115,8 @@ class _ReorderableNavState extends State<ReorderableNav> {
               // so lift the pill in place while dragging instead of dimming it.
               final dragging = itemState.isActive || itemState.isDragging;
               return div(
-                classes: 'transition-transform duration-150 '
+                classes:
+                    'transition-transform duration-150 '
                     '${dragging ? '-translate-y-0.5 scale-105' : ''}',
                 [child],
               );
@@ -123,28 +124,25 @@ class _ReorderableNavState extends State<ReorderableNav> {
             // A hover-revealed grip is the drag surface; pressing the link text
             // itself does not trigger pointer capture, so the anchor still
             // navigates on a plain click. Drag the grip to reorder.
-            child: div(
-              classes: 'group flex items-center rounded-full',
-              [
-                DndDragHandle(
-                  label: 'Reorder ${_itemFor(id).label}',
-                  child: span(
-                    classes:
-                        'cursor-grab select-none pl-2 text-xs leading-none '
-                        'text-muted/40 opacity-0 transition-opacity '
-                        'group-hover:opacity-100',
-                    attributes: const {'aria-hidden': 'true'},
-                    [.text('⠿')],
-                  ),
+            child: div(classes: 'group flex items-center rounded-full', [
+              DndDragHandle(
+                label: 'Reorder ${_itemFor(id).label}',
+                child: span(
+                  classes:
+                      'cursor-grab select-none pl-2 text-xs leading-none '
+                      'text-muted/40 opacity-0 transition-opacity '
+                      'group-hover:opacity-100',
+                  attributes: const {'aria-hidden': 'true'},
+                  [.text('⠿')],
                 ),
-                a(
-                  href: _itemFor(id).href,
-                  attributes: const {'draggable': 'false'},
-                  classes: 'pill-link',
-                  [.text(_itemFor(id).label)],
-                ),
-              ],
-            ),
+              ),
+              a(
+                href: _itemFor(id).href,
+                attributes: const {'draggable': 'false'},
+                classes: 'pill-link',
+                [.text(_itemFor(id).label)],
+              ),
+            ]),
           ),
       ]),
     );

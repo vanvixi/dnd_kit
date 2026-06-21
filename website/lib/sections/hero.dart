@@ -13,55 +13,49 @@ class Hero extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    return header(
-      classes: 'relative overflow-hidden',
-      [
-        // Soft ambient backdrop.
-        div(
-          classes:
-              'pointer-events-none absolute -top-32 right-0 h-[420px] w-[420px] '
-              'rounded-full bg-accent/20 blur-3xl',
-          const [],
-        ),
-        div(
-          classes:
-              'mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 '
-              'lg:grid-cols-[1.1fr_0.9fr] lg:py-28',
-          [
-            div(classes: 'flex flex-col items-start gap-6', [
-              eyebrow('Drag-and-drop · Flutter & Web'),
-              h1(
-                classes:
-                    'font-serif text-5xl leading-[1.05] text-ink sm:text-6xl',
-                [
-                  .text('Pick up the '),
-                  span(classes: 'text-accent', [.text('whole page')]),
-                  .text('.'),
-                ],
+    return header(classes: 'relative overflow-hidden', [
+      // Soft ambient backdrop.
+      div(
+        classes:
+            'pointer-events-none absolute -top-32 right-0 h-[420px] w-[420px] '
+            'rounded-full bg-accent/20 blur-3xl',
+        const [],
+      ),
+      div(
+        classes:
+            'mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 '
+            'lg:grid-cols-[1.1fr_0.9fr] lg:py-28',
+        [
+          div(classes: 'flex flex-col items-start gap-6', [
+            eyebrow('Drag-and-drop · Flutter & Web'),
+            h1(
+              classes:
+                  'font-serif text-5xl leading-[1.05] text-ink sm:text-6xl',
+              [
+                .text('Pick up the '),
+                span(classes: 'text-accent', [.text('whole page')]),
+                .text('.'),
+              ],
+            ),
+            p(classes: 'max-w-xl text-lg leading-relaxed text-muted', const [
+              .text(
+                'dnd_kit is one drag engine for Flutter and the browser. '
+                'This page is built with it — every handle, card and chip '
+                'you can grab below runs on the same runtime.',
               ),
-              p(
-                classes: 'max-w-xl text-lg leading-relaxed text-muted',
-                const [
-                  .text(
-                    'dnd_kit is one drag engine for Flutter and the browser. '
-                    'This page is built with it — every handle, card and chip '
-                    'you can grab below runs on the same runtime.',
-                  ),
-                ],
-              ),
-              div(classes: 'flex flex-wrap items-center gap-3', [
-                ctaPrimary('View on GitHub', SiteLinks.github, external: true),
-                ctaGhost('Read the docs', SiteLinks.docs),
-              ]),
             ]),
-            // The entrance animation lives on this static wrapper, not inside
-            // the @client island — hydration re-mounts the island subtree, so a
-            // mount animation placed there would replay and flicker.
-            div(classes: 'animate-fade-in', const [HeroStack()]),
-          ],
-        ),
-      ],
-    );
+            div(classes: 'flex flex-wrap items-center gap-3', [
+              ctaPrimary('View on GitHub', SiteLinks.github, external: true),
+              ctaGhost('Read the docs', SiteLinks.docs),
+            ]),
+          ]),
+          // The entrance animation lives on this static wrapper, not inside
+          // the @client island — hydration re-mounts the island subtree, so a
+          // mount animation placed there would replay and flicker.
+          div(classes: 'animate-fade-in', const [HeroStack()]),
+        ],
+      ),
+    ]);
   }
 }
 
@@ -120,32 +114,32 @@ class _HeroStackState extends State<HeroStack> {
   Component build(BuildContext context) {
     return DndScope(
       controller: _controller,
-      child: div(
-        classes: 'card flex flex-col gap-4 p-5 shadow-lift',
-        [
-          div(classes: 'flex items-center justify-between', [
-            span(
-              classes: 'font-mono text-xs uppercase tracking-wider text-muted',
-              const [.text('drag a capability →')],
-            ),
-            span(
-              classes: 'font-mono text-xs text-accent',
-              [.text('${_stack.length} in stack')],
-            ),
-          ]),
-          _zone('zone-tray', _tray, 'Capabilities'),
-          _zone('zone-stack', _stack, 'Your stack', emptyHint: 'drop here'),
-          DndDragOverlay(
-            controller: _controller,
-            builder: (context, overlay) => _chipFace(overlay.activeId, true),
+      child: div(classes: 'card flex flex-col gap-4 p-5 shadow-lift', [
+        div(classes: 'flex items-center justify-between', [
+          span(
+            classes: 'font-mono text-xs uppercase tracking-wider text-muted',
+            const [.text('drag a capability →')],
           ),
-        ],
-      ),
+          span(classes: 'font-mono text-xs text-accent', [
+            .text('${_stack.length} in stack'),
+          ]),
+        ]),
+        _zone('zone-tray', _tray, 'Capabilities'),
+        _zone('zone-stack', _stack, 'Your stack', emptyHint: 'drop here'),
+        DndDragOverlay(
+          controller: _controller,
+          builder: (context, overlay) => _chipFace(overlay.activeId, true),
+        ),
+      ]),
     );
   }
 
-  Component _zone(String zoneId, List<DndId> chips, String title,
-      {String? emptyHint}) {
+  Component _zone(
+    String zoneId,
+    List<DndId> chips,
+    String title, {
+    String? emptyHint,
+  }) {
     final isOver = _controller.overId?.value == zoneId;
     return DndDroppable(
       id: DndId(zoneId),
@@ -175,10 +169,7 @@ class _HeroStackState extends State<HeroStack> {
       constraint: const DndSensorActivationConstraint(distance: 4),
       label: 'Drag ${_chipLabels[id.value]}',
       onDragEnd: _handleEnd,
-      child: div(
-        classes: isActive ? 'opacity-30' : '',
-        [_chipFace(id, false)],
-      ),
+      child: div(classes: isActive ? 'opacity-30' : '', [_chipFace(id, false)]),
     );
   }
 

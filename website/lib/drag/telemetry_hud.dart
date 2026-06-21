@@ -49,7 +49,9 @@ class _TelemetryHudState extends State<TelemetryHud> {
     // Active state warms via border + text (no translucent fill): a near-solid
     // background avoids the iOS Safari backdrop-filter-on-fixed bug where the
     // bar only paints after a scroll.
-    final shell = s.active ? 'border-accent text-ink' : 'border-line text-muted';
+    final shell = s.active
+        ? 'border-accent text-ink'
+        : 'border-line text-muted';
 
     // Anchor to the bottom-left on mobile and centre on >= sm. Centring a
     // fixed element resolves against the initial containing block, which a
@@ -89,9 +91,12 @@ class _TelemetryHudState extends State<TelemetryHud> {
   }
 
   Component _field(String label, String value, {bool always = true}) {
-    return span(classes: 'whitespace-nowrap ${always ? '' : 'hidden sm:inline'}', [
-      span(classes: 'text-accent', [.text('$label ')]),
-      .text(value),
-    ]);
+    return span(
+      classes: 'whitespace-nowrap ${always ? '' : 'hidden sm:inline'}',
+      [
+        span(classes: 'text-accent', [.text('$label ')]),
+        .text(value),
+      ],
+    );
   }
 }

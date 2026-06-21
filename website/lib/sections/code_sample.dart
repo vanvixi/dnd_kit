@@ -52,10 +52,9 @@ class _CodeSampleState extends State<CodeSample> {
                   ),
               ],
             ),
-            span(
-              classes: 'ml-auto font-mono text-xs text-muted',
-              const [.text('main.dart')],
-            ),
+            span(classes: 'ml-auto font-mono text-xs text-muted', const [
+              .text('main.dart'),
+            ]),
           ],
         ),
         Component.element(

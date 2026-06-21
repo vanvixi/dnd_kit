@@ -57,29 +57,26 @@ class _FeaturesState extends State<Features> {
       itemIds: _order,
       onMove: _onMove,
       child: div([
-        div(
-          classes: 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3',
-          [
-            for (final id in _order)
-              SortableItem(
-                id: id,
-                constraint: const DndSensorActivationConstraint(distance: 8),
-                label: 'Reorder ${_featureFor(id).title}',
-                builder: (context, itemState, child) {
-                  final lifted = itemState.isActive || itemState.isDragging;
-                  final over = itemState.isOver;
-                  return div(
-                    classes:
-                        'h-full transition-[opacity,transform] duration-150 '
-                        '${lifted ? 'opacity-40' : ''} '
-                        '${over ? 'scale-[1.02]' : ''}',
-                    [child],
-                  );
-                },
-                child: _featureCard(_featureFor(id)),
-              ),
-          ],
-        ),
+        div(classes: 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3', [
+          for (final id in _order)
+            SortableItem(
+              id: id,
+              constraint: const DndSensorActivationConstraint(distance: 8),
+              label: 'Reorder ${_featureFor(id).title}',
+              builder: (context, itemState, child) {
+                final lifted = itemState.isActive || itemState.isDragging;
+                final over = itemState.isOver;
+                return div(
+                  classes:
+                      'h-full transition-[opacity,transform] duration-150 '
+                      '${lifted ? 'opacity-40' : ''} '
+                      '${over ? 'scale-[1.02]' : ''}',
+                  [child],
+                );
+              },
+              child: _featureCard(_featureFor(id)),
+            ),
+        ]),
         DndDragOverlay(
           controller: _controller,
           builder: (context, overlay) => div(
@@ -106,10 +103,7 @@ class _FeaturesState extends State<Features> {
           ),
           Grip(label: 'Reorder ${feature.title}'),
         ]),
-        h3(
-          classes: 'font-serif text-xl text-ink',
-          [.text(feature.title)],
-        ),
+        h3(classes: 'font-serif text-xl text-ink', [.text(feature.title)]),
         p(classes: 'text-sm leading-relaxed text-muted', [.text(feature.body)]),
       ],
     );
