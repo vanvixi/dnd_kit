@@ -260,9 +260,23 @@ Close the prepared `0.3.1` package line as one auditable family publication:
 
 Phase README: `docs/stories/phase-25-coordinated-family-patch-release/README.md`.
 
+## Phase 28 - Cross-Adapter Multi-Container Parity
+
+Close the remaining sortable parity gap between Flutter and Jaspr without
+forking move-intent logic:
+
+- hoist the experimental multi-container helpers into `dnd_kit`;
+- preserve additive Flutter imports and behavior for existing experimental
+  consumers;
+- expose the same shared contract from `dnd_kit_jaspr`;
+- prove that both adapters compute identical cross-container move intent over
+  the shared engine.
+
+Phase README: `docs/stories/phase-28-cross-adapter-multi-container/README.md`.
+
 ## Current State
 
-The repository has implemented work through `US-073`. The Flutter adapter, the
+The repository has implemented work through `US-075`. The Flutter adapter, the
 pure Dart engine, and the Jaspr adapter share the `dnd_kit` brand family under
 the post-US-060 topology, the workspace is unified under the Phase 17 toolchain,
 and both adapters now ship a sortable preset over the shared engine. Phase 19
@@ -285,7 +299,10 @@ contract code by moving `DndAnnouncements` into `dnd_kit` while keeping Flutter
 semantics execution and Jaspr live-region execution adapter-local. Phase 25 is
 the closed release packet for those prepared package deltas as a coordinated
 stable `0.3.1` family release; local proof passed and the three packages were
-published in dependency order on 2026-06-20. Future work
+published in dependency order on 2026-06-20. Phase 26 then published the website
+homepage to GitHub Pages via CI, and Phase 27 added affected-only validation to
+the Validate CI workflow. Phase 28 is the next planned product slice: shared
+experimental multi-container parity between Flutter and Jaspr. Future work
 should extend this roadmap through new product docs, story packets, and
 decisions rather than by reviving the old umbrella/core topology from the
 historical specs.
