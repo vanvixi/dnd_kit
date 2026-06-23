@@ -5,7 +5,7 @@ library;
 class SiteLinks {
   const SiteLinks._();
 
-  static const github = 'https://github.com/vanvixi/dnd_kit';
+  static const github = 'https://github.com/iamv4g/dnd_kit';
 
   static const pubKit = 'https://pub.dev/packages/dnd_kit';
   static const pubFlutter = 'https://pub.dev/packages/dnd_kit_flutter';

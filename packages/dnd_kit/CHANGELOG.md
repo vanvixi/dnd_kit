@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2
+
+- Updates the pub.dev homepage metadata to the hosted project website while
+  keeping repository and issue tracker links on GitHub.
+- Refreshes the package links for the repository transfer to
+  `iamv4g/dnd_kit`.
+
 ## 0.3.1
 
 - Adds `DndAnnouncements` to the shared engine as a framework-neutral

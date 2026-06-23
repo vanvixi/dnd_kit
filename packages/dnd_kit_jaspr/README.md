@@ -1,6 +1,6 @@
 # dnd_kit_jaspr
 
-Jaspr (web) adapter for the [`dnd_kit`](https://github.com/vanvixi/dnd_kit)
+Jaspr (web) adapter for the [`dnd_kit`](https://github.com/iamv4g/dnd_kit)
 drag-and-drop family.
 
 `dnd_kit_jaspr` is built on the shared `dnd_kit` engine, so Jaspr and
@@ -98,8 +98,6 @@ feature gallery covering generic drag/drop, sortable, auto-scroll,
 accessibility, and shared-runtime modifiers.
 
 ## dnd_kit family
-
-Project home: https://vanvixi.github.io/dnd_kit/
 
 | Package                                                       | Use it for                                                                                 |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |

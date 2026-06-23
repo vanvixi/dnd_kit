@@ -57,6 +57,6 @@ static host (GitHub Pages, Netlify, Cloudflare Pages, …).
 
 ## Links
 
-- GitHub: https://github.com/vanvixi/dnd_kit
+- GitHub: https://github.com/iamv4g/dnd_kit
 - pub.dev: https://pub.dev/packages/dnd_kit_jaspr
 - Docs: _coming soon_ (currently a `#docs` placeholder in the nav/footer)

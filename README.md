@@ -58,9 +58,7 @@ depending on another's framework.
   depend on `dnd_kit`.
 
 `dnd_kit` is the pure Dart engine (formerly published as `dnd_kit_core`); the
-adapters build on it. All three publish dev releases during `0.x`. The neutral
-project home is the repository README and the gallery at
-https://vanvixi.github.io/dnd_kit/.
+adapters build on it. All three publish dev releases during `0.x`.
 
 ## Current Status
 

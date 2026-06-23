@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2
+
+- Updates the pub.dev homepage metadata to the hosted project website.
+- Refreshes the package links for the repository transfer to
+  `iamv4g/dnd_kit`.
+- Depends on `dnd_kit: ^0.3.2` with no runtime API changes.
+
 ## 0.3.1
 
 - Fixes a framework assertion (`owner._debugCurrentBuildTarget != null`) thrown

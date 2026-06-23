@@ -2,7 +2,7 @@
 
 This package-local example gives pub.dev a compact, illustrative sample. The
 full runnable Jaspr feature gallery lives in the repository-level
-[`examples/jaspr_example_gallery`](https://github.com/vanvixi/dnd_kit/tree/main/examples/jaspr_example_gallery)
+[`examples/jaspr_example_gallery`](https://github.com/iamv4g/dnd_kit/tree/main/examples/jaspr_example_gallery)
 directory.
 
 ```dart
@@ -41,6 +41,6 @@ class TaskBoard extends StatelessComponent {
 
 More complete examples:
 
-- [`examples/jaspr_example_gallery`](https://github.com/vanvixi/dnd_kit/tree/main/examples/jaspr_example_gallery)
+- [`examples/jaspr_example_gallery`](https://github.com/iamv4g/dnd_kit/tree/main/examples/jaspr_example_gallery)
   shows a runnable browser feature gallery with drag/drop, sortable,
   auto-scroll, accessibility, modifiers, and shared-runtime behavior.

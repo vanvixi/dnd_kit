@@ -4,9 +4,6 @@
 sortable lists, grids, Kanban boards, dashboards, canvas editors, and other
 drag-heavy interfaces. It builds on the framework-agnostic `dnd_kit` engine.
 
-Try the hosted example gallery:
-https://vanvixi.github.io/dnd_kit/
-
 The package is centered on Flutter-native widgets and controllers:
 
 - `DndScope` and `DndController` coordinate drag state.
