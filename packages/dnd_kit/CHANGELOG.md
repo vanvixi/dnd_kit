@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.0-dev.1
+## 0.4.0
 
 - Graduates multi-container from a helper-only contract into a supported shared
   engine feature for the common board/list case.
@@ -10,9 +10,6 @@
 - Adds `SortableMultiMoveInput` and `SortableMultiMoveResolver` so adapters and
   advanced consumers can override the default policy without forking the whole
   feature.
-
-## 0.4.0-dev.0
-
 - Adds the experimental multi-container helper contract to the shared engine:
   `SortableContainer` and `SortableMultiContainer` now live in
   `package:dnd_kit/dnd_kit.dart` so Flutter and Jaspr apps compute the same

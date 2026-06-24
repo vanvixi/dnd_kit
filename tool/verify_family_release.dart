@@ -9,7 +9,11 @@ const _packages = [
 Future<void> main(List<String> args) async {
   final root = _resolveRootDir();
 
-  await _runCommand('dart', ['pub', 'get'], workingDirectory: root);
+  await _runCommand(
+    'fvm',
+    ['dart', 'pub', 'get'],
+    workingDirectory: root,
+  );
   await _runCommand(
     'fvm',
     ['dart', 'run', 'melos', 'run', 'validate'],

@@ -303,9 +303,23 @@ board/list contract that shipped in Phase 29:
 
 Phase README: `docs/stories/phase-30-website-multi-container-showcase/README.md`.
 
+## Phase 31 - Coordinated Family Stable 0.4.0 Release
+
+Close the prepared `0.4.0-dev.1` package line as one coordinated stable family
+publication after the multi-container graduation work has soaked:
+
+- promote `dnd_kit` from `0.4.0-dev.1` to `0.4.0` as the dependency root;
+- promote `dnd_kit_flutter` to `0.4.0` against `dnd_kit: ^0.4.0`;
+- promote `dnd_kit_jaspr` to `0.4.0` against `dnd_kit: ^0.4.0`;
+- keep changelog truth, dependency order, and dry-run proof aligned with the
+  already-landed multi-container feature set.
+
+Phase README:
+`docs/stories/phase-31-coordinated-family-stable-0-4-0-release/README.md`.
+
 ## Current State
 
-The repository has implemented work through `US-076`. The Flutter adapter, the
+The repository has implemented work through `US-079`. The Flutter adapter, the
 pure Dart engine, and the Jaspr adapter share the `dnd_kit` brand family under
 the post-US-060 topology, the workspace is unified under the Phase 17 toolchain,
 and both adapters now ship a sortable preset over the shared engine. Phase 19
@@ -341,7 +355,11 @@ Jaspr browser proof exercises the same behavior over the shared engine.
 Phase 30 then upgraded the hosted Jaspr homepage Kanban showcase to that same
 supported multi-container surface, replacing the stale app-owned raw-droppable
 assembly path while keeping the website's own visuals, telemetry, and state
-mutation local to the site.
-Future work should extend this roadmap through new product docs, story packets,
-and decisions rather than by reviving the old umbrella/core topology from the
-historical specs.
+mutation local to the site. Phase 31 then closed the stable family release
+packet for that line: the prepared `0.4.0-dev.1` family metadata was promoted
+to stable `0.4.0`, local release proof passed through the shared verifier, and
+the three packages published to pub.dev in dependency order on 2026-06-24:
+`dnd_kit 0.4.0` -> `dnd_kit_flutter 0.4.0` -> `dnd_kit_jaspr 0.4.0`.
+Future work should keep extending this roadmap through new product docs, story
+packets, and decisions rather than by reviving the old umbrella/core topology
+from the historical specs.

@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.4.0-dev.1
+## 0.4.0
 
-- Depends on `dnd_kit: ^0.4.0-dev.1`.
+- Depends on `dnd_kit: ^0.4.0`.
 - Adds a production multi-container adapter surface:
   `SortableMultiScope`, `SortableMultiContainerArea`, and `SortableMultiItem`.
 - Default cross-container collision ranking and drag-end move resolution now
@@ -10,10 +10,6 @@
   a custom detector or item-level `onDragEnd` callback for the common case.
 - The runnable multi-container example now uses the supported adapter surface
   and a single-phase application-owned state update.
-
-## 0.4.0-dev.0
-
-- Depends on `dnd_kit: ^0.4.0-dev.0`.
 - Keeps exporting the experimental multi-container helper contract from
   `package:dnd_kit_flutter/dnd_kit_flutter.dart`, but the underlying
   `SortableContainer` and `SortableMultiContainer` source now lives in the
