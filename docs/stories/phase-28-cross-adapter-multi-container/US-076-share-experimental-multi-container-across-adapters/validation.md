@@ -57,7 +57,7 @@ cd packages/dnd_kit_jaspr && fvm dart test -p chrome <targeted multi-container b
   passed with 3 widget tests covering the Flutter example board's render,
   cross-column move, and same-column reorder flows.
 - After `0.3.2` had already been published, the local family metadata for this
-  post-publish feature line was advanced to `0.4.0` across
+  post-publish feature line was advanced to `0.4.0-dev.0` across
   `packages/dnd_kit/pubspec.yaml`, `packages/dnd_kit_flutter/pubspec.yaml`, and
   `packages/dnd_kit_jaspr/pubspec.yaml`, with adapter constraints updated to
-  `dnd_kit: ^0.4.0`.
+  `dnd_kit: ^0.4.0-dev.0`.

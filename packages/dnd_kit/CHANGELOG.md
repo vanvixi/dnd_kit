@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.0
+## 0.4.0-dev.0
 
 - Adds the experimental multi-container helper contract to the shared engine:
   `SortableContainer` and `SortableMultiContainer` now live in

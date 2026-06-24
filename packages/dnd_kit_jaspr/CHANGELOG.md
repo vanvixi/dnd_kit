@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.4.0
+## 0.4.0-dev.0
 
-- Depends on `dnd_kit: ^0.4.0`.
+- Depends on `dnd_kit: ^0.4.0-dev.0`.
 - Re-exports the shared experimental multi-container helper contract from
   `dnd_kit`, so Jaspr apps can use `SortableContainer` and
   `SortableMultiContainer` with the same move-intent semantics as Flutter.

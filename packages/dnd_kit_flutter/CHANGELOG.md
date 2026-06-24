@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.4.0
+## 0.4.0-dev.0
 
-- Depends on `dnd_kit: ^0.4.0`.
+- Depends on `dnd_kit: ^0.4.0-dev.0`.
 - Keeps exporting the experimental multi-container helper contract from
   `package:dnd_kit_flutter/dnd_kit_flutter.dart`, but the underlying
   `SortableContainer` and `SortableMultiContainer` source now lives in the
