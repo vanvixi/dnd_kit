@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0-dev.1
+
+- Depends on `dnd_kit: ^0.4.0-dev.1`.
+- Adds the production multi-container adapter surface:
+  `SortableMultiScope`, `SortableMultiContainerArea`, and `SortableMultiItem`.
+- Jaspr now shares the same default board/list collision and move-intent
+  semantics as Flutter through the pure-Dart `dnd_kit` core policy.
+- Browser proof now exercises the supported multi-container surface instead of
+  only the helper contract.
+
 ## 0.4.0-dev.0
 
 - Depends on `dnd_kit: ^0.4.0-dev.0`.

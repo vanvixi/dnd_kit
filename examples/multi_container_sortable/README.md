@@ -1,8 +1,9 @@
-# Experimental Multi-Container Sortable Example
+# Production Multi-Container Sortable Example
 
-This example shows the experimental multi-container sortable API shape. The API
-is annotated with `@experimental`, now lives in the shared `dnd_kit` engine,
-and can change before V1.
+This example shows the supported multi-container board/list surface built on
+top of the shared `dnd_kit` interaction contract. The library now owns default
+target resolution and insertion semantics, while the app still owns rendering
+and state mutation.
 
 ```dart
 final containers = <SortableContainer>[
@@ -16,22 +17,24 @@ final containers = <SortableContainer>[
   ),
 ];
 
-void handleDragEnd(DndDragEndEvent event) {
-  final move = SortableMultiContainer.moveDetailsFor(
-    event,
-    containers: containers,
-  );
-
-  if (move == null) {
-    return;
-  }
-
-  // Applications own mutation. Remove move.activeId from
-  // move.fromContainerId at move.fromIndex, then insert it into
-  // move.toContainerId at move.toIndex.
-}
+SortableMultiScope(
+  containers: containers,
+  onMove: (move) {
+    // Applications still own mutation. Remove move.activeId from
+    // move.fromContainerId at move.fromIndex, then insert it into
+    // move.toContainerId at move.toIndex.
+  },
+  child: SortableMultiContainerArea(
+    id: const DndId('todo'),
+    itemIds: const <DndId>[DndId('task-1'), DndId('task-2')],
+    child: const SortableMultiItem(
+      id: DndId('task-1'),
+      child: Text('Task 1'),
+    ),
+  ),
+)
 ```
 
-Use the stable `SortableScope` and `SortableItem` APIs for same-container lists
-and grids. Reach for this experimental surface only when prototyping movement
-between application-owned containers.
+Use `SortableScope` / `SortableItem` for same-container-only lists and grids.
+Reach for `SortableMultiScope` when you need supported movement between
+application-owned containers.

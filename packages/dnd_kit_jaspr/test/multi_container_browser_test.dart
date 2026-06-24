@@ -1,8 +1,6 @@
 @TestOn('browser')
 library;
 
-// ignore_for_file: experimental_member_use
-
 import 'package:dnd_kit_jaspr/dnd_kit_jaspr.dart';
 import 'package:jaspr/dom.dart';
 import 'package:jaspr/jaspr.dart';
@@ -14,8 +12,6 @@ void main() {
     testClient(
       'computes cross-container move intent from a Jaspr drag flow',
       (tester) async {
-        final controller = DndController();
-        addTearDown(controller.dispose);
         final containers = <SortableContainer>[
           SortableContainer(
             id: const DndId('todo'),
@@ -29,29 +25,31 @@ void main() {
         SortableMoveDetails? move;
 
         tester.pumpComponent(
-          DndScope(
-            controller: controller,
+          SortableMultiScope(
+            containers: containers,
+            onMove: (moveDetails) {
+              move = moveDetails;
+            },
             child: div([
               div(
                 styles: Styles(position: Position.fixed(left: 0.px, top: 0.px)),
                 [
-                  DndDraggable(
-                    id: const DndId('task-1'),
-                    onDragEnd: (event) {
-                      move = SortableMultiContainer.moveDetailsFor(
-                        event,
-                        containers: containers,
-                      );
-                    },
-                    child: button([Component.text('task')]),
+                  SortableMultiContainerArea(
+                    id: const DndId('todo'),
+                    itemIds: const <DndId>[DndId('task-1')],
+                    child: SortableMultiItem(
+                      id: const DndId('task-1'),
+                      child: button([Component.text('task')]),
+                    ),
                   ),
                 ],
               ),
               div(
                 styles: Styles(position: Position.fixed(left: 240.px, top: 0.px)),
                 [
-                  DndDroppable(
+                  SortableMultiContainerArea(
                     id: const DndId('done'),
+                    itemIds: const <DndId>[],
                     child: article(
                       styles: Styles(width: 120.px, height: 120.px),
                       const [Component.text('done')],
@@ -72,8 +70,6 @@ void main() {
           _pointerEvent('pointermove', x: 280, y: 20, pointerId: 1),
         );
 
-        expect(controller.overId, const DndId('done'));
-
         await tester.dispatchEvent(
           find.tag('article'),
           _pointerEvent('pointerup', x: 280, y: 20, pointerId: 1),
@@ -86,7 +82,6 @@ void main() {
         expect(move!.toContainerId, const DndId('done'));
         expect(move!.fromIndex, 0);
         expect(move!.toIndex, 0);
-        expect(controller.state, const DndIdle());
       },
     );
   });

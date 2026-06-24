@@ -33,6 +33,7 @@ export 'src/sensors/pointer_sensor.dart';
 export 'src/sortable/sortable_container.dart';
 export 'src/sortable/sortable_details.dart';
 export 'src/sortable/sortable_item.dart';
+export 'src/sortable/sortable_multi_scope.dart';
 export 'src/sortable/sortable_scope.dart';
 export 'src/sortable/sortable_strategy.dart';
 export 'src/widgets/auto_scroll.dart';

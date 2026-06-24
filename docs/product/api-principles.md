@@ -12,6 +12,9 @@ Use family-consistent names across adapters where practical:
 - `DndDragOverlay`
 - `SortableScope`
 - `SortableItem`
+- `SortableMultiScope`
+- `SortableMultiContainerArea`
+- `SortableMultiItem`
 
 Avoid React-specific API shapes such as `DndContext`, `useDraggable`,
 `useDroppable`, or hook-style naming.
@@ -60,6 +63,18 @@ tasks, boards, or app state.
 
 Sortable callbacks provide enough information for the user to mutate their own
 data with `setState`, Riverpod, BLoC, Provider, Redux, or any other approach.
+
+## Multi-Container Defaults
+
+Production multi-container behavior follows these rules:
+
+- `dnd_kit` owns the default interaction semantics for the common board/list
+  case, including collision ranking, empty-container drops, and before/after
+  insertion around an over-item target.
+- Applications still own rendering, animation, and collection mutation.
+- Override hooks must be explicit and additive, not require replacing the
+  whole surface. Supported hooks include custom collision ranking,
+  `SortableMultiMoveResolver`, and insertion-strategy overrides.
 
 ## Stable IDs
 

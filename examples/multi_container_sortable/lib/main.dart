@@ -4,7 +4,6 @@ import 'package:dnd_kit_flutter/dnd_kit_flutter.dart';
 import 'package:flutter/material.dart';
 
 import 'board_column_widget.dart';
-import 'collision_detector.dart';
 import 'task_card_content.dart';
 import 'task_item.dart';
 
@@ -41,8 +40,6 @@ class MultiContainerSortableExample extends StatefulWidget {
 
 class _MultiContainerSortableExampleState
     extends State<MultiContainerSortableExample> {
-  late final DndController _controller;
-
   List<SortableContainer> _containers = [
     SortableContainer(
       id: const DndId('backlog'),
@@ -66,92 +63,54 @@ class _MultiContainerSortableExampleState
     ),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = DndController(
-      collisionDetector: multiContainerCollisionDetector,
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _handleDragEnd(DndDragEndEvent event) {
-    final move = SortableMultiContainer.moveDetailsFor(
-      event,
-      containers: _containers,
-    );
-
-    if (move == null) {
-      _controller.reset();
-      return;
-    }
-
+  void _handleMove(SortableMoveDetails move) {
     final fromId = move.fromContainerId;
     final toId = move.toContainerId;
-
     if (fromId == null || toId == null) {
-      _controller.reset();
       return;
     }
 
-    if (fromId == toId) {
-      // Same-container sorting
-      setState(() {
-        _containers = _containers.map((container) {
-          if (container.id == fromId) {
-            final items = List<DndId>.from(container.itemIds);
-            final removed = items.removeAt(move.fromIndex);
-            items.insert(move.toIndex, removed);
-            return SortableContainer(id: container.id, itemIds: items);
-          }
-          return container;
-        }).toList();
-      });
-      _controller.reset();
-    } else {
-      // Cross-container move
-      final activeItem = move.activeId;
+    setState(() {
+      _containers = _applyMove(_containers, move);
+    });
+  }
 
-      // Phase 1: Remove item from original container to avoid duplicate registration
-      setState(() {
-        _containers = _containers.map((container) {
-          if (container.id == fromId) {
-            final items = List<DndId>.from(container.itemIds);
-            items.removeAt(move.fromIndex);
-            return SortableContainer(id: container.id, itemIds: items);
-          }
-          return container;
-        }).toList();
-      });
-
-      // Phase 2: Add item to target container in the next frame
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        setState(() {
-          _containers = _containers.map((container) {
-            if (container.id == toId) {
-              final items = List<DndId>.from(container.itemIds);
-              final targetIndex = move.toIndex.clamp(0, items.length);
-              items.insert(targetIndex, activeItem);
-              return SortableContainer(id: container.id, itemIds: items);
-            }
-            return container;
-          }).toList();
-        });
-      });
-      _controller.reset();
+  List<SortableContainer> _applyMove(
+    List<SortableContainer> containers,
+    SortableMoveDetails move,
+  ) {
+    final fromId = move.fromContainerId;
+    final toId = move.toContainerId;
+    if (fromId == null || toId == null) {
+      return containers;
     }
+
+    return containers.map((container) {
+      final items = List<DndId>.from(container.itemIds);
+
+      if (container.id == fromId) {
+        items.removeAt(move.fromIndex);
+      }
+
+      if (container.id == toId) {
+        final insertIndex = container.id == fromId
+            ? move.toIndex.clamp(0, items.length)
+            : move.toIndex.clamp(0, items.length);
+        items.insert(insertIndex, move.activeId);
+      }
+
+      return SortableContainer(
+        id: container.id,
+        itemIds: items,
+      );
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return DndScope(
-      controller: _controller,
+    return SortableMultiScope(
+      containers: _containers,
+      onMove: _handleMove,
       child: Scaffold(
         body: Container(
           decoration: const BoxDecoration(
@@ -256,7 +215,6 @@ class _MultiContainerSortableExampleState
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   child: BoardColumnWidget(
                                     container: container,
-                                    onDragEnd: _handleDragEnd,
                                   ),
                                 ),
                               ),
@@ -270,7 +228,6 @@ class _MultiContainerSortableExampleState
 
               // Floating Drag Overlay
               DndDragOverlay(
-                controller: _controller,
                 builder: (context, details) {
                   final taskId = details.activeId.value;
                   final task = tasks[taskId];

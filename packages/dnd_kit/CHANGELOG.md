@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0-dev.1
+
+- Graduates multi-container from a helper-only contract into a supported shared
+  engine feature for the common board/list case.
+- `SortableMultiContainer` now owns the default collision detector and
+  move-intent resolution policy, including empty-container drops and adaptive
+  before/after insertion around an over-item target.
+- Adds `SortableMultiMoveInput` and `SortableMultiMoveResolver` so adapters and
+  advanced consumers can override the default policy without forking the whole
+  feature.
+
 ## 0.4.0-dev.0
 
 - Adds the experimental multi-container helper contract to the shared engine:

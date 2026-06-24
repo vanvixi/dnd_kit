@@ -22,14 +22,15 @@ product docs, story packets, and decision records under `docs/`.
 ## Product Surfaces
 
 - Pure Dart package APIs for geometry, state, collision, modifier, sensor,
-  sortable math, the experimental multi-container helper contract, the
+  sortable math, the production multi-container interaction contract, the
   framework-neutral drag runtime (`DndRuntime`), and the measuring-cache
   contract (`DndMeasuringRegistry`).
 - Flutter widget APIs for drag scopes, controllers, draggables, droppables,
-  handles, overlays, measuring, sensors, auto-scroll, and accessibility.
+  handles, overlays, measuring, sensors, auto-scroll, accessibility, and the
+  production multi-container surface.
 - Jaspr component APIs for drag scopes, controllers, draggables, droppables,
-  handles, overlays, sortable presets, browser measuring, auto-scroll, and
-  accessibility.
+  handles, overlays, sortable presets, browser measuring, auto-scroll,
+  accessibility, and the production multi-container surface.
 - Sortable preset APIs for vertical lists, horizontal lists, and grids.
 - Example Flutter and Jaspr apps used as adoption guides and integration proof.
 
@@ -44,8 +45,8 @@ dnd_kit
 `dnd_kit` is the shared engine. `dnd_kit_flutter` and `dnd_kit_jaspr` are peer
 adapters over it; neither depends on the other. There is no umbrella package.
 Sortable widgets now live in both adapters, while the sortable move/strategy
-math and experimental multi-container helper contract they use are shared from
-`dnd_kit`.
+math and the shared multi-container interaction contract they use are shared
+from `dnd_kit`.
 
 ## Dependency Rule
 
@@ -90,12 +91,14 @@ See `SPEC_JASPR.md` §4.3 and ADR 0015.
 
 The shared layer also owns the sortable contract and strategy math
 (`SortableMoveDetails`, `SortableStrategies` for vertical/horizontal/grid),
-the experimental multi-container helper contract
-(`SortableContainer`, `SortableMultiContainer`), and the DOM-free auto-scroll
-edge/velocity math (`dndAutoScrollVelocity`, `DndAutoScrollOptions`,
-`DndScrollAxis`). Adapters keep only the framework-specific execution: Flutter
-retains the `Ticker`, render-box measuring, and `ScrollPosition` scrolling and
-delegates the math.
+the production multi-container contract (`SortableContainer`,
+`SortableMultiContainer`, `SortableMultiMoveInput`), and the DOM-free
+auto-scroll edge/velocity math (`dndAutoScrollVelocity`,
+`DndAutoScrollOptions`, `DndScrollAxis`). Adapters keep only the
+framework-specific execution: Flutter retains the `Ticker`, render-box
+measuring, and `ScrollPosition` scrolling and delegates the math, while both
+adapters expose their own `SortableMultiScope` / `SortableMultiContainerArea` /
+`SortableMultiItem` surfaces over the shared core behavior.
 
 ## Decisions
 
@@ -105,5 +108,6 @@ delegates the math.
 - `docs/decisions/0018-flutter-3-44-workspace-unification.md`
 - `docs/decisions/0020-axis-aware-auto-scroll.md`
 - `docs/decisions/0021-shared-experimental-multi-container.md`
+- `docs/decisions/0022-production-ready-multi-container-surface.md`
 
 For historical Jaspr-specific design context, also see `SPEC_JASPR.md`.

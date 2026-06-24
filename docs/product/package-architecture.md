@@ -49,7 +49,7 @@ Owns:
 - modifier contracts and pure Dart modifiers
 - sensor contracts and the shared pointer sensor
 - registry contracts
-- base sortable math, the experimental multi-container helper contract, and
+- base sortable math, the production multi-container interaction contract, and
   axis-aware auto-scroll edge/velocity math
 
 Must not import:
@@ -88,6 +88,9 @@ Owns Flutter-specific sortable widget/component plumbing:
 
 - `SortableScope`
 - `SortableItem`
+- `SortableMultiScope`
+- `SortableMultiContainerArea`
+- `SortableMultiItem`
 - sortable keyboard coordinates
 
 Also re-exports shared sortable contract types from `dnd_kit`:
@@ -99,7 +102,8 @@ Also re-exports shared sortable contract types from `dnd_kit`:
 - `SortableStrategies`
 
 Stable V1 strategies are vertical list, horizontal list, and grid.
-Multi-container, nested sortable, and virtualized adapters remain experimental.
+Production multi-container board/list surfaces are supported in both adapters.
+Nested sortable and virtualized adapters remain experimental.
 
 Flutter apps import `package:dnd_kit_flutter/dnd_kit_flutter.dart`.
 
@@ -124,7 +128,7 @@ Owns:
 - live-region accessibility hooks and accessible labels/descriptions
 
 Jaspr inherits the shared single-container sortable strategies (vertical list,
-horizontal list, and grid), the experimental multi-container helper contract,
+horizontal list, and grid), the shared multi-container interaction contract,
 and the shared `DndAnnouncements` accessibility contract from `dnd_kit`.
 
 Must not:

@@ -318,9 +318,11 @@ homepage to GitHub Pages via CI, and Phase 27 added affected-only validation to
 the Validate CI workflow. Phase 28 then closed the last pure-Dart sortable
 parity gap by moving the experimental multi-container helper contract into
 `dnd_kit` and exposing it from both adapters without forking move-intent logic.
-Phase 29 is the next planned product slice: promote multi-container from
-experimental helper parity to a production-ready library feature with stable
-default interaction semantics and adapter-level surfaces. Future work
-should extend this roadmap through new product docs, story packets, and
-decisions rather than by reviving the old umbrella/core topology from the
+Phase 29 then promoted multi-container from helper parity to a production-ready
+library feature: `dnd_kit` now owns the default board/list interaction policy,
+both adapters expose `SortableMultiScope` / `SortableMultiContainerArea` /
+`SortableMultiItem`, the Flutter example now uses that supported surface, and
+Jaspr browser proof exercises the same behavior over the shared engine.
+Future work should extend this roadmap through new product docs, story packets,
+and decisions rather than by reviving the old umbrella/core topology from the
 historical specs.

@@ -10,11 +10,9 @@ class BoardColumnWidget extends StatelessWidget {
   const BoardColumnWidget({
     super.key,
     required this.container,
-    required this.onDragEnd,
   });
 
   final SortableContainer container;
-  final DndDragEndCallback onDragEnd;
 
   String get _title {
     switch (container.id.value) {
@@ -57,12 +55,13 @@ class BoardColumnWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DndDroppable(
-      key: ValueKey('column-drop:${container.id.value}'),
+    return SortableMultiContainerArea(
       id: container.id,
+      itemIds: container.itemIds,
       builder: (context, details, child) {
         final isOver = details.isOver;
         return AnimatedContainer(
+          key: ValueKey('column-drop:${container.id.value}'),
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: isOver ? 0.06 : 0.03),
@@ -158,7 +157,6 @@ class BoardColumnWidget extends StatelessWidget {
                             child: DraggableCard(
                               key: ValueKey('task-card:${itemId.value}'),
                               task: tasks[itemId.value]!,
-                              onDragEnd: onDragEnd,
                             ),
                           );
                         },

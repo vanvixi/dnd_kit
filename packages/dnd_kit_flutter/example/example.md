@@ -67,4 +67,4 @@ More complete examples:
 - [`examples/kanban_board`](https://github.com/iamv4g/dnd_kit/tree/main/examples/kanban_board)
   shows a realistic board built with generic drag/drop APIs.
 - [`examples/multi_container_sortable`](https://github.com/iamv4g/dnd_kit/tree/main/examples/multi_container_sortable)
-  documents the experimental multi-container sortable shape.
+  shows the supported multi-container sortable surface.

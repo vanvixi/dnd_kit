@@ -25,6 +25,7 @@ export 'src/a11y/live_region.dart' show DndLiveRegion;
 export 'src/scope/controller.dart';
 export 'src/scope/scope.dart';
 export 'src/sortable/sortable_item.dart';
+export 'src/sortable/sortable_multi_scope.dart';
 export 'src/sortable/sortable_scope.dart';
 export 'src/widgets/auto_scroll.dart';
 export 'src/widgets/drag_handle.dart';
