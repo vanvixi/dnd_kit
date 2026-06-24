@@ -274,6 +274,20 @@ forking move-intent logic:
 
 Phase README: `docs/stories/phase-28-cross-adapter-multi-container/README.md`.
 
+## Phase 29 - Production-Ready Multi-Container
+
+Graduate multi-container from an experimental helper contract into a
+production-ready feature with one supported behavior story across adapters:
+
+- library-owned default interaction semantics for target resolution and
+  insertion behavior;
+- adapter-level multi-container surfaces so apps do not have to wire raw
+  droppables, collision detectors, and drag-end intent logic by hand;
+- app-owned presentation, animation, and state mutation preserved;
+- explicit override hooks for products that need custom interaction policy.
+
+Phase README: `docs/stories/phase-29-production-ready-multi-container/README.md`.
+
 ## Current State
 
 The repository has implemented work through `US-076`. The Flutter adapter, the
@@ -304,7 +318,9 @@ homepage to GitHub Pages via CI, and Phase 27 added affected-only validation to
 the Validate CI workflow. Phase 28 then closed the last pure-Dart sortable
 parity gap by moving the experimental multi-container helper contract into
 `dnd_kit` and exposing it from both adapters without forking move-intent logic.
-Future work
+Phase 29 is the next planned product slice: promote multi-container from
+experimental helper parity to a production-ready library feature with stable
+default interaction semantics and adapter-level surfaces. Future work
 should extend this roadmap through new product docs, story packets, and
 decisions rather than by reviving the old umbrella/core topology from the
 historical specs.

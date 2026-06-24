@@ -1,0 +1,37 @@
+# Validation
+
+## Proof Strategy
+
+The story is done only when multi-container is validated as a supported feature
+rather than a helper-level experiment: the library provides stable default
+interaction semantics, adapter-level surfaces expose them consistently, and apps
+retain presentation ownership plus policy override hooks.
+
+## Test Plan
+
+| Layer | Cases |
+| --- | --- |
+| Unit | Core tests cover default target resolution, before/after insertion, empty-container insertion, same-container reorder, cross-container move intent, and override-hook branching. |
+| Integration | Flutter and Jaspr package tests prove each adapter exposes the same multi-container contract and callback semantics without app-owned low-level wiring for the default case. |
+| E2E | Flutter and Jaspr production examples cover realistic board flows: same-container reorder, cross-container move, drop into empty container, ambiguous target resolution, and one custom-policy override. |
+| Platform | `fvm dart analyze`, targeted package tests, browser proof for Jaspr, and workspace validation all pass on the release line that first ships the supported feature. |
+| Performance | Multi-container default policy does not regress current sortable smoke baselines beyond an agreed tolerance. |
+| Logs/Audit | Harness intake, story, decision, and trace records capture the promotion from experimental helper to supported feature. |
+
+## Fixtures
+
+- A deterministic board with at least three containers, including one empty
+  container.
+- A shared set of stable `DndId` fixtures reused across Flutter and Jaspr.
+- At least one custom policy fixture to prove override hooks without replacing
+  the whole adapter surface.
+
+## Commands
+
+```text
+TBD
+```
+
+## Acceptance Evidence
+
+Add validation results after implementation exists.
