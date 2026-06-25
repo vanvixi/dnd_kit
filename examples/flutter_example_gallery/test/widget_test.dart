@@ -65,4 +65,26 @@ void main() {
     await gesture.up();
     await tester.pumpAndSettle();
   });
+
+  testWidgets('renders every catalog demo without error', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(const ExampleGalleryApp());
+
+    const labels = <String>[
+      'Collision',
+      'Sensors',
+      'Modifiers',
+      'Auto-scroll',
+      'Sortable',
+      'Multi-container',
+      'Accessibility',
+    ];
+    for (final label in labels) {
+      await tester.tap(find.text(label).first);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: '$label demo threw');
+    }
+  });
 }

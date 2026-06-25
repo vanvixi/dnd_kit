@@ -95,7 +95,6 @@ class _CollisionDemoState extends State<CollisionDemo> {
                   Text('Over: ${over ?? 'none'}'),
                   const SizedBox(height: 12),
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       for (final id in _zoneIds) ...<Widget>[
                         Expanded(child: _Zone(id: id)),

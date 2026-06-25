@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'demos/accessibility_demo.dart';
+import 'demos/auto_scroll_demo.dart';
 import 'demos/basic_demo.dart';
 import 'demos/collision_demo.dart';
+import 'demos/modifiers_demo.dart';
 import 'demos/multi_container/multi_container_demo.dart';
 import 'demos/sensors_demo.dart';
+import 'demos/sortable_demo.dart';
 
 void main() => runApp(const ExampleGalleryApp());
 
@@ -25,8 +29,8 @@ final class _DemoEntry {
   final WidgetBuilder builder;
 }
 
-// Catalog order. Demos still to fill: modifiers, auto-scroll, sortable,
-// accessibility (see docs/product/examples-standard.md).
+// Catalog order (see docs/product/examples-standard.md). Flutter now ships the
+// full catalog.
 final _demos = <_DemoEntry>[
   _DemoEntry(
     slug: 'basic',
@@ -50,11 +54,39 @@ final _demos = <_DemoEntry>[
     builder: (_) => const SensorsDemo(),
   ),
   _DemoEntry(
+    slug: 'modifiers',
+    label: 'Modifiers',
+    hint: 'Constrained movement',
+    icon: Icons.tune,
+    builder: (_) => const ModifiersDemo(),
+  ),
+  _DemoEntry(
+    slug: 'auto-scroll',
+    label: 'Auto-scroll',
+    hint: 'Edge-driven scrolling',
+    icon: Icons.swap_vert,
+    builder: (_) => const AutoScrollDemo(),
+  ),
+  _DemoEntry(
+    slug: 'sortable',
+    label: 'Sortable',
+    hint: 'Reorderable list preset',
+    icon: Icons.reorder,
+    builder: (_) => const SortableDemo(),
+  ),
+  _DemoEntry(
     slug: 'multi-container',
     label: 'Multi-container',
     hint: 'Move cards across columns',
     icon: Icons.dashboard_customize_outlined,
     builder: (_) => const MultiContainerDemo(),
+  ),
+  _DemoEntry(
+    slug: 'accessibility',
+    label: 'Accessibility',
+    hint: 'Keyboard + announcements',
+    icon: Icons.accessibility_new,
+    builder: (_) => const AccessibilityDemo(),
   ),
 ];
 
