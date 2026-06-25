@@ -23,10 +23,11 @@ This phase standardizes the examples, then builds the showcase page on top.
 | --- | --- | --- |
 | **US-083** | Define the examples standard: canonical demo catalog, naming/structure conventions, and the Flutter/Jaspr parity matrix (no demo code) | No ADR (product contract doc under the existing examples decisions) |
 | **US-084** | Consolidate `examples/` into two galleries: rename `example_gallery` → `flutter_example_gallery`, fold the standalone packages into `lib/demos/` (`basic`, `multi-container`), remove the legacy `kanban_board` app | No ADR (structure under the examples standard) |
-| US-085+ | Fill the remaining parity gaps so both galleries expose the full catalog | TBD |
-| US-086+ | Add the website showcase page presenting Flutter and Jaspr demos | TBD (Flutter-on-web delivery decided in that story) |
+| **US-085** | Parity for `collision` + `sensors`: add both demos to both galleries | No ADR (demo content under the examples standard) |
+| US-086+ | Fill the remaining parity gaps (Flutter: modifiers, auto-scroll, sortable, accessibility; Jaspr: multi-container) | TBD |
+| US-087+ | Add the website showcase page presenting Flutter and Jaspr demos | TBD (Flutter-on-web delivery decided in that story) |
 
-US-085+ and the showcase story are placeholders.
+US-086+ and the showcase story are placeholders.
 
 ## Validation Ladder
 

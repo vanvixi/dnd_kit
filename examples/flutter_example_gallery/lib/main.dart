@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'demos/basic_demo.dart';
+import 'demos/collision_demo.dart';
 import 'demos/multi_container/multi_container_demo.dart';
+import 'demos/sensors_demo.dart';
 
 void main() => runApp(const ExampleGalleryApp());
 
@@ -23,8 +25,8 @@ final class _DemoEntry {
   final WidgetBuilder builder;
 }
 
-// Catalog order. Demos still to fill: collision, sensors, modifiers,
-// auto-scroll, sortable, accessibility (see docs/product/examples-standard.md).
+// Catalog order. Demos still to fill: modifiers, auto-scroll, sortable,
+// accessibility (see docs/product/examples-standard.md).
 final _demos = <_DemoEntry>[
   _DemoEntry(
     slug: 'basic',
@@ -32,6 +34,20 @@ final _demos = <_DemoEntry>[
     hint: 'Drag, drop, handle, overlay',
     icon: Icons.drag_indicator,
     builder: (_) => const BasicDemo(),
+  ),
+  _DemoEntry(
+    slug: 'collision',
+    label: 'Collision',
+    hint: 'Detector picks the target',
+    icon: Icons.adjust,
+    builder: (_) => const CollisionDemo(),
+  ),
+  _DemoEntry(
+    slug: 'sensors',
+    label: 'Sensors',
+    hint: 'Activation constraints',
+    icon: Icons.touch_app_outlined,
+    builder: (_) => const SensorsDemo(),
   ),
   _DemoEntry(
     slug: 'multi-container',

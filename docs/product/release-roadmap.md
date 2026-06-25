@@ -345,7 +345,10 @@ Converge the example apps so the website can host a Flutter/Jaspr showcase page:
 - `US-084`: consolidate `examples/` into two galleries — rename
   `example_gallery` → `flutter_example_gallery`, fold the standalone packages
   into `lib/demos/`, and remove the legacy `kanban_board` app;
-- follow-up stories then fill the parity gaps and add the showcase page.
+- `US-085`: bring `collision` and `sensors` to full Flutter/Jaspr parity by
+  adding both catalog demos to both galleries;
+- follow-up stories then fill the remaining parity gaps and add the showcase
+  page.
 
 Phase README:
 `docs/stories/phase-33-example-standardization-and-showcase/README.md`.
@@ -405,9 +408,11 @@ modifiers, auto-scroll), an API Reference page, and a collapsible mobile docs
 menu. Phase 33 then opened example standardization: `US-083` defined the
 examples standard — a canonical demo catalog mirroring the docs concept
 taxonomy, naming/structure conventions, and the Flutter/Jaspr parity matrix —
-and `US-084` consolidated `examples/` into the two galleries
+`US-084` consolidated `examples/` into the two galleries
 (`flutter_example_gallery`, `jaspr_example_gallery`), folding the standalone
-Flutter packages into `lib/demos/` and removing the legacy `kanban_board` app.
+Flutter packages into `lib/demos/` and removing the legacy `kanban_board` app,
+and `US-085` brought the `collision` and `sensors` demos to full Flutter/Jaspr
+parity.
 Future work should keep extending this roadmap through new product docs, story
 packets, and decisions rather than by reviving the old umbrella/core topology
 from the historical specs.

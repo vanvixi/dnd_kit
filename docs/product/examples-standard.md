@@ -89,23 +89,21 @@ Target: every catalog demo present in both galleries, under `lib/demos/`.
 | Demo              | Flutter today                         | Jaspr today           | Action          |
 | ----------------- | ------------------------------------- | --------------------- | --------------- |
 | `basic`           | ✓ `BasicDemo`                         | ✓ `BasicDemo`         | done            |
-| `collision`       | ✗                                     | ✗                     | add to both     |
-| `sensors`         | ✗                                     | ✗                     | add to both     |
+| `collision`       | ✓ `CollisionDemo`                     | ✓ `CollisionDemo`     | done            |
+| `sensors`         | ✓ `SensorsDemo`                       | ✓ `SensorsDemo`       | done            |
 | `modifiers`       | ✗                                     | ✓ `ModifiersDemo`     | add to Flutter  |
 | `auto-scroll`     | ✗                                     | ✓ `AutoScrollDemo`    | add to Flutter  |
 | `sortable`        | ✗                                     | ✓ `SortableDemo`      | add to Flutter  |
 | `multi-container` | ✓ `MultiContainerDemo`                | ✗                     | add to Jaspr    |
 | `accessibility`   | ✗                                     | ✓ `AccessibilityDemo` | add to Flutter  |
 
-Done in US-084: renamed `example_gallery` → `flutter_example_gallery`, folded the
-standalone packages into `lib/demos/` (`basic`, `multi-container`), and removed
-the legacy `kanban_board` app.
+Done so far: US-084 consolidated the projects (`basic`, `multi-container` on
+Flutter); US-085 brought `collision` and `sensors` to parity on both adapters.
 
 Remaining parity work (follow-up stories):
 
-- Flutter gains: `collision`, `sensors`, `modifiers`, `auto-scroll`, `sortable`,
-  `accessibility`.
-- Jaspr gains: `collision`, `sensors`, `multi-container`.
+- Flutter gains: `modifiers`, `auto-scroll`, `sortable`, `accessibility`.
+- Jaspr gains: `multi-container`.
 
 A sensible fill order is shared-engine-visible concepts first (collision,
 sensors, modifiers, auto-scroll), then the presets (sortable, multi-container),
