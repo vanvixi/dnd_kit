@@ -349,8 +349,8 @@ Converge the example apps so the website can host a Flutter/Jaspr showcase page:
   adding both catalog demos to both galleries;
 - `US-086`: bring the Flutter gallery to the full catalog by adding
   `modifiers`, `auto-scroll`, `sortable`, and `accessibility`;
-- the Jaspr `multi-container` demo is the last parity gap, then the showcase
-  page follows.
+- `US-087`: add the Jaspr `multi-container` demo, completing Flutter/Jaspr
+  catalog parity; the showcase page follows.
 
 Phase README:
 `docs/stories/phase-33-example-standardization-and-showcase/README.md`.
@@ -414,9 +414,9 @@ taxonomy, naming/structure conventions, and the Flutter/Jaspr parity matrix —
 (`flutter_example_gallery`, `jaspr_example_gallery`), folding the standalone
 Flutter packages into `lib/demos/` and removing the legacy `kanban_board` app,
 `US-085` brought the `collision` and `sensors` demos to full Flutter/Jaspr
-parity, and `US-086` completed the Flutter gallery's catalog by adding
-`modifiers`, `auto-scroll`, `sortable`, and `accessibility` (the Jaspr
-`multi-container` demo remains the last parity gap).
+parity, `US-086` completed the Flutter gallery's catalog by adding `modifiers`,
+`auto-scroll`, `sortable`, and `accessibility`, and `US-087` added the Jaspr
+`multi-container` demo — both galleries are now at full catalog parity.
 Future work should keep extending this roadmap through new product docs, story
 packets, and decisions rather than by reviving the old umbrella/core topology
 from the historical specs.

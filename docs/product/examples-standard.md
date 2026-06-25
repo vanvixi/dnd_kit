@@ -94,15 +94,13 @@ Target: every catalog demo present in both galleries, under `lib/demos/`.
 | `modifiers`       | ✓ `ModifiersDemo`                     | ✓ `ModifiersDemo`     | done            |
 | `auto-scroll`     | ✓ `AutoScrollDemo`                    | ✓ `AutoScrollDemo`    | done            |
 | `sortable`        | ✓ `SortableDemo`                      | ✓ `SortableDemo`      | done            |
-| `multi-container` | ✓ `MultiContainerDemo`                | ✗                     | add to Jaspr    |
+| `multi-container` | ✓ `MultiContainerDemo`                | ✓ `MultiContainerDemo` | done           |
 | `accessibility`   | ✓ `AccessibilityDemo`                 | ✓ `AccessibilityDemo` | done            |
 
-Done so far: US-084 consolidated the projects; US-085 added `collision` and
-`sensors` to both adapters; US-086 brought the Flutter gallery to the full
-catalog (`modifiers`, `auto-scroll`, `sortable`, `accessibility`).
-
-Remaining parity work: the Jaspr gallery still needs the `multi-container` demo.
-Once it lands, both galleries expose the full catalog.
+Parity is complete: US-084 consolidated the projects, US-085 added `collision`
+and `sensors`, US-086 brought the Flutter gallery to the full catalog, and
+US-087 added the Jaspr `multi-container` demo. Both galleries now expose every
+catalog demo.
 
 A sensible fill order is shared-engine-visible concepts first (collision,
 sensors, modifiers, auto-scroll), then the presets (sortable, multi-container),

@@ -6,6 +6,7 @@ import 'demos/auto_scroll_demo.dart';
 import 'demos/basic_demo.dart';
 import 'demos/collision_demo.dart';
 import 'demos/modifiers_demo.dart';
+import 'demos/multi_container_demo.dart';
 import 'demos/sensors_demo.dart';
 import 'demos/sortable_demo.dart';
 import 'ui.dart';
@@ -24,8 +25,8 @@ class GalleryApp extends StatefulComponent {
 class _GalleryAppState extends State<GalleryApp> {
   int _selected = 0;
 
-  // Catalog order (see docs/product/examples-standard.md). Still to fill:
-  // multi-container.
+  // Catalog order (see docs/product/examples-standard.md). The Jaspr gallery
+  // now ships the full catalog.
   static final List<_Demo> _demos = <_Demo>[
     _Demo('Basic', 'Drag, drop, handle, overlay', () => const BasicDemo()),
     _Demo(
@@ -37,6 +38,11 @@ class _GalleryAppState extends State<GalleryApp> {
     _Demo('Modifiers', 'Constrained movement', () => const ModifiersDemo()),
     _Demo('Auto-scroll', 'Edge-driven scrolling', () => const AutoScrollDemo()),
     _Demo('Sortable', 'Reorderable list preset', () => const SortableDemo()),
+    _Demo(
+      'Multi-container',
+      'Move cards across columns',
+      () => const MultiContainerDemo(),
+    ),
     _Demo(
       'Accessibility',
       'Keyboard + live region',

@@ -18,5 +18,4 @@ Each demo lives under `lib/demos/` as a single `<slug>_demo.dart` file, or as a
 adapter are tracked parity gaps, not permitted differences — see the standard
 for the current matrix.
 
-The Flutter gallery ships the full catalog. The Jaspr gallery ships everything
-except `multi-container`, which is the last remaining parity gap.
+Both galleries ship the full catalog — Flutter and Jaspr are at parity.
