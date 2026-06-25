@@ -8,11 +8,8 @@ packages/
   dnd_kit_flutter/  # Flutter adapter
   dnd_kit_jaspr/    # Jaspr adapter
 examples/
-  basic_drag_drop/
-  kanban_board/
-  multi_container_sortable/
-  example_gallery/
-  jaspr_example_gallery/
+  flutter_example_gallery/  # Flutter demo catalog
+  jaspr_example_gallery/    # Jaspr demo catalog
 docs/
 ```
 
