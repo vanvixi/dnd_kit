@@ -5,9 +5,10 @@ single canonical demo catalog, shared naming and layout conventions, and a
 parity target across the Flutter and Jaspr adapters. It exists so the examples,
 the documentation, and the upcoming showcase page all speak the same vocabulary.
 
-Status: standard defined (US-083). Renaming/consolidating the projects and
-bringing both adapters to parity is tracked as follow-up work; this document
-does not change demo code.
+Status: standard defined (US-083); the project consolidation landed (US-084) —
+`examples/` now holds the two galleries and the Flutter `basic` and
+`multi-container` demos live under `lib/demos/`. Bringing the remaining demos to
+parity is tracked as follow-up work.
 
 ## Why standardize
 
@@ -87,19 +88,21 @@ Target: every catalog demo present in both galleries, under `lib/demos/`.
 
 | Demo              | Flutter today                         | Jaspr today           | Action          |
 | ----------------- | ------------------------------------- | --------------------- | --------------- |
-| `basic`           | ✓ (`basic_drag_drop`, to migrate)     | ✓ `BasicDemo`         | migrate + align |
+| `basic`           | ✓ `BasicDemo`                         | ✓ `BasicDemo`         | done            |
 | `collision`       | ✗                                     | ✗                     | add to both     |
 | `sensors`         | ✗                                     | ✗                     | add to both     |
 | `modifiers`       | ✗                                     | ✓ `ModifiersDemo`     | add to Flutter  |
 | `auto-scroll`     | ✗                                     | ✓ `AutoScrollDemo`    | add to Flutter  |
 | `sortable`        | ✗                                     | ✓ `SortableDemo`      | add to Flutter  |
-| `multi-container` | ✓ (`multi_container_sortable` / `kanban_board`, to migrate) | ✗ | migrate to Flutter demo; add to Jaspr |
+| `multi-container` | ✓ `MultiContainerDemo`                | ✗                     | add to Jaspr    |
 | `accessibility`   | ✗                                     | ✓ `AccessibilityDemo` | add to Flutter  |
 
-Resulting work (for follow-up stories, not this one):
+Done in US-084: renamed `example_gallery` → `flutter_example_gallery`, folded the
+standalone packages into `lib/demos/` (`basic`, `multi-container`), and removed
+the legacy `kanban_board` app.
 
-- Rename `example_gallery` → `flutter_example_gallery` and migrate the three
-  standalone packages into `lib/demos/` (`basic`, `multi-container`).
+Remaining parity work (follow-up stories):
+
 - Flutter gains: `collision`, `sensors`, `modifiers`, `auto-scroll`, `sortable`,
   `accessibility`.
 - Jaspr gains: `collision`, `sensors`, `multi-container`.

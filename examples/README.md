@@ -18,8 +18,7 @@ Each demo lives under `lib/demos/` as a single `<slug>_demo.dart` file, or as a
 adapter are tracked parity gaps, not permitted differences — see the standard
 for the current matrix.
 
-> Migration note: the Flutter side currently still uses `example_gallery` plus
-> the standalone packages `basic_drag_drop`, `kanban_board`, and
-> `multi_container_sortable`. The standard folds these into
-> `flutter_example_gallery/lib/demos/`; that rename and migration is follow-up
-> work.
+The Flutter gallery currently ships the `basic` and `multi-container` demos
+under `lib/demos/`; the other catalog demos are tracked parity gaps. The Jaspr
+gallery ships `basic`, `sortable`, `auto-scroll`, `accessibility`, and
+`modifiers`.
